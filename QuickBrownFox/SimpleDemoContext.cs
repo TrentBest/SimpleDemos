@@ -10,6 +10,7 @@ public class SimpleDemoContext : IStateContext
 {
     public bool IsValid { get; set; } = false;
     public string Name { get; set; } = "SimpleDemo";
+    public int WinPosition { get; } = 10;
 
     private List<ISimpleAgent> agents = new List<ISimpleAgent>();
 
@@ -22,7 +23,9 @@ public class SimpleDemoContext : IStateContext
             FSM_API.Create.CreateFiniteStateMachine("AppFSM", -1, "Main")
                 .State("Executing", OnEnterExecuting, OnUpdateExecuting, OnExitExecuting)
                 .State("Shutdown", OnEnterShutdown, null, null)
-                .Transition("Executing", "Shutdown", (ctx) => Console.KeyAvailable)
+                .Transition("Executing", "Shutdown", (ctx) => Console.KeyAvailable
+                ||agents.Any(s=>s.State.CurrentState == "Mangled")
+                || agents.Any(s=>s is QuickBrownFox fox && fox.Position == ((SimpleDemoContext)ctx).WinPosition))
                 .BuildDefinition();
         }
         //Now register this context with the "AppFSM"
@@ -92,7 +95,8 @@ public class SimpleDemoContext : IStateContext
                     }
 
                     // Collision logic: check if agents have the same position
-                    if (distance == 0)
+                    if (distance == 0 && currentAgent.State.CurrentState != "Jumping"
+                        && otherAgent.State.CurrentState != "Jumping")
                     {
                         currentAgent.CollidedAgents.Add(otherAgent);
                         otherAgent.CollidedAgents.Add(currentAgent);
