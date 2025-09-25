@@ -1,16 +1,18 @@
 ﻿
 
+
 using TheSingularityWorkshop.FSM_API;
 
 public class QuickBrownFox : IStateContext, ISimpleAgent
 {
     public int Position { get; set; }
     public int Speed { get; set; } = 1;
-    public int Sight { get; } = 2;
+    public int Sight { get; } = 3;
+    private int JumpEnd = 0;
     public QuickBrownFox(int position)
     {
         this.Position = position;
-        if(!FSM_API.Interaction.Exists("QuickBrownFoxFSM", "Update"))
+        if (!FSM_API.Interaction.Exists("QuickBrownFoxFSM", "Update"))
         {
             FSM_API.Create.CreateFiniteStateMachine("QuickBrownFoxFSM", -1, "Update")
                 .State("Walking", OnEnterWalking, OnUpdateWalking, OnExitWalking)
@@ -18,7 +20,7 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
                 .State("Fleeing", OnEnterFleeing, OnUpdateFleeing, OnExitFleeing)
                 .State("Mangled", OnEnterMangled, OnUpdateMangled, OnExitManagled)
                 .Transition("Walking", "Jumping", ShouldJump)
-                .Transition("Jumping", "Walking", (ctx) => true)
+                .Transition("Jumping", "Walking", ShouldLand)
                 .Transition("Walking", "Fleeing", ShouldFlee)
                 .BuildDefinition();
         }
@@ -26,9 +28,18 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
         IsValid = true;
     }
 
+    private bool ShouldLand(IStateContext context)
+    {
+        if (context is QuickBrownFox fox)
+        {
+            return fox.Position >= fox.JumpEnd;
+        }
+        return false;
+    }
+
     private void OnEnterWalking(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
             fox.Speed = 1;
             Console.WriteLine($"{fox.Name} has started walking at a speed of:  {fox.Speed}!");
@@ -37,7 +48,7 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
 
     private void OnUpdateWalking(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
             fox.Position += fox.Speed;
             Console.WriteLine($"{fox.Name} is walking:  {fox.Position}");
@@ -46,7 +57,7 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
 
     private void OnExitWalking(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
             Console.WriteLine($"{fox.Name} has stopped walking.");
         }
@@ -54,9 +65,10 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
 
     private void OnEnterJumping(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
-            Console.WriteLine($"{fox.Name} has started jumping!");
+            Console.WriteLine($"{fox.Name} has started jumping at:  {fox.Position}!");
+            JumpEnd = fox.Position + 2;
         }
     }
 
@@ -64,7 +76,8 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
     {
         if (context is QuickBrownFox fox)
         {
-            Console.WriteLine($"{fox.Name} is jumping!");
+            fox.Position += fox.Speed;
+            Console.WriteLine($"{fox.Name} is jumping:  {fox.Position}!");
         }
     }
 
@@ -72,13 +85,13 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
     {
         if (context is QuickBrownFox fox)
         {
-            Console.WriteLine($"{fox.Name} has finished jumping!");
+            Console.WriteLine($"{fox.Name} has finished jumping:  {fox.Position}!");
         }
     }
 
     private void OnEnterFleeing(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
             Console.WriteLine($"{fox.Name} has started to flee!");
             fox.Speed = 2;
@@ -96,7 +109,7 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
 
     private void OnExitFleeing(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
             Console.WriteLine($"{fox.Name} has stopped fleeing!");
         }
@@ -128,16 +141,23 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
 
     private bool ShouldJump(IStateContext context)
     {
-        if( context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
-            return fox.VisibleAgents.Any(s => s is LazySleepingDog dog && dog.Position - fox.Position <= 1);
+            foreach (var visible in fox.VisibleAgents)
+            {
+                var distance = visible.Position - fox.Position;
+                if(distance <= 2)
+                {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     private bool ShouldFlee(IStateContext context)
     {
-        if(context is QuickBrownFox fox)
+        if (context is QuickBrownFox fox)
         {
             return fox.CollidedAgents.Any(s => s is LazySleepingDog dog);
         }

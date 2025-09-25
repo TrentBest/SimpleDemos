@@ -11,6 +11,7 @@ public class SimpleDemoContext : IStateContext
     public bool IsValid { get; set; } = false;
     public string Name { get; set; } = "SimpleDemo";
     public int WinPosition { get; } = 10;
+    public int CurrentFrame { get; private set; } = 0;
 
     private List<ISimpleAgent> agents = new List<ISimpleAgent>();
 
@@ -68,7 +69,7 @@ public class SimpleDemoContext : IStateContext
         if (context is SimpleDemoContext demo)
         {
             // The main loop for our simulation
-
+            Console.WriteLine($"\nStepping Simulation:  {demo.CurrentFrame}");
             // Step 1: Clear previous frame's vision and collision data
             foreach (var agent in demo.agents)
             {
@@ -107,6 +108,7 @@ public class SimpleDemoContext : IStateContext
 
             // Step 3: Let the agents' FSMs handle their own logic
             FSM_API.Interaction.Update("Update");
+            demo.CurrentFrame++;
         }
     }
 
