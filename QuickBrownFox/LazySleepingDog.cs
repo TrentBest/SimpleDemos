@@ -1,22 +1,21 @@
-﻿
-
-using TheSingularityWorkshop.FSM_API;
+﻿using TheSingularityWorkshop.FSM_API;
 
 internal class LazySleepingDog : IStateContext, ISimpleAgent
 {
     public int Position { get; set; }
     public int Speed { get; set; } = 1;
     public int Sight { get; } = 2;
+
     public LazySleepingDog(int position)
     {
         this.Position = position;
-        if(!FSM_API.Interaction.Exists("LazyDogFSM", "Update"))
+        if (!FSM_API.Interaction.Exists("LazyDogFSM", "Update"))
         {
             FSM_API.Create.CreateFiniteStateMachine("LazyDogFSM", -1, "Update")
                 .State("Sleeping", OnEnterSleeping, OnUpdateSleeping, OnExitSleeping)
                 .State("Awake", OnEnterAwake, OnUpdateAwake, OnExitAwake)
                 .State("Chasing", OnEnterChasing, OnUpdateChasing, OnExitChasing)
-                .State("Mangling", OnEnterMangling, OnUpdteMangling, OnExitMangling)
+                .State("Mangling", OnEnterMangling, OnUpdateMangling, OnExitMangling) // Fixed Typo
                 .Transition("Sleeping", "Awake", IsAwake)
                 .Transition("Awake", "Chasing", ShouldChase)
                 .Transition("Chasing", "Mangling", IsMangling)
@@ -26,11 +25,16 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
         IsValid = true;
     }
 
+    private void Log(string message)
+    {
+        if (SimpleDemoContext.EnableLogging) Console.WriteLine(message);
+    }
+
     private void OnEnterSleeping(IStateContext context)
     {
-        if(context is LazySleepingDog dog)
+        if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has started sleeping!");
+            Log($"{dog.Name} has started sleeping!");
         }
     }
 
@@ -38,7 +42,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} is sleeping!");
+            Log($"{dog.Name} is sleeping!");
         }
     }
 
@@ -46,7 +50,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has stopped sleeping!");
+            Log($"{dog.Name} has stopped sleeping!");
         }
     }
 
@@ -54,7 +58,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has started awake!");
+            Log($"{dog.Name} has started awake!");
         }
     }
 
@@ -62,7 +66,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} is awake!");
+            Log($"{dog.Name} is awake!");
         }
     }
 
@@ -70,7 +74,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} is leaving the awake state!");
+            Log($"{dog.Name} is leaving the awake state!");
         }
     }
 
@@ -78,7 +82,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has started chasing!");
+            Log($"{dog.Name} has started chasing!");
             dog.Speed = 3;
         }
     }
@@ -88,7 +92,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
         if (context is LazySleepingDog dog)
         {
             dog.Position += dog.Speed;
-            Console.WriteLine($"{dog.Name} is chasing:  {dog.Position}");
+            Log($"{dog.Name} is chasing: {dog.Position}");
         }
     }
 
@@ -96,7 +100,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has stopped chasing!");
+            Log($"{dog.Name} has stopped chasing!");
             dog.Speed = 1;
         }
     }
@@ -105,16 +109,16 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has started Mangling the fox!");
+            Log($"{dog.Name} has started Mangling the fox!");
             dog.CollidedAgents.FirstOrDefault()?.State.TransitionTo("Mangled");
         }
     }
 
-    private void OnUpdteMangling(IStateContext context)
+    private void OnUpdateMangling(IStateContext context) // Fixed Typo
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} is Mangling the fox!");
+            Log($"{dog.Name} is Mangling the fox!");
         }
     }
 
@@ -122,7 +126,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     {
         if (context is LazySleepingDog dog)
         {
-            Console.WriteLine($"{dog.Name} has stopped mangling the fox!");
+            Log($"{dog.Name} has stopped mangling the fox!");
         }
     }
 
@@ -137,7 +141,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
 
     private bool ShouldChase(IStateContext context)
     {
-        if(context is LazySleepingDog dog)
+        if (context is LazySleepingDog dog)
         {
             return dog.VisibleAgents.Any(s => s is QuickBrownFox p);
         }
@@ -146,7 +150,7 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
 
     private bool IsMangling(IStateContext context)
     {
-        if( context is LazySleepingDog dog)
+        if (context is LazySleepingDog dog)
         {
             return dog.CollidedAgents.Any(s => s is QuickBrownFox p);
         }
@@ -158,5 +162,4 @@ internal class LazySleepingDog : IStateContext, ISimpleAgent
     public List<ISimpleAgent> VisibleAgents { get; } = new List<ISimpleAgent>();
     public List<ISimpleAgent> CollidedAgents { get; } = new List<ISimpleAgent>();
     public FSMHandle State { get; }
-
 }

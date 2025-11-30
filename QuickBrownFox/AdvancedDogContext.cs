@@ -4,6 +4,19 @@ using TheSingularityWorkshop.FSM_API;
 
 public class AdvancedDogContext : IAdvancedAgent
 {
+    // IAdvancedAgent properties
+    public float SightRange { get; set; } = 3;
+    public Vector2 Position { get; set; }
+    public FSMHandle Status { get; }
+    public List<IAdvancedAgent> VisibleAgents { get; } = new List<IAdvancedAgent>();
+    public List<IAdvancedAgent> CollidingAgents { get; } = new List<IAdvancedAgent>();
+    public bool IsValid { get; set; } = false;
+    public string Name { get; set; }
+    public int Speed { get; private set; } = 1; // Default speed for dogs
+    private IAdvancedAgent Chasing { get; set; }
+    private AdvancedDemoEnvironment Environment { get; }
+
+    // Updated Constructor
     public AdvancedDogContext(int id, Vector2 pos, AdvancedDemoEnvironment environment)
     {
         Position = pos;
@@ -31,20 +44,22 @@ public class AdvancedDogContext : IAdvancedAgent
     {
         if (context is AdvancedDogContext dog)
         {
+            // Speed up if we are chasing
+            dog.Speed = 1;
             var fox = dog.Environment.GetNearestFox(dog);
             if (fox != null)
             {
                 dog.Chasing = fox;
             }
         }
-
     }
 
     private void OnEnterChasing(IStateContext context)
     {
         if (context is AdvancedDogContext dog)
         {
-            Console.WriteLine($"{dog.Name} has started chasing:  {dog.Chasing.Name}");
+            dog.Speed = 3; // Dog runs faster when chasing!
+            Console.WriteLine($"{dog.Name} has started chasing: {dog.Chasing.Name}");
         }
     }
 
@@ -52,22 +67,15 @@ public class AdvancedDogContext : IAdvancedAgent
     {
         if (context is AdvancedDogContext dog)
         {
-            var dogPos = dog.Position;
-            var foxPos = dog.Chasing.Position;
-            var dx = dogPos.X - foxPos.X;
-            var dy = dogPos.Y - foxPos.Y;
-            if (dx >= dy)
-            {
-                var x = dog.Position.X;
-                x += dog.Speed;
-                dog.Position = new Vector2(x, dog.Position.Y);
-            }
-            else
-            {
-                var y = dog.Position.Y;
-                y += dog.Speed;
-                dog.Position = new Vector2(dog.Position.X, y);
-            }
+            if (dog.Chasing == null) return;
+
+            // Calculate 2D direction towards the target fox
+            Vector2 direction = Vector2.Normalize(dog.Chasing.Position - dog.Position);
+
+            // Move towards the fox by the set speed
+            dog.Position += direction * dog.Speed;
+
+            Console.WriteLine($"{dog.Name} is chasing at {dog.Position}");
         }
     }
 
@@ -75,7 +83,7 @@ public class AdvancedDogContext : IAdvancedAgent
     {
         if (context is AdvancedDogContext dog)
         {
-
+            dog.Speed = 1;
         }
     }
 
@@ -83,6 +91,7 @@ public class AdvancedDogContext : IAdvancedAgent
     {
         if (context is AdvancedDogContext dog)
         {
+            Console.WriteLine($"{dog.Name} is mangling {dog.Chasing.Name}!");
             dog.Chasing.Status.TransitionTo("Mangled");
         }
     }
@@ -91,27 +100,31 @@ public class AdvancedDogContext : IAdvancedAgent
     {
         if (context is AdvancedDogContext dog)
         {
+            // Wake up if something touches the dog (collision)
             return dog.CollidingAgents.Count > 0;
         }
-        return true;
+        return false; // Changed from true to false to only wake on collision
     }
 
     private bool ShouldChase(IStateContext context)
     {
         if (context is AdvancedDogContext dog)
         {
-            return dog.Chasing != null;
+            // Chase if a fox is visible
+            return dog.VisibleAgents.Any(agent => agent is AdvancedFoxContext);
         }
-        return true;
+        return false; // Changed from true to false
     }
 
     private bool IsManglingFox(IStateContext context)
     {
         if (context is AdvancedDogContext dog)
         {
-            var dx = dog.Position.X - dog.Chasing.Position.X;
-            var dy = dog.Position.Y - dog.Chasing.Position.Y;
-            if (dx <= .25f && dy <= .25f)
+            if (dog.Chasing == null) return false;
+
+            // Use 2D distance check for collision with the target fox
+            float distance = Vector2.Distance(dog.Position, dog.Chasing.Position);
+            if (distance < 0.5f) // Small collision radius
             {
                 return true;
             }
@@ -123,19 +136,9 @@ public class AdvancedDogContext : IAdvancedAgent
     {
         if (context is AdvancedDogContext dog)
         {
-            return !dog.VisibleAgents.Any(agent => agent is AdvancedFoxContext fox);
+            // Sleep if no foxes are visible
+            return !dog.VisibleAgents.Any(agent => agent is AdvancedFoxContext);
         }
         return false;
     }
-
-    public int SightRange { get; } = 3;
-    private IAdvancedAgent Chasing { get; set; }
-    private AdvancedDemoEnvironment Environment { get; }
-    public Vector2 Position { get; set; }
-    public FSMHandle Status { get; }
-    public List<IAdvancedAgent> VisibleAgents { get; } = new List<IAdvancedAgent>();
-    public List<IAdvancedAgent> CollidingAgents { get; } = new List<IAdvancedAgent>();
-    public bool IsValid { get; set; } = false;
-    public string Name { get; set; }
-    public int Speed { get; private set; }
 }

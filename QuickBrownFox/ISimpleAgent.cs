@@ -1,6 +1,6 @@
 ﻿using TheSingularityWorkshop.FSM_API;
 
-public interface ISimpleAgent
+public interface ISimpleAgent : IStateContext
 {
     FSMHandle State { get; }
     List<ISimpleAgent> VisibleAgents { get; }

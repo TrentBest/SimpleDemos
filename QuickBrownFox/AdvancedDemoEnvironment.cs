@@ -4,6 +4,10 @@ using TheSingularityWorkshop.FSM_API;
 
 public class AdvancedDemoEnvironment : IStateContext
 {
+    // Updated environment bounds to 100x100
+    public int EnvironmentWidth { get; private set; } = 100;
+    public int EngironmentHeight { get; private set; } = 100;
+
     private List<IAdvancedAgent> _agents = new List<IAdvancedAgent>();
 
     public AdvancedDemoEnvironment()
@@ -13,7 +17,6 @@ public class AdvancedDemoEnvironment : IStateContext
             FSM_API.Create.CreateFiniteStateMachine("AdvancedDemoEnvironmentFSM", -1, "Environment")
                 .State("Existing", null, OnUpdateExisting, null)
                 .BuildDefinition();
-
         }
         FSM_API.Create.CreateInstance("AdvancedDemoEnvironmentFSM", this, "Environment");
         Name = "AdvancedDemoEnvironment";
@@ -24,34 +27,52 @@ public class AdvancedDemoEnvironment : IStateContext
     {
         if (context is AdvancedDemoEnvironment env)
         {
-            foreach (IAdvancedAgent agent in env.GetAgents())
+            // Reset vision and collision data for all agents
+            foreach (var agent in env._agents)
             {
-                var agents = env.GetAgents();
-                agents.Remove(agent);
-                foreach (var agent2 in agents)
-                {
-                    if (agent.Position.X - agent2.Position.X <= float.Epsilon
-                        && agent.Position.Y - agent2.Position.Y <= float.Epsilon)
-                    {
-                        if (!agent.CollidingAgents.Contains(agent2))
-                        {
-                            agent.CollidingAgents.Add(agent2);
-                        }
-                        if (!agent2.CollidingAgents.Contains(agent))
-                        {
-                            agent2.CollidingAgents.Add(agent);
-                        }
-                    }
-                }
-
-                agents.Where(s => ManhattanDistance(s.Position, agent.Position) <= s.SightRange).ToList();
+                agent.CollidingAgents.Clear();
+                agent.VisibleAgents.Clear();
             }
 
+            // Perform vision and collision checks for all agents
+            // Using a nested loop with index to avoid duplicate checks
+            for (int i = 0; i < env._agents.Count; i++)
+            {
+                var currentAgent = env._agents[i];
+                for (int j = i + 1; j < env._agents.Count; j++)
+                {
+                    var otherAgent = env._agents[j];
 
+                    // Collision logic (exact integer position match for grid-based agents)
+                    if (Vector2.Distance(currentAgent.Position, otherAgent.Position) < 0.5f
+                        && currentAgent.Status.CurrentState != "Jumping"
+                        && otherAgent.Status.CurrentState != "Jumping")
+                    {
+                        currentAgent.CollidingAgents.Add(otherAgent);
+                        otherAgent.CollidingAgents.Add(currentAgent);
+                    }
+
+                    // Vision logic (using Manhattan distance)
+                    if (ManhattanDistance(currentAgent.Position, otherAgent.Position) <= currentAgent.SightRange)
+                    {
+                        currentAgent.VisibleAgents.Add(otherAgent);
+                    }
+                    if (ManhattanDistance(currentAgent.Position, otherAgent.Position) <= otherAgent.SightRange)
+                    {
+                        otherAgent.VisibleAgents.Add(currentAgent);
+                    }
+                }
+            }
         }
     }
 
-    private List<IAdvancedAgent> GetAgents()
+    // New helper method for agent clearing
+    public void ClearAgents()
+    {
+        _agents.Clear();
+    }
+
+    public List<IAdvancedAgent> GetAgents()
     {
         return _agents.ToList();
     }
@@ -61,9 +82,11 @@ public class AdvancedDemoEnvironment : IStateContext
         _agents.Add(agent);
     }
 
+    // Corrected IsEmptyAt: returns TRUE if NO agent is occupying the space (it IS empty).
     public bool IsEmptyAt(Vector2 pos)
     {
-        return _agents.Any(s => s.Position.X == pos.X && s.Position.Y == pos.Y);
+        // Use a small distance tolerance for 2D float comparison (for integer positions, 0.5f is fine)
+        return !_agents.Any(s => Vector2.Distance(s.Position, pos) < 0.5f);
     }
 
     public IAdvancedAgent? GetNearestFox(AdvancedDogContext dog)
@@ -73,8 +96,8 @@ public class AdvancedDemoEnvironment : IStateContext
 
     private float ManhattanDistance(Vector2 position1, Vector2 position2)
     {
-        float dx = Math.Abs(position1.x - position2.x);
-        float dy = Math.Abs(position1.y - position2.y);
+        float dx = Math.Abs(position1.X - position2.X);
+        float dy = Math.Abs(position1.Y - position2.Y);
 
         return dx + dy;
     }
