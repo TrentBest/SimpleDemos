@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TheSingularityWorkshop.FSM_API" Version="1.0.12" />
+    <Reference Include="FSM_API">
+      <HintPath>..\..\..\TSW\FSM_API\bin\Release\net8.0\FSM_API.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

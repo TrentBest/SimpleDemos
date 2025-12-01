@@ -70,7 +70,7 @@ public class QuickBrownFox : IStateContext, ISimpleAgent
     {
         if (context is QuickBrownFox fox)
         {
-            return true;
+            return fox.Position == fox.JumpEnd;
         }
         return false;
     }
