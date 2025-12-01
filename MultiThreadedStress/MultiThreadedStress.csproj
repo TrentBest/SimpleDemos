@@ -7,10 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="FSM_API">
-      <HintPath>..\..\..\TSW\FSM_API\bin\Release\net8.0\FSM_API.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
