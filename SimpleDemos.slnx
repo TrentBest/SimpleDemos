@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="FSM_NN/FSM_NN.csproj" Id="aa2e91f5-786f-4882-bad0-e58458a39426" />
   <Project Path="MultiThreadedStress/MultiThreadedStress.csproj" Id="3aadf637-5a51-4dbb-a1b6-d218b2ae5e07" />
   <Project Path="QuickBrownFox/QuickBrownFox.csproj" />
   <Project Path="Stress/Stress.csproj" Id="23ad801d-5ac5-4039-91d0-f5f6f682c618" />
