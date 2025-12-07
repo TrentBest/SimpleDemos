@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="FSM-COS/FSM-COS.csproj" Id="5d7dc7ba-b620-44f4-93da-040252f7022c" />
+  <Project Path="FSM_COS.Tests/FSM_COS.Tests.csproj" Id="1d096d1e-3a70-4ab5-a6d7-d9c742fd5c15" />
+  <Project Path="IntegerSpeedTest/IntegerSpeedTest.csproj" Id="7704f4bc-4bcc-46be-99d0-970976b02df4" />
   <Project Path="MultiThreadedStress/MultiThreadedStress.csproj" Id="3aadf637-5a51-4dbb-a1b6-d218b2ae5e07" />
   <Project Path="QuickBrownFox/QuickBrownFox.csproj" />
   <Project Path="Stress/Stress.csproj" Id="23ad801d-5ac5-4039-91d0-f5f6f682c618" />

@@ -1,16 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using System.IO;
 
 using TheSingularityWorkshop.FSM_API;
 
 public class StressTestContext : IStateContext
 {
     public bool IsValid { get; set; } = true;
-    public string Name { get; set; } = "StressTest";
+    public string Name { get; set; } = "StressTest_Optimized";
 
     // --- Configuration ---
     private const int TARGET_FPS = 30;
     private const int BATCH_SIZE = 1000;
+    private string csvPath = "qbf_optimized_data.csv"; // New File Name
+    private long _startMem = 0;
 
     // Dynamic World Settings
     public int WorldMin = 0;
@@ -22,8 +25,13 @@ public class StressTestContext : IStateContext
     private long _frameCount = 0;
     private double _fps = 0;
 
-    // --- Spatial Hashing ---
+    // --- Spatial Hashing & Pooling ---
     public Dictionary<int, GridCell> Grid = new Dictionary<int, GridCell>();
+
+    // THE OPTIMIZATION: A Pool of reusable cells
+    private Queue<GridCell> _cellPool = new Queue<GridCell>();
+    private List<GridCell> _activeCells = new List<GridCell>();
+
     private List<StressAgent> _allAgents = new List<StressAgent>();
     private Random _rng = new Random();
 
@@ -31,8 +39,6 @@ public class StressTestContext : IStateContext
     public int CountFoxesAlive => _allAgents.Count(a => a is StressFox f && f.IsAlive);
     public int CountFoxesMangled => _allAgents.Count(a => a is StressFox f && !f.IsAlive);
     public int CountDogs => _allAgents.Count(a => a is StressDog);
-
-    // NEW: Real-time Action Metrics
     public int ActiveChases = 0;
     public int ActiveFlees = 0;
     public int ActiveJumps = 0;
@@ -40,46 +46,66 @@ public class StressTestContext : IStateContext
     public StressTestContext()
     {
         Console.Clear();
-        Console.WriteLine("=== Stress Test: The Gauntlet (Dynamic) ===");
-        Console.WriteLine("Goal: Foxes must traverse an expanding world of sleeping dogs.");
-        Console.WriteLine("Logic: Spatial Hashing + Dynamic FSMs (Jump/Flee/Chase).");
-        Console.WriteLine("Press 'Esc' to Stop.\n");
+        Console.WriteLine("=== Stress Test: The Gauntlet (OPTIMIZED POOLING) ===");
+        Console.WriteLine($"[Logging Data to: {Path.GetFullPath(csvPath)}]");
 
         if (!FSM_API.Internal.GetProcessingGroupNames().Contains("StressTest"))
         {
             FSM_API.Create.CreateProcessingGroup("StressTest");
         }
 
+        using (StreamWriter sw = new StreamWriter(csvPath, false))
+        {
+            sw.WriteLine("Agents,FPS,MemTotalMB,MemDeltaMB,WorldSize,Density");
+        }
+
         AddBatch(BATCH_SIZE);
+        GC.Collect();
+        _startMem = GC.GetTotalMemory(true);
         _frameTimer.Start();
     }
 
     public void Update()
     {
-        // 1. Reset Frame Counters
+        // 1. Return active cells to the pool instead of GC'ing them
+        foreach (var cell in _activeCells)
+        {
+            cell.Foxes.Clear();
+            cell.Dogs.Clear();
+            _cellPool.Enqueue(cell);
+        }
+        _activeCells.Clear();
         Grid.Clear();
+
         int chases = 0;
         int flees = 0;
         int jumps = 0;
 
-        // 2. Rebuild Grid & Count States (The Overhead Check)
+        // 2. Rebuild Grid using POOL
         foreach (var agent in _allAgents)
         {
             if (!agent.IsActive) continue;
 
-            // Spatial Hash
             int cellKey = agent.Position / CELL_SIZE;
             if (!Grid.TryGetValue(cellKey, out var cell))
             {
-                cell = new GridCell();
+                // Get from pool or create new if empty
+                if (_cellPool.Count > 0)
+                {
+                    cell = _cellPool.Dequeue();
+                }
+                else
+                {
+                    cell = new GridCell();
+                }
+
                 Grid[cellKey] = cell;
+                _activeCells.Add(cell);
             }
 
             if (agent is StressFox fox && fox.IsAlive)
             {
                 cell.Foxes.Add(fox);
-
-                // Count Actions
                 string state = fox.State.CurrentState;
                 if (state == "Fleeing") flees++;
                 if (state == "Jumping") jumps++;
@@ -95,12 +121,17 @@ public class StressTestContext : IStateContext
         ActiveFlees = flees;
         ActiveJumps = jumps;
 
-        // 3. Measure Performance & Render
+        // 3. Measure Performance
         long elapsedMs = _frameTimer.ElapsedMilliseconds;
         if (elapsedMs >= 1000)
         {
             _fps = _frameCount / (elapsedMs / 1000.0);
-            RenderStats();
+            long currentMem = GC.GetTotalMemory(false);
+            long memDelta = (currentMem - _startMem) / 1024 / 1024;
+            long memTotal = currentMem / 1024 / 1024;
+
+            RenderStats(memDelta);
+            LogData(memTotal, memDelta);
 
             // Dynamic Scaling
             if (_fps > TARGET_FPS + 2)
@@ -113,9 +144,9 @@ public class StressTestContext : IStateContext
 
             _frameCount = 0;
             _frameTimer.Restart();
+            _startMem = GC.GetTotalMemory(false);
         }
 
-        // 4. Input & Updates
         if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)
         {
             IsValid = false;
@@ -127,24 +158,23 @@ public class StressTestContext : IStateContext
         _frameCount++;
     }
 
-    private void RenderStats()
+    private void LogData(long memTotal, long memDelta)
+    {
+        float density = _allAgents.Count / (float)(WorldMax - WorldMin);
+        using (StreamWriter sw = new StreamWriter(csvPath, true))
+        {
+            sw.WriteLine($"{_allAgents.Count},{_fps:F2},{memTotal},{memDelta},{WorldMax - WorldMin},{density:F4}");
+        }
+    }
+
+    private void RenderStats(long memDelta)
     {
         Console.SetCursorPosition(0, 5);
-        Console.WriteLine($"[Simulation Status]             ");
+        Console.WriteLine($"[OPTIMIZED Status]              ");
         Console.WriteLine($"FPS:            {_fps:F2} / {TARGET_FPS}      ");
-        Console.WriteLine($"World Width:    {(WorldMax - WorldMin):N0} units       ");
-        Console.WriteLine($"Density:        {_allAgents.Count / (float)(WorldMax - WorldMin):F4} agents/unit");
-        Console.WriteLine($"-------------------------------");
-        Console.WriteLine($"[Population]                    ");
-        Console.WriteLine($"Total Agents:   {_allAgents.Count:N0}       ");
-        Console.WriteLine($"Dogs:           {CountDogs:N0}       ");
-        Console.WriteLine($"Foxes (Alive):  {CountFoxesAlive:N0}       ");
-        Console.WriteLine($"Foxes (Dead):   {CountFoxesMangled:N0}       ");
-        Console.WriteLine($"-------------------------------");
-        Console.WriteLine($"[Live Actions]                  ");
-        Console.WriteLine($"Dogs Awake:     {ActiveChases:N0}       ");
-        Console.WriteLine($"Foxes Fleeing:  {ActiveFlees:N0}       ");
-        Console.WriteLine($"Foxes Jumping:  {ActiveJumps:N0}       ");
+        Console.WriteLine($"Mem Delta:      {memDelta} MB/sec      "); // Visual feedback
+        Console.WriteLine($"Pool Size:      {_cellPool.Count}      ");
+        Console.WriteLine($"Agents:         {_allAgents.Count:N0}       ");
     }
 
     private void AddBatch(int count)
@@ -159,20 +189,17 @@ public class StressTestContext : IStateContext
 
     private void Cleanup()
     {
-        Console.WriteLine("\n\nStopping Stress Test...");
         foreach (var agent in _allAgents) FSM_API.Interaction.DestroyInstance(agent.State);
         FSM_API.Interaction.RemoveProcessingGroup("StressTest");
-        _allAgents.Clear();
     }
 
-    // --- Helpers & Agents (Same as before) ---
     public class GridCell { public List<StressFox> Foxes = new(); public List<StressDog> Dogs = new(); }
     public abstract class StressAgent : IStateContext
     {
         public bool IsValid { get; set; } = true; public string Name { get; set; }
         public int Position; public FSMHandle State; public StressTestContext Context; public bool IsActive = true;
     }
-    // (Include StressFox and StressDog classes from previous turn here)
+    // (StressFox and StressDog classes remain unchanged from previous file)
     public class StressFox : StressAgent
     {
         public bool IsAlive = true; public int Destination; public int Speed = 1;
