@@ -9,6 +9,8 @@ using TheSingularityWorkshop.FSM_API;
 
 class Program
 {
+    public static string Instance { get; private set; }
+
     // Data container for our report
     struct BenchResult
     {
@@ -23,9 +25,16 @@ class Program
     {
         Console.WriteLine("=== The Singularity Workshop: Final Baseline Profiler ===");
         Console.WriteLine("Generating artifacts for Coder Legion Article...");
+        if(args.Length > 0)
+        {
+            Instance = args[0];
+        }
+        string uniqueSuffix = string.IsNullOrWhiteSpace(Instance) ?
+                               Process.GetCurrentProcess().Id.ToString() :
+                               Instance;
 
-        string csvPath = "benchmark_data.csv";
-        string tablePath = "article_table.txt";
+        string csvPath = $"benchmark_data_{uniqueSuffix}.csv";
+        string tablePath = $"article_table_{uniqueSuffix}.txt";
         List<BenchResult> allResults = new List<BenchResult>();
 
         // Configuration

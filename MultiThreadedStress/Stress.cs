@@ -5,7 +5,7 @@ using TheSingularityWorkshop.FSM_API;
 
 public class Stress : IStateContext
 {
-    public int WorkerCount { get; set; }
+    public int WorkerCount { get; set; } // Changed from private set to public set
     public int TickInterval { get; private set; }
     public string GroupName { get; private set; }
 
@@ -14,6 +14,10 @@ public class Stress : IStateContext
     // Payload Data
     public int DataValue { get; set; } = 0;
     public long LastFrameOps { get; set; }
+
+    // NEW: Lock object for thread safety when creating/updating agents in this group.
+    private readonly object _lock = new object();
+    public object LockObject => _lock;
 
     public Stress(int workerCount, int tickInterval, string groupName = "Stress")
     {
@@ -47,18 +51,28 @@ public class Stress : IStateContext
 
     public void SpawnWorkers()
     {
-        string workerFsmName = $"WorkerFSM_{TickInterval}";
-        Workers.Clear();
-
-        for (int i = 0; i < WorkerCount; i++)
+        // Only run logic when the lock is acquired. This is the fix for the concurrency issue.
+        lock (LockObject)
         {
-            var workerCtx = new Stress(0, TickInterval, GroupName) { Name = $"Worker_{i}" };
-            workerCtx.Status = FSM_API.Create.CreateInstance(workerFsmName, workerCtx, GroupName);
-            Workers.Add(workerCtx.Status);
+            string workerFsmName = $"WorkerFSM_{TickInterval}";
+
+            // FIX: Calculate how many new workers to add to reach the target WorkerCount
+            int agentsToAdd = WorkerCount - Workers.Count;
+
+            if (agentsToAdd > 0)
+            {
+                for (int i = Workers.Count; i < WorkerCount; i++)
+                {
+                    // Create and add the new FSM instance (Agent)
+                    var workerCtx = new Stress(0, TickInterval, GroupName) { Name = $"Worker_{GroupName}_{i}" };
+                    workerCtx.Status = FSM_API.Create.CreateInstance(workerFsmName, workerCtx, GroupName);
+                    Workers.Add(workerCtx.Status);
+                }
+            }
         }
     }
 
-    // --- The Payload ---
+    // --- The Payload (UNCHANGED) ---
     private void OnUpdateWorker(IStateContext context)
     {
         if (context is Stress worker)
