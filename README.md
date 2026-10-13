@@ -46,28 +46,20 @@ That makes the behavior inspectable and easier to extend: add a state, define a 
 
 ### 🦊 The quick brown fox
 
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 720 142" role="img" aria-label="Fox FSM: Walking can transition to Jumping and back to Walking, or transition to Fleeing when a collision occurs. The dog can force the fox into Mangled.">
-  <defs>
-    <marker id="fox-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#B45309"/></marker>
-  </defs>
-  <rect x="8" y="35" width="120" height="46" rx="8" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
-  <text x="68" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#78350F">Walking</text>
-  <rect x="205" y="35" width="120" height="46" rx="8" fill="#FFEDD5" stroke="#B45309" stroke-width="2"/>
-  <text x="265" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#9A3412">Jumping</text>
-  <rect x="402" y="35" width="120" height="46" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
-  <text x="462" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#991B1B">Fleeing</text>
-  <rect x="592" y="35" width="120" height="46" rx="8" fill="#E5E7EB" stroke="#4B5563" stroke-width="2"/>
-  <text x="652" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#1F2937">Mangled*</text>
-  <path d="M128 48 H198" stroke="#B45309" stroke-width="2" marker-end="url(#fox-arrow)"/>
-  <text x="163" y="27" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">obstacle</text>
-  <path d="M205 72 H135" stroke="#B45309" stroke-width="2" marker-end="url(#fox-arrow)"/>
-  <text x="170" y="100" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">jump complete</text>
-  <path d="M128 81 C190 130 345 130 402 81" fill="none" stroke="#B91C1C" stroke-width="2" marker-end="url(#fox-arrow)"/>
-  <text x="265" y="127" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">collision → flee</text>
-  <path d="M522 58 H585" stroke="#4B5563" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#fox-arrow)"/>
-  <text x="553" y="27" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">dog forces</text>
-  <text x="8" y="15" font-family="sans-serif" font-size="11" fill="currentColor">* Mangled is an externally requested state; the basic fox definition does not declare a normal transition into it.</text>
-</svg>
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> Walking
+    Walking --> Jumping : ShouldJump
+    Jumping --> Walking : ShouldLand
+    Walking --> Fleeing : ShouldFlee
+    Mangled : externally requested state
+    note right of Mangled
+      Dog requests this state
+      on a successful catch.
+      No normal transition is declared.
+    end note
+```
 
 The basic fox definition includes `Walking`, `Jumping`, `Fleeing`, and `Mangled`. It jumps when an obstacle is close, returns to walking when its jump completes, and flees after a dog collision. The dog can directly request the fox's `Mangled` state.
 
