@@ -102,5 +102,21 @@ public class SimpleDemoContext : IStateContext
         }
     }
 
+    /// <summary>
+    /// Captures observable agent data after an FSM update for documentation/replay.
+    /// This is a snapshot of the running C# simulation, not a browser-side simulation.
+    /// </summary>
+    public object CaptureSnapshot() => new
+    {
+        Frame = CurrentFrame,
+        Agents = agents.Select(agent => new
+        {
+            Name = agent.Name,
+            State = agent.State.CurrentState,
+            Position = agent.Position,
+            Speed = agent.Speed
+        }).ToArray()
+    };
+
     private void RegisterAgent(ISimpleAgent agent) { agents.Add(agent); }
 }
