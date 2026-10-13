@@ -16,6 +16,10 @@
 
 # SimpleDemos: The Fox, the Dog, and the FSM
 
+<p align="center">
+  <img src="docs/assets/fox-dog-number-line.svg" alt="Animated fox moving along a number line toward a sleeping dog at position three; the fox's illustrative FSM state changes as it moves." width="100%" />
+</p>
+
 A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, inspect the larger 2D multi-agent implementation, or run the separate worker-throughput benchmark.
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
@@ -78,6 +82,10 @@ stateDiagram-v2
 The dog starts asleep. A collision wakes it; seeing the fox allows it to chase; a collision while chasing triggers its mangling behavior and requests the fox's `Mangled` state.
 
 ### 🦊🐕 Many agents, shared environment
+
+<p align="center">
+  <img src="docs/assets/many-foxes-and-dogs.svg" alt="Schematic multi-agent world with multiple foxes and dogs, showing example visibility ranges and shared environment sensing." width="100%" />
+</p>
 
 The advanced source files extend the same idea into a 100 × 100 2D environment with multiple foxes and dogs, destinations, visibility, and collision checks. These files are an advanced implementation to explore; **the current console entry point launches the basic demo and optional stress test, not the advanced simulation**. That distinction is intentional here so the documentation does not claim an execution path that the current entry point does not provide.
 
