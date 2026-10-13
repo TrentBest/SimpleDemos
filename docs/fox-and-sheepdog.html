@@ -62,7 +62,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
  </g>
  <g id="zzz" fill="#c6d9ec" font-weight="900"><text x="51" y="-24" font-size="18">Z</text><text x="68" y="-39" font-size="13">z</text><text x="80" y="-49" font-size="10">z</text></g>
 </g>
-<g id="tombstone" opacity="0" transform="translate(332 226)">
+<g id="tombstone" opacity="0" transform="translate(390 226)">
  <path d="M-27 45V8Q-27-18 0-18Q27-18 27 8V45Z" fill="#8998a7" stroke="#d1dbe4" stroke-width="2"/>
  <text x="0" y="14" fill="#182638" text-anchor="middle" font-size="12" font-weight="900">RIP</text><path d="M-11 25H11M-8 31H8" stroke="#182638" stroke-width="2"/>
 </g>
@@ -159,7 +159,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
   setState('Ghost Ascending','The dog lets go. One tiny ghost, complete with halo and harp, floats away.','The cartoon scuffle increments the counter once. The dog is unharmed, and the ghost is a deliberately silly visual metaphor—not a realistic depiction of injury.');
  }
  function resetAfterGhost(){
-  setOpacity(ghost,0);setOpacity(tombstone,1);setOpacity(dogBody,0);setOpacity(foxArt,0);dogState='Sleeping';setOpacity(zzz,1);
+  setOpacity(ghost,0);setOpacity(tombstone,1);setOpacity(foxArt,0);dogState='Sleeping';setOpacity(zzz,1);
   setState('Tombstone → Reset','The ghost fades; a tombstone marks the gag. The dog curls back up for another nap.','The outcome has been recorded. The demo resets the fox for another pass so the same inputs can be tested repeatedly.');
   phaseTime=0;
  }
