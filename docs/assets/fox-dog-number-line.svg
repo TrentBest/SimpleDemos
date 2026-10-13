@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="330" viewBox="0 0 1000 330" role="img" aria-labelledby="title desc">
-  <title id="title">A fox spots a sleeping sheepdog, jumps over it, and repeats in both directions</title>
-  <desc id="desc">An animated fox walks with its feet on a numbered line. When it first spots a large sleeping sheepdog at position three, a red exclamation mark appears above its head. The fox jumps over the dog, lands at position four, walks to the end, turns around, and repeats the sequence in reverse.</desc>
+  <title id="title">A fox approaches a sleeping shaggy sheepdog, jumps over it, and repeats in both directions</title>
+  <desc id="desc">An animated fox walks with its feet on a numbered line. When it first spots a shaggy sleeping sheepdog at position three, a red exclamation mark appears above its head. The fox jumps over the dog, lands at position four, walks to the end, turns around, and repeats the sequence in reverse.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101b2d"/><stop offset="1" stop-color="#1b2d40"/></linearGradient>
     <linearGradient id="foxFur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffc56f"/><stop offset="1" stop-color="#e96d35"/></linearGradient>
@@ -10,6 +10,8 @@
       .tick-label { fill:#c7d2df; font-size:14px; text-anchor:middle; }
       .state { font-size:14px; font-weight:700; }
       .alert { animation: alertFlash 18s linear infinite; }
+      .zzz { transform-box: fill-box; transform-origin: center; animation: sleepy 1.8s ease-in-out infinite; }
+      @keyframes sleepy { 0%,100% { transform:translate(0,0) rotate(-5deg); } 50% { transform:translate(7px,-9px) rotate(6deg); } }
       .walk-label { animation: walkState 18s linear infinite; }
       .jump-label { animation: jumpState 18s linear infinite; }
       @keyframes alertFlash {
@@ -24,7 +26,7 @@
         0%,8.9% { opacity:0; } 9%,25% { opacity:1; } 25.1%,100% { opacity:0; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .alert,.walk-label,.jump-label { animation:none; }
+        .alert,.walk-label,.jump-label,.zzz { animation:none; }
         .alert { opacity:0; }
         .walk-label { opacity:1; }
         .jump-label { opacity:0; }
@@ -55,24 +57,22 @@
   <text x="340" y="273" fill="#8da4ba" font-size="12" text-anchor="middle">SHEEPDOG</text>
   <text x="420" y="273" fill="#8da4ba" font-size="12" text-anchor="middle">LANDS AT 4</text>
   <!-- A large, shaggy sheepdog: a friendly nod to classic cartoon sheepdogs, not a traced character. -->
+  <!-- Original shaggy sheepdog: broad body, floppy ears, long muzzle, collar, and sleepy face. -->
   <g transform="translate(340 180)">
-    <ellipse cx="0" cy="41" rx="48" ry="7" fill="#07111d" opacity=".45"/>
-    <path d="M-42 20 Q-54 9 -43 -1 Q-48 -16 -33 -19 Q-22 -32 -10 -23 Q4 -37 16 -25 Q31 -30 35 -16 Q52 -11 45 3 Q56 16 40 25 L-31 30Z" fill="#f1e8d6" stroke="#c8c9c5" stroke-width="2"/>
-    <ellipse cx="-2" cy="19" rx="39" ry="23" fill="#eee6d6" stroke="#c8c9c5" stroke-width="2"/>
-    <path d="M-29 7 Q-44 -1 -36 -13 Q-22 -21 -14 -9 Q-4 -18 6 -8 Q21 -16 30 -3 L25 12 Q4 25 -19 18Z" fill="#faf4e8"/>
-    <path d="M-30 31 L-30 39 M-11 34 L-12 40 M16 34 L17 40 M32 28 L36 39" stroke="#e7ddca" stroke-width="8" stroke-linecap="round"/>
-    <circle cx="28" cy="7" r="21" fill="#f5ecdc" stroke="#c8c9c5" stroke-width="2"/>
-    <path d="M13 -7 Q0 -19 8 -29 Q21 -34 24 -18 M33 -9 Q44 -23 51 -13 Q56 -2 45 1" fill="#e9dfcd" stroke="#c8c9c5" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M15 7 Q21 0 28 7" fill="none" stroke="#6c6259" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M32 7 Q39 0 44 7" fill="none" stroke="#6c6259" stroke-width="2.5" stroke-linecap="round"/>
-    <ellipse cx="34" cy="17" rx="8" ry="5" fill="#394a58"/>
-    <path d="M28 23 Q35 28 41 22" fill="none" stroke="#77695c" stroke-width="2" stroke-linecap="round"/>
-    <path d="M-32 9 Q-42 2 -46 13 L-37 24" fill="#eee6d6" stroke="#c8c9c5" stroke-width="2"/>
-    <path d="M-6 37 Q0 31 7 37" fill="none" stroke="#b5aa99" stroke-width="4" stroke-linecap="round"/>
-    <path d="M45 -15 Q52 -28 60 -16 Q64 -7 55 -5" fill="none" stroke="#9fb3c8" stroke-width="1.5"/>
-    <text x="52" y="-26" fill="#c5d7e8" font-size="14" font-weight="700">Z</text><text x="64" y="-35" fill="#c5d7e8" font-size="10" font-weight="700">z</text>
-    <path d="M-22 -1 Q-5 -10 8 -1" fill="none" stroke="#477c8d" stroke-width="7" stroke-linecap="round"/>
-    <path d="M-4 -7 L3 -2 L-2 4 L-9 -1Z" fill="#d6b75b" stroke="#8b783c" stroke-width="1.5"/>
+    <ellipse cx="0" cy="41" rx="52" ry="7" fill="#07111d" opacity=".45"/>
+    <path d="M-45 4 Q-54 -8 -44 -20 Q-38 -31 -25 -25 Q-10 -32 0 -24 Q18 -31 29 -18 Q43 -15 43 0 L35 26 L-34 29Z" fill="#d8d5cc" stroke="#929fa6" stroke-width="2"/>
+    <ellipse cx="-3" cy="15" rx="40" ry="22" fill="#eee9de" stroke="#aab0b2" stroke-width="2"/>
+    <path d="M-31 6 Q-40 -2 -30 -12 Q-17 -18 -9 -7 Q2 -17 12 -7 Q25 -14 31 -2 L24 12 Q4 24 -20 19Z" fill="#faf3e7"/>
+    <path d="M-29 29 L-31 38 M-9 31 L-10 39 M15 31 L17 39 M31 26 L36 38" stroke="#e5dfd2" stroke-width="9" stroke-linecap="round"/>
+    <path d="M-39 -1 Q-55 -8 -55 -26 Q-53 -42 -42 -36 Q-28 -28 -32 -8Z" fill="#a6a39a" stroke="#7e898e" stroke-width="2"/>
+    <path d="M19 -10 Q31 -24 42 -14 Q50 -3 38 8 L23 7Z" fill="#d0ccc2" stroke="#929fa6" stroke-width="2"/>
+    <path d="M21 4 Q34 -2 47 6 Q57 13 48 22 Q36 28 21 19Z" fill="#f3ecdf" stroke="#aab0b2" stroke-width="2"/>
+    <path d="M28 7 Q34 2 39 7 M39 8 Q44 3 48 9" fill="none" stroke="#6d625a" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="48" cy="14" rx="6" ry="4" fill="#394a58"/>
+    <path d="M42 20 Q48 24 53 19" fill="none" stroke="#76695d" stroke-width="2" stroke-linecap="round"/>
+    <path d="M-30 19 Q-18 27 -4 22" fill="none" stroke="#a93f4b" stroke-width="7" stroke-linecap="round"/>
+    <path d="M-4 19 L3 23 L-3 29 L-10 24Z" fill="#e4c66b" stroke="#8b783c" stroke-width="1.5"/>
+    <g class="zzz" fill="#c5d7e8" font-weight="700"><text x="50" y="-25" font-size="15">Z</text><text x="66" y="-37" font-size="11">z</text><text x="77" y="-45" font-size="9">z</text></g>
   </g>
   <!-- Fox stays on the number line; the same motion path carries it out and back, with auto-rotation on the return. -->
   <g transform="translate(100 181)">
