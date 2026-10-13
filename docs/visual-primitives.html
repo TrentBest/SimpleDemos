@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visual Primitive Lab — The Singularity Workshop</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1421;--panel:#14263a;--line:#38536b;--ink:#edf5fc;--muted:#a8bbcf;--mint:#7ee0bd;--gold:#ffcf86;--blue:#8fcaff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1200px;margin:auto;padding:24px 18px 44px}h1{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.1;margin:.25rem 0 .65rem}h2{font-size:1.05rem;margin:0 0 8px}.kicker{color:var(--mint);font-size:.76rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}p{color:var(--muted)}a{color:var(--blue)}.intro{max-width:850px}.stage{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#0e1c2c;box-shadow:0 16px 42px #0003}.stagehead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line);background:#13263a}.stagehead strong{font-size:1.05rem}.tag{border:1px solid #42647c;border-radius:999px;padding:4px 10px;color:var(--mint);font-size:.8rem;font-weight:750}
+svg{display:block;width:100%;height:auto;min-height:260px;background:#0b1725;touch-action:manipulation}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px;background:#13263a;border-top:1px solid var(--line)}.field{display:grid;gap:5px;color:#d5e2ee;font-size:.86rem}.field input,.field select{width:100%;min-width:0;background:#0c1a29;color:var(--ink);border:1px solid #456078;border-radius:8px;padding:9px;font:inherit}.field input[type=range]{padding:0;accent-color:var(--mint)}button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radius:9px;padding:10px 13px;font:inherit;font-weight:750;cursor:pointer}button:hover{background:#2b4b65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.primary{background:#1f6558;border-color:#4fba9c}.readout{display:flex;gap:10px 20px;flex-wrap:wrap;padding:12px 16px;background:#0d1a28;color:var(--muted);font-size:.88rem}.readout strong{color:var(--ink);font-variant-numeric:tabular-nums}.below{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-top:16px}.card{padding:16px;background:var(--panel);border:1px solid #2a4055;border-radius:13px}.card p{margin:.35rem 0}.code{font: .88rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:#d6e7f5;overflow-wrap:anywhere}.note{font-size:.85rem}.step{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#23465a;color:var(--mint);font-weight:850;margin-right:7px}
+@media(max-width:760px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.below{grid-template-columns:1fr}}@media(max-width:420px){.controls{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header class="intro">
+<div class="kicker">The Singularity Workshop · Visual test sequence 01</div>
+<h1>From one point to many lines</h1>
+<p>Start with the smallest visible mark. Increase the workload, change its arrangement, and randomize its colour. Each step is a visual experiment: the output is right there to inspect, and the counters tell you what the page asked SVG to create.</p>
+</header>
+<section class="stage" aria-label="Interactive SVG primitive experiment">
+<div class="stagehead"><strong id="stageTitle">01 · Draw one point</strong><span class="tag">Live SVG · no external assets</span></div>
+<svg id="scene" viewBox="0 0 1000 520" role="img" aria-labelledby="svgTitle svgDesc">
+<title id="svgTitle">One point in a coordinate field</title><desc id="svgDesc">A single coloured point appears at the center of a coordinate field.</desc>
+<defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="#1c3044" stroke-width="1"/></pattern></defs>
+<rect width="1000" height="520" fill="url(#grid)"/><path d="M500 24V496M24 260H976" stroke="#426078" stroke-width="1.5" stroke-dasharray="5 7"/><g id="drawing"></g>
+<text x="30" y="38" fill="#7e9bb5" font-size="14">SVG VIEWBOX · 1000 × 520</text><text x="970" y="496" text-anchor="end" fill="#7e9bb5" font-size="14">X →</text><text x="514" y="40" fill="#7e9bb5" font-size="14">Y ↑</text>
+</svg>
+<div class="readout" aria-live="polite"><span>Visible marks: <strong id="markCount">1</strong></span><span>SVG elements created: <strong id="elementCount">1</strong></span><span>Build time: <strong id="buildTime">—</strong></span><span>Seed: <strong id="seedReadout">1</strong></span></div>
+<div class="controls">
+<label class="field">Visual test<select id="mode"><option value="point">01 · One point</option><option value="cloud">02 · Point cloud</option><option value="connected">03 · Four connected points</option><option value="line">04 · One line</option><option value="manyLines">05 · Many lines</option></select></label>
+<label class="field">Point / line count<select id="count"><option value="1">1</option><option value="4">4</option><option value="100">100</option><option value="1000">1,000</option><option value="10000">10,000</option></select></label>
+<label class="field">Point size <span id="radiusValue">3.5</span><input id="radius" type="range" min="1" max="8" step=".5" value="3.5"></label>
+<label class="field">Line width <span id="widthValue">2</span><input id="lineWidth" type="range" min=".5" max="6" step=".5" value="2"></label>
+<button id="randomize" class="primary">Randomize positions + colours</button><button id="reset">Reset example</button>
+<label class="field">Colour style<select id="palette"><option value="rainbow">Rainbow</option><option value="cool">Cool spectrum</option><option value="warm">Warm spectrum</option><option value="single">Single colour</option></select></label>
+<label class="field">Position spread <span id="spreadValue">100%</span><input id="spread" type="range" min="10" max="100" step="10" value="100"></label>
+</div>
+</section>
+<section class="below">
+<article class="card"><h2><span class="step">1</span>What this proves</h2><p id="explanation">The page can create and display one SVG circle. This is a first visual proof of a point-like mark, not yet a test of the C# Visualize backend.</p><p class="note">Choose a progression step, change its count or style, and press <strong>Randomize</strong>. The scene is redrawn from data; no screenshot is being swapped in.</p></article>
+<article class="card"><h2><span class="step">2</span>What the counters mean</h2><p class="code" id="dataReadout">mode=point · requested=1 · SVG marks=1</p><p class="note">Build time measures this page's JavaScript element-generation and DOM insertion pass. It is a local observation—not a GPU benchmark, a cross-device comparison, or evidence of the .NET backend's performance.</p></article>
+</section>
+<p class="note">This playground deliberately uses SVG so its shapes and connections are inspectable. The 10,000-point step is a stress experiment; SVG element count and DOM overhead are part of what we're learning. Visualize's current C# contracts are not executed by this page. <a href="https://github.com/TrentBest/TheSingularityWorkshop.Visualize">Visualize repository</a> · <a href="https://github.com/TrentBest/SimpleDemos">SimpleDemos</a></p>
+</main>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ const svgNS = "http://www.w3.org/2000/svg";
+ const drawing = $("drawing");
+ const mode = $("mode"), count = $("count"), radius = $("radius"), lineWidth = $("lineWidth");
+ const palette = $("palette"), spread = $("spread");
+ let seed = 1;
+ let points = [];
+ const descriptions = {
+  point:["01 · Draw one point","The page can create and display one SVG circle. This is a first visual proof of a point-like mark, not yet a test of the C# Visualize backend."],
+  cloud:["02 · Draw many points","A point cloud is a set of independently positioned marks. Change the count through 1, 4, 100, 1,000, and 10,000; randomization changes positions and colours without changing the selected count."],
+  connected:["03 · Connect four points","Four known points are joined in order with line segments. The closed path makes the relationship between point data and connected geometry easy to inspect."],
+  line:["04 · Draw one line","One SVG line connects two endpoints. Change its width and colour to see presentation attributes change independently from its geometry."],
+  manyLines:["05 · Draw many lines","A bundle of line segments stresses a different primitive from a point cloud. The selected count controls how many lines are generated; randomization changes their endpoints and colours."]
+ };
+ function rand(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}
+ function colour(i,n){
+  if(palette.value==="single")return "#7ee0bd";
+  const t=n<=1?0:i/n;
+  if(palette.value==="cool")return "hsl("+(180+150*t)+",78%,68%)";
+  if(palette.value==="warm")return "hsl("+(8+48*t)+",90%,68%)";
+  return "hsl("+Math.floor((i*137.508+seed%360)%360)+",82%,68%)";
+ }
+ function make(tag,attrs){const el=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));return el}
+ function newPoints(n){
+  const s=Number(spread.value)/100;
+  points=Array.from({length:n},()=>({x:500+(rand()-.5)*900*s,y:260+(rand()-.5)*450*s}));
+ }
+ function render(){
+  const start=performance.now(), selected=mode.value, n=Number(count.value);
+  if(selected==="point")points=[{x:500,y:260}];
+  else if(selected==="connected")points=[{x:300,y:170},{x:700,y:160},{x:750,y:360},{x:260,y:350}];
+  else if(selected==="line")points=[{x:220,y:360},{x:780,y:160}];
+  else if(points.length!==(selected==="manyLines"?n*2:n))newPoints(selected==="manyLines"?n*2:n);
+  const frag=document.createDocumentFragment();let marks=0;
+  const r=Number(radius.value),w=Number(lineWidth.value);
+  if(selected==="point"||selected==="cloud"){
+   points.forEach((p,i)=>{frag.appendChild(make("circle",{cx:p.x,cy:p.y,r,fill:colour(i,points.length)}));marks++});
+  } else if(selected==="connected"){
+   const p=points.map(q=>q.x+","+q.y).join(" ");
+   frag.appendChild(make("polygon",{points:p,fill:"none",stroke:"#7ee0bd","stroke-width":w,"stroke-linejoin":"round"}));marks++;
+   points.forEach((p,i)=>{frag.appendChild(make("circle",{cx:p.x,cy:p.y,r:r+2,fill:colour(i,4),stroke:"#0b1421","stroke-width":2}));marks++});
+  } else if(selected==="line"){
+   frag.appendChild(make("line",{x1:points[0].x,y1:points[0].y,x2:points[1].x,y2:points[1].y,stroke:colour(0,1),"stroke-width":w,"stroke-linecap":"round"}));marks++;
+   points.forEach(p=>{frag.appendChild(make("circle",{cx:p.x,cy:p.y,r:r+1,fill:"#edf5fc"}));marks++});
+  } else {
+   for(let i=0;i<n;i++){const a=points[i*2],b=points[i*2+1];frag.appendChild(make("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:colour(i,n),"stroke-width":w,"stroke-linecap":"round",opacity:.88}));marks++}
+  }
+  drawing.replaceChildren(frag);
+  const elapsed=performance.now()-start;
+  $("stageTitle").textContent=descriptions[selected][0];
+  $("svgTitle").textContent=descriptions[selected][0];
+  $("svgDesc").textContent=descriptions[selected][1];
+  $("explanation").textContent=descriptions[selected][1];
+  $("markCount").textContent=marks.toLocaleString();
+  $("elementCount").textContent=marks.toLocaleString();
+  $("buildTime").textContent=elapsed.toFixed(2)+" ms";
+  $("seedReadout").textContent=seed.toLocaleString();
+  $("radiusValue").textContent=r;
+  $("widthValue").textContent=w;
+  $("spreadValue").textContent=spread.value+"%";
+  $("dataReadout").textContent="mode="+selected+" · requested="+(selected==="point"?"1":n.toLocaleString())+" · SVG marks="+marks.toLocaleString()+" · build="+elapsed.toFixed(2)+"ms";
+ }
+ $("randomize").addEventListener("click",()=>{seed=(seed+1)>>>0||1;newPoints(mode.value==="manyLines"?Number(count.value)*2:Number(count.value));render()});
+ $("reset").addEventListener("click",()=>{seed=1;mode.value="point";count.value="1";radius.value="3.5";lineWidth.value="2";palette.value="rainbow";spread.value="100";points=[];render()});
+ [mode,count,radius,lineWidth,palette,spread].forEach(el=>el.addEventListener("input",()=>{if(el===mode||el===count||el===spread)points=[];render()}));
+ [mode,count,radius,lineWidth,palette,spread].forEach(el=>el.addEventListener("change",render));
+ render();
+})();
+</script>
+</body>
+</html>
