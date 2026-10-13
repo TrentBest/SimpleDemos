@@ -17,7 +17,7 @@
 # SimpleDemos: The Fox, the Dog, and the FSM
 
 <p align="center">
-  <img src="docs/assets/fox-dog-number-line.svg" alt="Animated fox moving along a number line toward a sleeping dog at position three; the fox's illustrative FSM state changes as it moves." width="100%" />
+  <img src="docs/assets/fox-dog-number-line.svg" alt="Animated fox walking along a number line, spotting a sleeping sheepdog, jumping over it, and turning around to repeat." width="100%" />
 </p>
 
 A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, inspect the larger 2D multi-agent implementation, or run the separate worker-throughput benchmark.
@@ -104,7 +104,7 @@ From the repository root:
 dotnet run --project QuickBrownFox/QuickBrownFox.csproj
 ```
 
-Watch the console output as the fox walks, detects the dog, jumps, and updates its position. The dog reacts to the shared environment's visibility and collision results. The demo ends when the fox reaches its goal, is mangled, or a key is available to stop the run.
+This executable demo references the published `TheSingularityWorkshop.FSM_API` NuGet package (version `1.0.13`) through `QuickBrownFox.csproj`. Restore resolves the package containing the compiled FSM_API assembly; the project does not depend on a developer-specific local DLL path. Watch the console output as the fox walks, detects the dog, jumps, and updates its position. The dog reacts to the shared environment's visibility and collision results. The demo ends when the fox reaches its goal, is mangled, or a key is available to stop the run.
 
 When prompted, press **Y** to start the in-process *Gauntlet* stress simulation; press any other key to skip it. The Gauntlet can grow its population dynamically and may consume substantial CPU, so skip it for the first tour.
 
