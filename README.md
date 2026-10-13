@@ -20,13 +20,13 @@ A small C#/.NET playground for learning how finite state machines (FSMs) coordin
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
-## 00 · The problem
+## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
 
 Without an explicit model, this behavior can quickly become a tangle of nested `if` statements. Here, each agent's behavior is organized into named states and transitions.
 
-## 01 · What this demonstrates
+## 🟩 01 · What this demonstrates
 
 - **FSM definitions:** build named states, transition conditions, and enter/update/exit callbacks.
 - **Context-driven behavior:** each FSM operates on an ordinary C# context implementing `IStateContext`.
@@ -36,13 +36,13 @@ Without an explicit model, this behavior can quickly become a tangle of nested `
 - **A larger simulation:** the repository also contains an advanced 2D simulation implementation with multiple foxes and dogs.
 - **A separate stress-test project:** explores high-volume FSM update throughput. This is a workload experiment, not a portable benchmark result.
 
-## 02 · Why FSM_API?
+## 🟧 02 · Why FSM_API?
 
 FSM_API separates *what state an agent is in* from *the data describing that agent*. The fox does not need to know how the application loop is implemented; it defines behavior and exposes context. The application coordinates sensing and updates.
 
 That makes the behavior inspectable and easier to extend: add a state, define a transition, and implement the callbacks without rewriting the entire simulation loop.
 
-## 03 · How the agents behave
+## 🔺 03 · How the agents behave
 
 ### 🦊 The quick brown fox
 
@@ -81,7 +81,7 @@ The dog starts asleep. A collision wakes it; seeing the fox allows it to chase; 
 
 The advanced source files extend the same idea into a 100 × 100 2D environment with multiple foxes and dogs, destinations, visibility, and collision checks. These files are an advanced implementation to explore; **the current console entry point launches the basic demo and optional stress test, not the advanced simulation**. That distinction is intentional here so the documentation does not claim an execution path that the current entry point does not provide.
 
-## 04 · See it in a minute
+## ⭐ 04 · See it in a minute
 
 ### Requirements
 
@@ -109,7 +109,7 @@ dotnet build SimpleDemos.slnx --no-restore
 
 The stress test writes `benchmark_data.csv` and `article_table.txt` into its working directory. Results depend on the machine, runtime, and workload; do not treat one run as a universal performance claim.
 
-## 05 · Read the code
+### Explore the implementation
 
 | Start here | What to look for |
 | :--- | :--- |
@@ -138,7 +138,7 @@ FSM_API.Create.CreateFiniteStateMachine("QuickBrownFoxFSM", -1, "Update")
 
 This is an excerpt of the pattern in the source, not a standalone program: the callbacks and predicates are methods on the fox context. Read the full implementation for the data each condition inspects.
 
-## Documentation and theory
+### Documentation and theory
 
 - [FSM_API repository](https://github.com/TrentBest/FSM_API) — source, guides, and tests
 - [FSM_API on NuGet](https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API/) — install the package
