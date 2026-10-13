@@ -1,4 +1,35 @@
-﻿using TheSingularityWorkshop.FSM_API;
+﻿using System.Text.Json;
+using TheSingularityWorkshop.FSM_API;
+
+if (args.Length == 2 && args[0] == "--export-trace")
+{
+    SimpleDemoContext.EnableLogging = false;
+    var traceContext = new SimpleDemoContext();
+    var frames = new List<object>();
+
+    // Run the real C# FSMs for a bounded number of updates, stopping at the demo's normal end.
+    for (var i = 0; i < 30 && traceContext.IsValid; i++)
+    {
+        FSM_API.Interaction.Update("Main");
+        frames.Add(traceContext.CaptureSnapshot());
+    }
+
+    var outputPath = Path.GetFullPath(args[1]);
+    Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+    var trace = new
+    {
+        schemaVersion = 1,
+        source = "SimpleDemos QuickBrownFox running through FSM_API",
+        frames
+    };
+    File.WriteAllText(outputPath, JsonSerializer.Serialize(trace, new JsonSerializerOptions
+    {
+        WriteIndented = true
+    }));
+
+    Console.WriteLine($"Exported {frames.Count} C# FSM snapshots to {outputPath}");
+    return;
+}
 
 // ---------------------------------------------------------
 // Part 1: Run the Interactive Simple Demo
