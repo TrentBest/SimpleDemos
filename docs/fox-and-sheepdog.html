@@ -147,12 +147,6 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
   explanation.textContent='Detection succeeded. The fox follows a parabolic arc whose midpoint is aligned with the dog. Change jump height or speed to explore the geometry.';
   jumpStart=x; jumpEnd=2*dogX-x; jumpT=0; jumpDuration=Math.abs(jumpEnd-jumpStart)/Number(speed.value); 
  }
- function startScuffle(){
-  distracted=false;sync();dogState='Waking';wakeTimer=0;scuffleCounted=false;
-  setState('Distracted → Collision','The fox is distracted! No jump: the dog wakes, and a cloud of cartoon chaos erupts.','Question marks replaced the fox’s alert response, so the jump transition did not happen. The dog wakes after the configured delay.');
-  setOpacity(questions,0);setOpacity(alert,0);setOpacity(zzz,0);setOpacity(dust,1);
-  fox.setAttribute('transform','translate('+dogX+' '+(baseline-10)+')');x=dogX;
- }
  function finishScuffle(){
   if(!scuffleCounted){mishaps++;scuffleCounted=true;sync();}
   setOpacity(dust,0);setOpacity(ghost,1);phaseTime=0;
