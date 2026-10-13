@@ -1,115 +1,161 @@
-# SimpleDemos: QuickBrownFox
+<!-- The Singularity Workshop moniker -->
+<p align="center">
+  <a href="https://github.com/TrentBest">
+    <img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.Visualize/development/docs/assets/moniker.svg" alt="The Singularity Workshop — animated workshop moniker" width="720" />
+  </a>
+</p>
 
-This repository contains a simple C# console application demonstrating the core features and implementation patterns of the **TheSingularityWorkshop.FSM\_API** library.
+<p align="center">
+  <strong>Small simulations. Real state machines. Observable behavior.</strong><br/>
+  <a href="https://github.com/TrentBest/FSM_API">FSM_API</a> ·
+  <a href="https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API/">NuGet</a> ·
+  <a href="https://github.com/TrentBest">The Singularity Workshop</a>
+</p>
 
-The project simulates a classic agent interaction problem based on the phrase: **"The quick brown fox jumps over the lazy sleeping dog."**
+---
 
-The simulation uses Finite State Machines (FSMs) to control the behavior of two agents:
-1.  **The Quick Brown Fox:** Tries to reach a win position (10).
-2.  **The Lazy Sleeping Dog:** Tries to catch and "mangle" the fox.
+# SimpleDemos: The Fox, the Dog, and the FSM
 
-***
+A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, then explore a larger 2D fox-and-dog simulation and a separate throughput stress-test project.
 
-## 💡 Concepts Demonstrated
+**The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
-This simple simulation showcases several key features of the FSM API:
+## 00 · The problem
 
-* **Finite State Machine (FSM) Creation:** Defining a FSM with states and transitions (e.g., `QuickBrownFoxFSM` in `QuickBrownFox.cs`).
-* **Context-Based Instances:** Creating FSM instances bound to specific data contexts (`QuickBrownFox` and `LazySleepingDog` are both `IStateContext`).
-* **Context-Driven Transitions:** Using conditional functions (predicates) within the agents' context to trigger state changes (e.g., `ShouldJump` and `IsMangling`).
-* **Update Loops and Processing Groups:** Structuring the simulation with a `Main` processing group for the application context and an `Update` group for all agent FSMs, allowing for concurrent updates.
-* **Inter-FSM Communication:** The `LazySleepingDog` directly triggers the `Mangled` state transition on the `QuickBrownFox`'s FSM instance when a collision occurs.
+A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
 
-***
+Without an explicit model, this behavior can quickly become a tangle of nested `if` statements. Here, each agent's behavior is organized into named states and transitions.
 
-## ⚙️ Finite State Machine Diagrams
+## 01 · What this demonstrates
 
-These diagrams visualize the states and transitions for each agent defined in the code.
+- **FSM definitions:** build named states, transition conditions, and enter/update/exit callbacks.
+- **Context-driven behavior:** each FSM operates on an ordinary C# context implementing `IStateContext`.
+- **Multiple instances:** the same named FSM definition can control individual agents.
+- **Processing groups:** the demo separates application-level work from agent updates.
+- **Interaction between FSMs:** when the dog catches the fox, the dog's behavior requests a transition on the fox's FSM.
+- **A larger simulation:** the repository also contains an advanced 2D simulation implementation with multiple foxes and dogs.
+- **A separate stress-test project:** explores high-volume FSM update throughput. This is a workload experiment, not a portable benchmark result.
 
-### 🦊 The Quick Brown Fox FSM
+## 02 · Why FSM_API?
 
-The fox primarily **Walks**, **Jumps** over obstacles (the dog), or **Flees** if it collides. The `Mangled` state is a terminal state forced by the dog's FSM.
+FSM_API separates *what state an agent is in* from *the data describing that agent*. The fox does not need to know how the application loop is implemented; it defines behavior and exposes context. The application coordinates sensing and updates.
 
-```mermaid
-stateDiagram-v2
-    direction LR
-    [*] --> Walking
-    Walking --> Jumping : ShouldJump (Dog in sight, within 2 units)
-    Jumping --> Walking : ShouldLand (Jump distance reached)
-    Walking --> Fleeing : ShouldFlee (Collision occurred)
-    
-````
+That makes the behavior inspectable and easier to extend: add a state, define a transition, and implement the callbacks without rewriting the entire simulation loop.
 
-### 🐕 The Lazy Sleeping Dog FSM
+## 03 · How the agents behave
 
-The dog starts **Sleeping** until an external force (a collision) wakes it up.
+### 🦊 The quick brown fox
+
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 720 142" role="img" aria-label="Fox FSM: Walking can transition to Jumping and back to Walking, or transition to Fleeing when a collision occurs. The dog can force the fox into Mangled.">
+  <defs>
+    <marker id="fox-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#B45309"/></marker>
+  </defs>
+  <rect x="8" y="35" width="120" height="46" rx="8" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+  <text x="68" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#78350F">Walking</text>
+  <rect x="205" y="35" width="120" height="46" rx="8" fill="#FFEDD5" stroke="#B45309" stroke-width="2"/>
+  <text x="265" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#9A3412">Jumping</text>
+  <rect x="402" y="35" width="120" height="46" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+  <text x="462" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#991B1B">Fleeing</text>
+  <rect x="592" y="35" width="120" height="46" rx="8" fill="#E5E7EB" stroke="#4B5563" stroke-width="2"/>
+  <text x="652" y="63" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#1F2937">Mangled*</text>
+  <path d="M128 48 H198" stroke="#B45309" stroke-width="2" marker-end="url(#fox-arrow)"/>
+  <text x="163" y="27" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">obstacle</text>
+  <path d="M205 72 H135" stroke="#B45309" stroke-width="2" marker-end="url(#fox-arrow)"/>
+  <text x="170" y="100" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">jump complete</text>
+  <path d="M128 81 C190 130 345 130 402 81" fill="none" stroke="#B91C1C" stroke-width="2" marker-end="url(#fox-arrow)"/>
+  <text x="265" y="127" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">collision → flee</text>
+  <path d="M522 58 H585" stroke="#4B5563" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#fox-arrow)"/>
+  <text x="553" y="27" text-anchor="middle" font-family="sans-serif" font-size="10" fill="currentColor">dog forces</text>
+  <text x="8" y="15" font-family="sans-serif" font-size="11" fill="currentColor">* Mangled is an externally requested state; the basic fox definition does not declare a normal transition into it.</text>
+</svg>
+
+The basic fox definition includes `Walking`, `Jumping`, `Fleeing`, and `Mangled`. It jumps when an obstacle is close, returns to walking when its jump completes, and flees after a dog collision. The dog can directly request the fox's `Mangled` state.
+
+### 🐕 The lazy sleeping dog
 
 ```mermaid
 stateDiagram-v2
     direction LR
     [*] --> Sleeping
-    Sleeping --> Awake : IsAwake (Collision Occurred)
-    Awake --> Chasing : ShouldChase (Fox Visible)
-    Chasing --> Mangling : IsMangling (Collision with Fox)
-    
-    state Mangling <<terminal>>
+    Sleeping --> Awake : collision wakes dog
+    Awake --> Chasing : fox is visible
+    Chasing --> Mangling : fox collision
+    Mangling --> [*]
 ```
 
------
+The dog starts asleep. A collision wakes it; seeing the fox allows it to chase; a collision while chasing triggers its mangling behavior and requests the fox's `Mangled` state.
 
-## 🛠️ Getting Started
+### 🦊🐕 Many agents, shared environment
 
-This project is a standard C\# console application.
+The advanced source files extend the same idea into a 100 × 100 2D environment with multiple foxes and dogs, destinations, visibility, and collision checks. These files are an advanced implementation to explore; **the current console entry point launches the basic demo and optional stress test, not the advanced simulation**. That distinction is intentional here so the documentation does not claim an execution path that the current entry point does not provide.
 
-### Prerequisites
+## 04 · See it in a minute
 
-  * **.NET 8.0 SDK** or later.
+### Requirements
 
-### Dependencies
+- .NET 8 SDK
+- Internet access on first restore, to retrieve the published FSM_API NuGet package
 
-The project relies on the following NuGet package:
+### Run the fox-and-dog demo
 
-```xml
-<PackageReference Include="TheSingularityWorkshop.FSM_API" Version="1.0.11" />
+From the repository root:
+
+```bash
+dotnet run --project QuickBrownFox/QuickBrownFox.csproj
 ```
 
-### Running the Demo
+Watch the console output as the fox walks, detects the dog, jumps, and updates its position. The dog reacts to the shared environment's visibility and collision results. The demo ends when the fox reaches its goal, is mangled, or a key is available to stop the run.
 
-1.  Clone the repository.
-2.  Navigate to the `QuickBrownFox` directory.
-3.  Run the application from your terminal:
-    ```bash
-    dotnet run
-    ```
+When prompted, press **Y** to start the separate throughput stress test; press any other key to skip it. The stress test can create tens of thousands of FSM instances and may run for a while, so skip it for the first tour.
 
-The console output will display the simulation frame-by-frame, showing agents moving, seeing each other, and transitioning between states. The simulation terminates when the fox reaches position 10 or is mangled.
+### Restore and build the solution
 
------
+```bash
+dotnet restore SimpleDemos.slnx
+dotnet build SimpleDemos.slnx --no-restore
+```
 
-## 🔍 Simulation Logic Summaries
+The stress test writes `benchmark_data.csv` and `article_table.txt` into its working directory. Results depend on the machine, runtime, and workload; do not treat one run as a universal performance claim.
 
-The core logic is contained within the agents' FSM definitions.
+## 05 · Read the code
 
-### The Quick Brown Fox (Position 0)
+| Start here | What to look for |
+| :--- | :--- |
+| [`Program.cs`](QuickBrownFox/Program.cs) | Application loop and optional stress-test prompt |
+| [`SimpleDemoContext.cs`](QuickBrownFox/SimpleDemoContext.cs) | Environment sensing, processing groups, and shutdown |
+| [`QuickBrownFox.cs`](QuickBrownFox/QuickBrownFox.cs) | Fox states, callbacks, and transition conditions |
+| [`LazySleepingDog.cs`](QuickBrownFox/LazySleepingDog.cs) | Dog states and cross-FSM transition request |
+| [`AdvancedDemoContext.cs`](QuickBrownFox/AdvancedDemoContext.cs) | Advanced multi-agent simulation setup |
+| [`AdvancedDemoEnvironment.cs`](QuickBrownFox/AdvancedDemoEnvironment.cs) | Shared environment and agent sensing |
+| [`Stress/Stress.cs`](Stress/Stress.cs) | Stress-test worker context and update workload |
 
-| State | Transition Condition | Action (OnUpdate) |
-| :--- | :--- | :--- |
-| **Walking** | *ShouldJump*: A visible agent is within 2 units. *ShouldFlee*: Collision with a dog. | Increments position by 1 (Speed). |
-| **Jumping** | *ShouldLand*: Position is greater than or equal to `JumpEnd` (2 steps after jumping started). | Increments position by 1. |
-| **Fleeing** | None (Terminal state). | Increments position by 2 (Speed). |
-| **Mangled** | None (Terminal state). | Outputs current status. |
+### The pattern in miniature
 
-### The Lazy Sleeping Dog (Position 3)
+An FSM definition describes behavior once; each instance supplies its own context:
 
-| State | Transition Condition | Action (OnUpdate) |
-| :--- | :--- | :--- |
-| **Sleeping** | *IsAwake*: A collision has occurred (The fox bumps into the dog while the dog is asleep). | Outputs sleeping status. |
-| **Awake** | *ShouldChase*: The fox is visible. | Outputs awake status. |
-| **Chasing** | *IsMangling*: A collision has occurred with the fox. | Increments position by 3 (Speed is set to 3 on enter). |
-| **Mangling** | None (Terminal state). | **Triggers the Fox's 'Mangled' state** and outputs mangling status. |
+```csharp
+FSM_API.Create.CreateFiniteStateMachine("QuickBrownFoxFSM", -1, "Update")
+    .State("Walking", OnEnterWalking, OnUpdateWalking, OnExitWalking)
+    .State("Jumping", OnEnterJump, OnUpdateJumping, OnExitJumping)
+    .State("Fleeing", OnEnterFleeing, OnUpdateFleeing, OnExitFleeing)
+    .Transition("Walking", "Jumping", ShouldJump)
+    .Transition("Jumping", "Walking", ShouldLand)
+    .Transition("Walking", "Fleeing", ShouldFlee)
+    .BuildDefinition();
+```
 
------
+This is an excerpt of the pattern in the source, not a standalone program: the callbacks and predicates are methods on the fox context. Read the full implementation for the data each condition inspects.
 
-## 📄 License
+## Documentation and theory
 
-This project is licensed under the **MIT License**.
+- [FSM_API repository](https://github.com/TrentBest/FSM_API) — source, guides, and tests
+- [FSM_API on NuGet](https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API/) — install the package
+- [FSM builder deep dive](https://github.com/TrentBest/FSM_API/blob/development/Documentation/User%20Guide/04_FSM_Builder_Deep_Dive.md) — states, transitions, and construction
+- [The Singularity Workshop](https://github.com/TrentBest) — related projects and experiments
+
+---
+
+<p align="center">
+  <strong>Understand the behavior. Inspect the state. Change the system.</strong><br/>
+  <a href="https://github.com/TrentBest">The Singularity Workshop</a>
+</p>
