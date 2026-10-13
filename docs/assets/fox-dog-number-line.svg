@@ -13,15 +13,15 @@
       .walk-label { animation: walkState 18s linear infinite; }
       .jump-label { animation: jumpState 18s linear infinite; }
       @keyframes alertFlash {
-        0%, 12.8% { opacity:0; transform:translateY(7px) scale(.65); }
-        13.2%, 17.8% { opacity:1; transform:translateY(0) scale(1); }
-        18.5%, 100% { opacity:0; transform:translateY(7px) scale(.65); }
+        0%, 6.6% { opacity:0; transform:translateY(7px) scale(.65); }
+        7%, 8.5% { opacity:1; transform:translateY(0) scale(1); }
+        9%, 100% { opacity:0; transform:translateY(7px) scale(.65); }
       }
       @keyframes walkState {
-        0%, 12.9% { opacity:1; } 13%, 18.4% { opacity:0; } 18.5%,100% { opacity:1; }
+        0%, 8.9% { opacity:1; } 9%, 25% { opacity:0; } 25.1%,100% { opacity:1; }
       }
       @keyframes jumpState {
-        0%,18.4% { opacity:0; } 18.5%,25% { opacity:1; } 25.1%,100% { opacity:0; }
+        0%,8.9% { opacity:0; } 9%,25% { opacity:1; } 25.1%,100% { opacity:0; }
       }
       @media (prefers-reduced-motion: reduce) {
         .alert,.walk-label,.jump-label { animation:none; }
