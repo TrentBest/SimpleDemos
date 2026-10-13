@@ -16,7 +16,7 @@
 
 # SimpleDemos: The Fox, the Dog, and the FSM
 
-A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, then explore a larger 2D fox-and-dog simulation and a separate throughput stress-test project.
+A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, inspect the larger 2D multi-agent implementation, or run the separate worker-throughput benchmark.
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
@@ -34,7 +34,7 @@ Without an explicit model, this behavior can quickly become a tangle of nested `
 - **Processing groups:** the demo separates application-level work from agent updates.
 - **Interaction between FSMs:** when the dog catches the fox, the dog's behavior requests a transition on the fox's FSM.
 - **A larger simulation:** the repository also contains an advanced 2D simulation implementation with multiple foxes and dogs.
-- **A separate stress-test project:** explores high-volume FSM update throughput. This is a workload experiment, not a portable benchmark result.
+- **A separate worker-throughput benchmark:** explores high-volume FSM update throughput. This is a workload experiment, not a portable benchmark result.
 
 ## 🟧 02 · Why FSM_API?
 
@@ -98,7 +98,7 @@ dotnet run --project QuickBrownFox/QuickBrownFox.csproj
 
 Watch the console output as the fox walks, detects the dog, jumps, and updates its position. The dog reacts to the shared environment's visibility and collision results. The demo ends when the fox reaches its goal, is mangled, or a key is available to stop the run.
 
-When prompted, press **Y** to start the separate throughput stress test; press any other key to skip it. The stress test can create tens of thousands of FSM instances and may run for a while, so skip it for the first tour.
+When prompted, press **Y** to start the in-process *Gauntlet* stress simulation; press any other key to skip it. The Gauntlet can grow its population dynamically and may consume substantial CPU, so skip it for the first tour.
 
 ### Restore and build the solution
 
@@ -107,7 +107,9 @@ dotnet restore SimpleDemos.slnx
 dotnet build SimpleDemos.slnx --no-restore
 ```
 
-The stress test writes `benchmark_data.csv` and `article_table.txt` into its working directory. Results depend on the machine, runtime, and workload; do not treat one run as a universal performance claim.
+The separate worker-throughput benchmark is launched with `dotnet run --project Stress/Stress.csproj`. It writes `benchmark_data.csv` and `article_table.txt` into its working directory and can attempt very large worker counts. Run it deliberately, not as part of a quick tour. Results depend on the machine, runtime, and workload; do not treat one run as a universal performance claim.
+
+`MultiThreadedStress/` is currently a scaffold that prints `Hello, World!`; it is not yet a multithreaded FSM demonstration.
 
 ### Explore the implementation
 
