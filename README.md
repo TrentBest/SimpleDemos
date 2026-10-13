@@ -28,6 +28,16 @@ A small C#/.NET playground for learning how finite state machines (FSMs) coordin
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
+## Export a trace from the real C# FSM
+
+The browser playground above is an independent illustration. To create replayable evidence from the **actual C# FSM_API run**, execute this from the repository root:
+
+```powershell
+dotnet run --project QuickBrownFox/QuickBrownFox.csproj -- --export-trace docs/fox-fsm-trace.json
+```
+
+This bounded mode disables console chatter, runs the real processing groups and agent FSMs, and writes per-frame agent state, position, and speed snapshots to the requested JSON path. It stops when the sample reaches its normal end or after 30 updates. The trace is an exported observation of the C# run; it does not itself render an animation, and the existing browser page does not automatically load it yet. That replay bridge is the next step.
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
