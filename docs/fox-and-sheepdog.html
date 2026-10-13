@@ -9,7 +9,7 @@
 *{box-sizing:border-box}body{margin:0;background:#0b1421;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1100px;margin:auto;padding:24px 18px 44px}header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}header img{width:min(100%,430px);height:auto}h1{font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.12;margin:.2rem 0}p{color:var(--muted)}a{color:#9fd6ff}.kicker{text-transform:uppercase;letter-spacing:.13em;color:var(--mint);font-size:.75rem;font-weight:800}
 .stage{border:1px solid #2a4055;border-radius:18px;overflow:hidden;background:#101e2d;box-shadow:0 18px 50px #0003}
-svg{display:block;width:100%;height:auto;touch-action:manipulation}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px;background:#132438;border-top:1px solid #2a4055}
+svg{display:block;width:100%;height:auto;touch-action:manipulation}#zzz{transform-box:fill-box;transform-origin:center;animation:sleepy 1.8s ease-in-out infinite}@keyframes sleepy{0%,100%{transform:translate(0,0) rotate(-5deg)}50%{transform:translate(7px,-9px) rotate(6deg)}}@media(prefers-reduced-motion:reduce){#zzz{animation:none}}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px;background:#132438;border-top:1px solid #2a4055}
 button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radius:10px;padding:11px 14px;font:inherit;font-weight:750;cursor:pointer}button:hover{background:#2b4b65}button:focus-visible,input:focus-visible{outline:3px solid #ffcf86;outline-offset:2px}.primary{background:#a83743;border-color:#e05a67}.primary:hover{background:#c34652}.field{display:grid;gap:4px;font-size:.88rem;color:#d5e2ee}.field span{display:flex;justify-content:space-between;gap:8px}.field output{color:var(--mint);font-variant-numeric:tabular-nums}.field input{width:100%;accent-color:var(--mint)}.readout{display:flex;gap:12px;flex-wrap:wrap;padding:12px 16px;background:#0e1a28;color:#b7c9da;font-size:.9rem}.readout strong{color:var(--ink)}.status{color:var(--mint);font-weight:800}.below{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-top:18px}.card{background:var(--panel);border:1px solid #2a4055;border-radius:14px;padding:16px}.card h2{font-size:1.05rem;margin:0 0 8px}.card p{margin:.4rem 0}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#d6e7f5;font-size:.9rem;overflow-wrap:anywhere}.tiny{font-size:.85rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:760px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.below{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
@@ -145,7 +145,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
   state='Jumping';stateLabel.textContent=state;statusText.textContent=state;
   caption.textContent='A clean, deliberate jump: the apex is directly over the dog.';
   explanation.textContent='Detection succeeded. The fox follows a parabolic arc whose midpoint is aligned with the dog. Change jump height or speed to explore the geometry.';
-  jumpStart=x; jumpEnd=x+direction*168; jumpT=0; jumpDuration=Math.abs(jumpEnd-jumpStart)/Number(speed.value); 
+  jumpStart=x; jumpEnd=2*dogX-x; jumpT=0; jumpDuration=Math.abs(jumpEnd-jumpStart)/Number(speed.value); 
  }
  function startScuffle(){
   distracted=false;sync();dogState='Waking';wakeTimer=0;scuffleCounted=false;
@@ -159,7 +159,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
   setState('Ghost Ascending','The dog lets go. One tiny ghost, complete with halo and harp, floats away.','The cartoon scuffle increments the counter once. The dog is unharmed, and the ghost is a deliberately silly visual metaphor—not a realistic depiction of injury.');
  }
  function resetAfterGhost(){
-  setOpacity(ghost,0);setOpacity(tombstone,1);dogState='Sleeping';setOpacity(zzz,1);
+  setOpacity(ghost,0);setOpacity(tombstone,1);setOpacity(dogBody,0);setOpacity(foxArt,0);dogState='Sleeping';setOpacity(zzz,1);
   setState('Tombstone → Reset','The ghost fades; a tombstone marks the gag. The dog curls back up for another nap.','The outcome has been recorded. The demo resets the fox for another pass so the same inputs can be tested repeatedly.');
   phaseTime=0;
  }
@@ -196,7 +196,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
    if(phaseTime>3){startScuffle();}
   }else if(state==='Waking'){
    wakeTimer+=dt;
-   if(wakeTimer>=Number(wake.value)){dogState='Awake';state='Scuffle';phaseTime=0;setOpacity(dust,1);setState('Cartoon Scuffle','A puff of dust, a few paws and tails, and absolutely no graphic detail.','The dog reacts to the collision. The dust cloud intentionally hides the action; visible shapes make it clear that a cartoon tussle is happening.');}
+   if(wakeTimer>=Number(wake.value)){dogState='Awake';state='Scuffle';phaseTime=0;setOpacity(dust,1);setOpacity(foxArt,0);setState('Cartoon Scuffle','A puff of dust, a few paws and tails, and absolutely no graphic detail.','The dog reacts to the collision. The dust cloud intentionally hides the action; visible shapes make it clear that a cartoon tussle is happening.');}
   }else if(state==='Scuffle'){
    if(phaseTime>=1.8)finishScuffle();
   }else if(state==='Ghost Ascending'){
