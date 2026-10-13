@@ -193,7 +193,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
   }else if(state==='Distracted'){
    x+=direction*Number(speed.value)*dt;
    if(Math.abs(x-dogX)<Number(speed.value)*dt+3){x=dogX;state='Waking';dogState='Waking';wakeTimer=0;phaseTime=0;setState('Dog Waking','The distracted fox walks right into the sheepdog. Uh-oh.','The fox failed to jump, so their positions overlap. The dog wakes, then the harmless dust-cloud gag plays.');setOpacity(zzz,0);}
-   if(phaseTime>3){startScuffle();}
+   if(phaseTime>5){x=dogX;state='Waking';dogState='Waking';wakeTimer=0;phaseTime=0;setState('Dog Waking','The distracted fox blunders into the sheepdog. Uh-oh.','At very low fox speeds, the fox still eventually reaches the dog. The dog wakes, then the harmless cartoon dust-cloud sequence plays.');setOpacity(zzz,0);}
   }else if(state==='Waking'){
    wakeTimer+=dt;
    if(wakeTimer>=Number(wake.value)){dogState='Awake';state='Scuffle';phaseTime=0;setOpacity(dust,1);setOpacity(foxArt,0);setState('Cartoon Scuffle','A puff of dust, a few paws and tails, and absolutely no graphic detail.','The dog reacts to the collision. The dust cloud intentionally hides the action; visible shapes make it clear that a cartoon tussle is happening.');}
@@ -204,7 +204,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
    ghost.setAttribute('transform','translate('+dogX+' '+y+')');
    if(phaseTime>=3.3)resetAfterGhost();
   }else if(state==='Tombstone → Reset'){
-   if(phaseTime>=2.1){setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);x=direction>0?left:right;direction*=-1;dogState='Sleeping';state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(foxArt,1);fox.setAttribute('transform','translate('+x+' '+baseline+')');hideEffects();caption.textContent='Another pass. Try changing a parameter or arming the distraction again.';explanation.textContent='The scene has reset. The fox returns from the opposite end, making it easy to compare outcomes across repeated runs.';phaseTime=0;}
+   if(phaseTime>=2.1){setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);x=direction>0?right:left;direction*=-1;dogState='Sleeping';state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(foxArt,1);fox.setAttribute('transform','translate('+x+' '+baseline+')');hideEffects();caption.textContent='Another pass. Try changing a parameter or arming the distraction again.';explanation.textContent='The scene has reset. The fox returns from the opposite end, making it easy to compare outcomes across repeated runs.';phaseTime=0;}
   }else if(state==='Turning'&&phaseTime>.35){state='Walking';stateLabel.textContent=state;statusText.textContent=state;phaseTime=0;}
   if(state!=='Jumping'&&state!=='Waking'&&state!=='Scuffle'&&state!=='Ghost Ascending'&&state!=='Tombstone → Reset'){
    fox.setAttribute('transform','translate('+x+' '+baseline+')');
