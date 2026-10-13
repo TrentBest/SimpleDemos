@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="310" viewBox="0 0 1000 310" role="img" aria-labelledby="title desc">
+  <title id="title">A fox walks along a number line toward a sleeping dog</title>
+  <desc id="desc">An animated fox moves back and forth on a numbered line. A sleeping dog rests at position three. The fox's named FSM state changes as it walks and reacts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101b2d"/><stop offset="1" stop-color="#1b2d40"/></linearGradient>
+    <linearGradient id="foxFur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffbf69"/><stop offset="1" stop-color="#ef743b"/></linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="10"/></filter>
+    <style>
+      text { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .tick-label { fill:#c7d2df; font-size:14px; text-anchor:middle; }
+      .state { font-size:15px; font-weight:700; }
+      .fox-motion { animation: foxWalk 7s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:center; }
+      .state-walk { animation: walkState 7s steps(1,end) infinite; }
+      .state-react { animation: reactState 7s steps(1,end) infinite; }
+      .position-dot { animation: dotWalk 7s ease-in-out infinite alternate; }
+      @keyframes foxWalk { 0% { transform:translateX(0); } 100% { transform:translateX(238px); } }
+      @keyframes dotWalk { 0% { cx:110px; } 100% { cx:348px; } }
+      @keyframes walkState { 0%, 69% { opacity:1; } 70%,100% { opacity:0; } }
+      @keyframes reactState { 0%,69% { opacity:0; } 70%,100% { opacity:1; } }
+      @media (prefers-reduced-motion: reduce) { .fox-motion,.position-dot { animation:none; } .state-react { opacity:0; } .state-walk { opacity:1; } }
+    </style>
+  </defs>
+  <rect width="1000" height="310" rx="20" fill="url(#bg)"/>
+  <circle cx="120" cy="65" r="45" fill="#e8f2ff" opacity=".06" filter="url(#soft)"/>
+  <text x="36" y="38" fill="#eaf2fb" font-size="17" font-weight="700" letter-spacing="1.3">ONE FOX · ONE DOG · EXPLICIT BEHAVIOR</text>
+  <text x="36" y="63" fill="#9fb3c8" font-size="13">The fox moves; the FSM names what it is doing.</text>
+  <rect x="36" y="82" width="210" height="32" rx="16" fill="#213e51" stroke="#426277"/>
+  <circle cx="53" cy="98" r="4" fill="#74d6b3"/>
+  <text x="66" y="103" fill="#ccefe4" font-size="13" font-weight="700">FSM STATE</text>
+  <text class="state state-walk" x="151" y="103" fill="#74d6b3">Walking</text>
+  <text class="state state-react" x="151" y="103" fill="#ffcf86">Reacting</text>
+  <rect x="747" y="80" width="217" height="61" rx="12" fill="#22364a" stroke="#3d5268"/>
+  <text x="765" y="102" fill="#91a8bf" font-size="12" letter-spacing=".8">SLEEPING DOG</text>
+  <text x="765" y="125" fill="#edf3fa" font-size="15" font-weight="700">Position 3 · asleep</text>
+  <path d="M100 221 H900" stroke="#91a6bb" stroke-width="3" stroke-linecap="round"/>
+  <path d="M100 221 H900" stroke="#47647e" stroke-width="10" stroke-linecap="round" opacity=".24"/>
+  <g stroke="#91a6bb" stroke-width="2">
+    <path d="M100 211v20 M180 211v20 M260 211v20 M340 211v20 M420 211v20 M500 211v20 M580 211v20 M660 211v20 M740 211v20 M820 211v20 M900 211v20"/>
+  </g>
+  <g class="tick-label">
+    <text x="100" y="252">0</text><text x="180" y="252">1</text><text x="260" y="252">2</text><text x="340" y="252">3</text><text x="420" y="252">4</text><text x="500" y="252">5</text><text x="580" y="252">6</text><text x="660" y="252">7</text><text x="740" y="252">8</text><text x="820" y="252">9</text><text x="900" y="252">10</text>
+  </g>
+  <text x="100" y="276" fill="#8da4ba" font-size="12" text-anchor="middle">FOX START</text>
+  <text x="340" y="276" fill="#8da4ba" font-size="12" text-anchor="middle">DOG</text>
+  <g transform="translate(340 172)">
+    <ellipse cx="0" cy="39" rx="31" ry="6" fill="#07111d" opacity=".45"/>
+    <g transform="rotate(-5)">
+      <path d="M-22 22 Q-38 11 -31 -1 Q-18 -12 -10 7" fill="#b88d69" stroke="#e0bc96" stroke-width="2"/>
+      <ellipse cx="0" cy="20" rx="28" ry="17" fill="#c8a17b"/>
+      <circle cx="19" cy="9" r="15" fill="#d8b58f"/>
+      <path d="M9 -2 L11 -17 L22 -5 M24 -3 L34 -13 L35 2" fill="#bd8c63" stroke="#e0bc96" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M24 12 Q31 16 34 11" fill="none" stroke="#694c3d" stroke-width="2" stroke-linecap="round"/>
+      <path d="M8 31 Q17 25 23 31" fill="none" stroke="#a47b5c" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <path d="M38 -7 Q45 -17 51 -7 Q55 0 48 3" fill="none" stroke="#9fb3c8" stroke-width="1.5"/>
+    <text x="46" y="-18" fill="#c5d7e8" font-size="13" font-weight="700">Z</text><text x="58" y="-29" fill="#c5d7e8" font-size="10" font-weight="700">z</text>
+  </g>
+  <g class="fox-motion" transform="translate(100 171)">
+    <ellipse cx="0" cy="40" rx="29" ry="6" fill="#07111d" opacity=".45"/>
+    <path d="M-12 23 Q-45 18 -39 0 Q-34 -13 -20 -3 Q-34 2 -21 10 Q-8 16 1 19" fill="#f7eee0" stroke="#dc8545" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M-12 23 Q-31 17 -29 5 Q-24 2 -19 10 Q-11 16 1 19" fill="#f6f0e6"/>
+    <ellipse cx="2" cy="21" rx="24" ry="15" fill="url(#foxFur)"/>
+    <path d="M-10 28 L-13 39 M14 29 L17 39" stroke="#f4b46b" stroke-width="6" stroke-linecap="round"/>
+    <path d="M-18 17 Q-13 6 -3 10 L14 14 L10 28 Q-2 34 -14 25Z" fill="#f8e8d1"/>
+    <path d="M9 10 L18 -8 L35 -14 L44 -3 L34 13 L20 19Z" fill="url(#foxFur)" stroke="#d96832" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M18 -7 L20 -23 L30 -12 M33 -12 L44 -22 L42 -4" fill="#ef8b43" stroke="#d96832" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M21 -5 L23 -17 L28 -10 M35 -12 L42 -18 L40 -7" fill="#f8e7cf"/>
+    <path d="M30 4 Q37 7 42 1" fill="none" stroke="#6e3b29" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="32" cy="-5" r="2.4" fill="#182638"/>
+    <path d="M-4 33 L-7 40 M20 31 L22 40" stroke="#f2d6b5" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <circle class="position-dot" cx="110" cy="221" r="6" fill="#ffb86b" stroke="#fff1d8" stroke-width="2"/>
+  <text x="36" y="296" fill="#7f98b0" font-size="11">Illustration of the idea · actual transitions and conditions live in the C# FSM definitions.</text>
+</svg>
