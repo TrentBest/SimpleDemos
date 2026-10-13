@@ -20,6 +20,8 @@
   <img src="docs/assets/fox-dog-number-line.svg" alt="Animated fox walking along a number line, spotting a sleeping sheepdog, jumping over it, and turning around to repeat." width="100%" />
 </p>
 
+**[Open the interactive fox-and-sheepdog playground](docs/fox-and-sheepdog.html)** — arm the distraction, tune the behavior parameters, and watch the dog wake up, the cartoon dust cloud, ghost, and tombstone sequence. For now, this browser playground is an explicitly modeled illustration; it does **not** execute the C# FSM_API assembly. The console project below does use the published FSM_API NuGet package.
+
 A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, inspect the larger 2D multi-agent implementation, or run the separate worker-throughput benchmark.
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
