@@ -36,7 +36,7 @@ The browser playground above is an independent illustration. To create replayabl
 dotnet run --project QuickBrownFox/QuickBrownFox.csproj -- --export-trace docs/fox-fsm-trace.json
 ```
 
-This bounded mode disables console chatter, runs the real processing groups and agent FSMs, and writes per-frame agent state, position, and speed snapshots to the requested JSON path. It stops when the sample reaches its normal end or after 30 updates. The trace is an exported observation of the C# run; it does not itself render an animation, and the existing browser page does not automatically load it yet. That replay bridge is the next step.
+This bounded mode disables console chatter, runs the real processing groups and agent FSMs, and writes per-frame agent state, position, and speed snapshots to the requested JSON path. It stops when the sample reaches its normal end or after 30 updates. The trace is an exported observation of the C# run, not an animation by itself. Open the [Visualize FSM Trace Replay](https://github.com/TrentBest/TheSingularityWorkshop.Visualize/blob/development/samples/PrimitiveGallery/fsm-trace-replay.html) page, choose the JSON file you exported, and scrub or play the recorded frames. The browser replays recorded values; it does not execute FSM_API.
 
 ## 🔵 00 · The problem
 
