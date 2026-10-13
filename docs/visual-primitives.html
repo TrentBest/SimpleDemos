@@ -75,9 +75,9 @@ svg{display:block;width:100%;height:auto;min-height:260px;background:#0b1725;tou
  }
  function render(){
   const start=performance.now(), selected=mode.value, n=Number(count.value);
-  if(selected==="point")points=[{x:500,y:260}];
-  else if(selected==="connected")points=[{x:300,y:170},{x:700,y:160},{x:750,y:360},{x:260,y:350}];
-  else if(selected==="line")points=[{x:220,y:360},{x:780,y:160}];
+  if(selected==="point" && points.length!==1)points=[{x:500,y:260}];
+  else if(selected==="connected" && points.length!==4)points=[{x:300,y:170},{x:700,y:160},{x:750,y:360},{x:260,y:350}];
+  else if(selected==="line" && points.length!==2)points=[{x:220,y:360},{x:780,y:160}];
   else if(points.length!==(selected==="manyLines"?n*2:n))newPoints(selected==="manyLines"?n*2:n);
   const frag=document.createDocumentFragment();let marks=0;
   const r=Number(radius.value),w=Number(lineWidth.value);
@@ -108,7 +108,7 @@ svg{display:block;width:100%;height:auto;min-height:260px;background:#0b1725;tou
   $("spreadValue").textContent=spread.value+"%";
   $("dataReadout").textContent="mode="+selected+" · requested="+(selected==="point"?"1":n.toLocaleString())+" · SVG marks="+marks.toLocaleString()+" · build="+elapsed.toFixed(2)+"ms";
  }
- $("randomize").addEventListener("click",()=>{seed=(seed+1)>>>0||1;newPoints(mode.value==="manyLines"?Number(count.value)*2:Number(count.value));render()});
+ $("randomize").addEventListener("click",()=>{seed=(seed+1)>>>0||1;const n=mode.value==="point"?1:mode.value==="connected"?4:mode.value==="line"?2:mode.value==="manyLines"?Number(count.value)*2:Number(count.value);newPoints(n);render()});
  $("reset").addEventListener("click",()=>{seed=1;mode.value="point";count.value="1";radius.value="3.5";lineWidth.value="2";palette.value="rainbow";spread.value="100";points=[];render()});
  [mode,count,radius,lineWidth,palette,spread].forEach(el=>el.addEventListener("input",()=>{if(el===mode||el===count||el===spread)points=[];render()}));
  [mode,count,radius,lineWidth,palette,spread].forEach(el=>el.addEventListener("change",render));
