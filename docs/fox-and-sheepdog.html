@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Fox, the Sheepdog, and the FSM — Interactive Demo</title>
+<style>
+:root{color-scheme:dark;--ink:#eaf2fb;--muted:#a8bbcf;--panel:#15283b;--line:#7890a8;--mint:#7ee0bd;--orange:#ffad61;--red:#ff5264}
+*{box-sizing:border-box}body{margin:0;background:#0b1421;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1100px;margin:auto;padding:24px 18px 44px}header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}header img{width:min(100%,430px);height:auto}h1{font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.12;margin:.2rem 0}p{color:var(--muted)}a{color:#9fd6ff}.kicker{text-transform:uppercase;letter-spacing:.13em;color:var(--mint);font-size:.75rem;font-weight:800}
+.stage{border:1px solid #2a4055;border-radius:18px;overflow:hidden;background:#101e2d;box-shadow:0 18px 50px #0003}
+svg{display:block;width:100%;height:auto;touch-action:manipulation}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px;background:#132438;border-top:1px solid #2a4055}
+button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radius:10px;padding:11px 14px;font:inherit;font-weight:750;cursor:pointer}button:hover{background:#2b4b65}button:focus-visible,input:focus-visible{outline:3px solid #ffcf86;outline-offset:2px}.primary{background:#a83743;border-color:#e05a67}.primary:hover{background:#c34652}.field{display:grid;gap:4px;font-size:.88rem;color:#d5e2ee}.field span{display:flex;justify-content:space-between;gap:8px}.field output{color:var(--mint);font-variant-numeric:tabular-nums}.field input{width:100%;accent-color:var(--mint)}.readout{display:flex;gap:12px;flex-wrap:wrap;padding:12px 16px;background:#0e1a28;color:#b7c9da;font-size:.9rem}.readout strong{color:var(--ink)}.status{color:var(--mint);font-weight:800}.below{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-top:18px}.card{background:var(--panel);border:1px solid #2a4055;border-radius:14px;padding:16px}.card h2{font-size:1.05rem;margin:0 0 8px}.card p{margin:.4rem 0}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#d6e7f5;font-size:.9rem;overflow-wrap:anywhere}.tiny{font-size:.85rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:760px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.below{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div><div class="kicker">The Singularity Workshop · Interactive behavior</div><h1>The Fox, the Sheepdog, and the FSM</h1><p>Change an input. Watch the behavior change. Then inspect the state and parameters that explain why.</p></div>
+</header>
+<section class="stage" aria-label="Interactive cartoon simulation">
+<svg id="world" viewBox="0 0 1000 390" role="img" aria-labelledby="sceneTitle sceneDesc">
+<title id="sceneTitle">Fox and sleeping sheepdog interactive simulation</title>
+<desc id="sceneDesc">A fox walks along a number line. It normally jumps over a sleeping shaggy sheepdog. Distracting the fox makes it miss the jump, causing a harmless cartoon dust-cloud scuffle before the dog returns to sleep.</desc>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#14273b"/><stop offset="1" stop-color="#20374a"/></linearGradient>
+ <linearGradient id="fur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffc778"/><stop offset="1" stop-color="#e66b32"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="9"/></filter>
+</defs>
+<rect width="1000" height="390" fill="url(#sky)"/>
+<circle cx="100" cy="65" r="55" fill="#d6eaff" opacity=".06" filter="url(#glow)"/>
+<text x="32" y="34" fill="#eaf2fb" font-size="16" font-weight="800" letter-spacing="1.3">A TINY WORLD · A VERY BIG CONSEQUENCE</text>
+<text x="32" y="58" fill="#9fb6cc" font-size="13">The button changes the fox's decision at the moment it detects the dog.</text>
+<rect x="32" y="75" width="285" height="38" rx="19" fill="#1d3b50" stroke="#426277"/>
+<circle cx="51" cy="94" r="4" fill="#7ee0bd"/><text x="64" y="99" fill="#cdeee4" font-size="12" font-weight="800">CURRENT FSM STATE</text>
+<text id="stateLabel" x="295" y="99" fill="#7ee0bd" font-size="13" font-weight="800" text-anchor="end">Walking</text>
+<rect x="742" y="75" width="226" height="60" rx="12" fill="#1a3045" stroke="#3c556b"/>
+<text x="758" y="98" fill="#91a8bf" font-size="11" letter-spacing=".8">CARTOON MISHAPS</text>
+<text id="countLabel" x="758" y="121" fill="#fff0da" font-size="17" font-weight="800">0 foxes harmed</text>
+<path d="M80 270H920" stroke="#829bb1" stroke-width="9" stroke-linecap="round" opacity=".15"/>
+<path d="M80 270H920" stroke="#829bb1" stroke-width="3" stroke-linecap="round"/>
+<g stroke="#829bb1" stroke-width="2"><path d="M80 260v20 M164 260v20 M248 260v20 M332 260v20 M416 260v20 M500 260v20 M584 260v20 M668 260v20 M752 260v20 M836 260v20 M920 260v20"/></g>
+<g fill="#c5d4e2" font-size="14" text-anchor="middle"><text x="80" y="301">0</text><text x="164" y="301">1</text><text x="248" y="301">2</text><text x="332" y="301">3</text><text x="416" y="301">4</text><text x="500" y="301">5</text><text x="584" y="301">6</text><text x="668" y="301">7</text><text x="752" y="301">8</text><text x="836" y="301">9</text><text x="920" y="301">10</text></g>
+<text x="80" y="324" fill="#8da4ba" font-size="11" text-anchor="middle">START</text><text x="332" y="324" fill="#8da4ba" font-size="11" text-anchor="middle">DOG · 3</text>
+<!-- Original shaggy sheepdog, with a broad muzzle, floppy ears, collar and sleeping face. -->
+<g id="dog" transform="translate(332 222)">
+ <ellipse cx="0" cy="51" rx="54" ry="8" fill="#07111d" opacity=".48"/>
+ <g id="dogBody">
+  <path d="M-46 20Q-61 5-48-9Q-53-27-34-31Q-23-45-8-33Q8-47 22-32Q41-37 44-18Q61-10 49 8Q59 24 39 34L-35 35Z" fill="#d7d4ca" stroke="#9ba7ae" stroke-width="2"/>
+  <ellipse cx="-2" cy="23" rx="42" ry="25" fill="#eee9dd" stroke="#aab0b2" stroke-width="2"/>
+  <path d="M-36 16Q-48 6-37-7Q-22-18-12-5Q0-17 11-6Q27-17 35-2L27 16Q5 31-20 25Z" fill="#faf3e6"/>
+  <path d="M-29 39L-31 47M-10 42L-11 49M17 41L18 49M34 36L39 47" stroke="#e5dfd2" stroke-width="10" stroke-linecap="round"/>
+  <path d="M-41 3Q-61-7-59-28Q-55-43-42-36Q-29-28-34-7Z" fill="#a6a39a" stroke="#7e898e" stroke-width="2"/>
+  <path d="M25-1Q45-16 57-3Q65 11 47 24L28 19Z" fill="#eee8db" stroke="#aab0b2" stroke-width="2"/>
+  <ellipse cx="36" cy="16" rx="20" ry="15" fill="#f7f0e3" stroke="#aab0b2" stroke-width="2"/>
+  <path d="M22 13Q29 7 35 13M39 13Q45 7 50 13" fill="none" stroke="#6d625a" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="39" cy="22" rx="8" ry="5" fill="#3d4c57"/><path d="M34 28Q40 32 46 27" fill="none" stroke="#76695d" stroke-width="2"/>
+  <path d="M-31 25Q-18 33-6 29" fill="none" stroke="#a93f4b" stroke-width="8" stroke-linecap="round"/>
+  <path d="M-5 25L3 29L-3 35L-11 30Z" fill="#e4c66b" stroke="#8b783c" stroke-width="1.5"/>
+ </g>
+ <g id="zzz" fill="#c6d9ec" font-weight="900"><text x="51" y="-24" font-size="18">Z</text><text x="68" y="-39" font-size="13">z</text><text x="80" y="-49" font-size="10">z</text></g>
+</g>
+<g id="tombstone" opacity="0" transform="translate(332 226)">
+ <path d="M-27 45V8Q-27-18 0-18Q27-18 27 8V45Z" fill="#8998a7" stroke="#d1dbe4" stroke-width="2"/>
+ <text x="0" y="14" fill="#182638" text-anchor="middle" font-size="12" font-weight="900">RIP</text><path d="M-11 25H11M-8 31H8" stroke="#182638" stroke-width="2"/>
+</g>
+<g id="dust" opacity="0">
+ <g fill="#d6c4a2" stroke="#8c806f" stroke-width="2">
+  <circle cx="-22" cy="0" r="27"/><circle cx="8" cy="-13" r="33"/><circle cx="33" cy="5" r="25"/><circle cx="-1" cy="19" r="29"/><circle cx="54" cy="-17" r="15"/>
+ </g>
+ <path d="M-10-12L-27-37L-6-28L1-45L11-23L35-35L27-12" fill="#f5eee0" stroke="#8c806f" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M17 18L39 35L13 28L-3 42L-1 18" fill="#e98a44" stroke="#9d5933" stroke-width="3" stroke-linejoin="round"/>
+ <text x="0" y="-49" text-anchor="middle" fill="#fff0da" font-size="19" font-weight="900">POOF!</text>
+</g>
+<g id="ghost" opacity="0">
+ <g transform="translate(0 0)" fill="#e8f5ff" stroke="#a7d4ed" stroke-width="2">
+  <path d="M-23 5Q-27-25 0-29Q27-25 23 5V31L12 24L0 32L-12 24L-23 31Z"/>
+  <circle cx="-8" cy="-5" r="3.5" fill="#31475b" stroke="none"/><circle cx="8" cy="-5" r="3.5" fill="#31475b" stroke="none"/>
+  <path d="M-5 6Q0 10 5 6" fill="none" stroke="#31475b"/>
+  <ellipse cx="0" cy="-38" rx="12" ry="4" fill="none" stroke="#ffcf86" stroke-width="3"/><path d="M0-49L-5-40H1L-3-31" fill="none" stroke="#ffcf86" stroke-width="3"/>
+ </g>
+ <g transform="translate(28 -2)" stroke="#ffcf86" stroke-width="2" fill="none"><path d="M0 0Q16-17 17 1V28M17 1Q28-5 29 7M17 9Q28 3 29 15M17 17Q27 12 28 23"/><path d="M3 0L-4 30M-4 30L-10 37M-4 30L3 36"/></g>
+</g>
+<g id="fox" transform="translate(80 0)">
+ <ellipse cx="0" cy="8" rx="28" ry="6" fill="#07111d" opacity=".4"/>
+ <g id="foxArt">
+  <path d="M-15-10Q-47-12-42-32Q-38-44-25-32Q-35-28-23-20Q-12-14 0-12" fill="#f7eee0" stroke="#d77a3e" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="0" cy="-14" rx="23" ry="15" fill="url(#fur)"/>
+  <path d="M-12-13Q-5-22 4-14L14-12L10-1Q-2 5-13-5Z" fill="#f8e8d1"/>
+  <path d="M8-24L18-43L34-48L43-36L33-21L19-17Z" fill="url(#fur)" stroke="#d96832" stroke-width="2"/>
+  <path d="M18-41L20-57L30-46M33-46L44-56L42-36" fill="#ef8b43" stroke="#d96832" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M21-39L23-51L28-44M35-46L42-52L40-41" fill="#f8e7cf"/>
+  <path d="M-8-2L-11 7M13-2L16 7" stroke="#f4b46b" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="32" cy="-38" r="2.5" fill="#182638"/><path d="M30-28Q37-25 42-30" fill="none" stroke="#6e3b29" stroke-width="2" stroke-linecap="round"/>
+ </g>
+ <g id="alert" opacity="0" fill="#ff5264" stroke="#fff1d8" stroke-width="1.5"><path d="M34-78Q34-85 40-85Q47-85 46-78L43-64Q42-61 39-61Q36-61 36-64Z"/><circle cx="40" cy="-55" r="3.5"/></g>
+ <g id="questions" opacity="0" fill="#ffcf86" stroke="#633e22" stroke-width=".7" font-weight="900" font-size="28"><text x="32" y="-69">?</text><text x="50" y="-82" font-size="22">?</text><text x="57" y="-60" font-size="18">?</text></g>
+</g>
+<text id="caption" x="500" y="365" fill="#c5d5e4" font-size="14" text-anchor="middle">The fox is approaching. The dog is asleep. What happens next?</text>
+</svg>
+<div class="readout"><span>State: <strong class="status" id="statusText">Walking</strong></span><span>Direction: <strong id="directionText">→</strong></span><span>Dog: <strong id="dogStateText">Sleeping</strong></span><span>Distraction: <strong id="distractionText">Off</strong></span></div>
+<div class="controls">
+ <button class="primary" id="distractButton">Distract Fox</button>
+ <button id="resetButton">Reset simulation</button>
+ <label class="field"><span>Fox speed <output id="speedValue">100</output></span><input id="speed" type="range" min="40" max="180" value="100" step="10"></label>
+ <label class="field"><span>Jump height <output id="heightValue">105</output></span><input id="height" type="range" min="45" max="150" value="105" step="5"></label>
+ <label class="field"><span>Detection distance <output id="sightValue">1.5</output></span><input id="sight" type="range" min="0.5" max="3" value="1.5" step="0.25"></label>
+ <label class="field"><span>Dog wake-up delay <output id="wakeValue">1.2 s</output></span><input id="wake" type="range" min="0.4" max="2.5" value="1.2" step="0.2"></label>
+</div>
+</section>
+<section class="below">
+ <article class="card"><h2>What just happened?</h2><p id="explanation">The fox is walking toward the sleeping dog. If it notices the dog in time, it calculates a jump over the dog's position.</p><p class="tiny">The jump uses an inverted parabola: <span class="code">y = -4 × height × t × (1 - t)</span>. At <span class="code">t = 0.5</span>, the fox is at the apex, horizontally centered over the dog.</p></article>
+ <article class="card"><h2>Behavior parameters</h2><p class="tiny">These controls tune this browser illustration's behavior model. They are deliberately visible so readers can experiment with inputs and observe transitions.</p><p class="code" id="parameterReadout">speed=100 · jumpHeight=105 · detectionDistance=1.5 · wakeDelay=1.2</p><p class="tiny">This interactive page currently models the behavior in browser code; it does not execute the compiled FSM_API assembly. The C# project uses the published FSM_API NuGet package. A next step is to export real C# state/position traces so the visual can display the library-driven run.</p></article>
+</section>
+<p class="tiny">Cartoon peril only: the scuffle is a dust cloud with silly shapes sticking out, not graphic injury. <a href="../../">Back to SimpleDemos README</a> · <a href="https://github.com/TrentBest/FSM_API">Explore FSM_API</a></p>
+</main>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ const fox=$('fox'), dog=$('dog'), zzz=$('zzz'), alert=$('alert'), questions=$('questions');
+ const dust=$('dust'), ghost=$('ghost'), tombstone=$('tombstone'), dogBody=$('dogBody'), foxArt=$('foxArt');
+ const stateLabel=$('stateLabel'), statusText=$('statusText'), dogStateText=$('dogStateText');
+ const directionText=$('directionText'), distractionText=$('distractionText'), countLabel=$('countLabel');
+ const caption=$('caption'), explanation=$('explanation'), button=$('distractButton');
+ const speed=$('speed'), height=$('height'), sight=$('sight'), wake=$('wake');
+ const dogX=332, left=80, right=920, baseline=262;
+ let x=left, direction=1, state='Walking', dogState='Sleeping', distracted=false, mishaps=0;
+ let last=performance.now(), phaseTime=0, jumpStart=0, jumpEnd=0, jumpT=0, jumpDuration=1, wakeTimer=0, scuffleCounted=false;
+ const setOpacity=(el,v)=>el.setAttribute('opacity',String(v));
+ function setState(s,cap,desc){state=s;stateLabel.textContent=s;statusText.textContent=s;caption.textContent=cap;explanation.textContent=desc;}
+ function sync(){
+  $('speedValue').textContent=speed.value; $('heightValue').textContent=height.value;
+  $('sightValue').textContent=Number(sight.value).toFixed(2).replace(/0$/,'');
+  $('wakeValue').textContent=Number(wake.value).toFixed(1)+' s';
+  $('parameterReadout').textContent='speed='+speed.value+' · jumpHeight='+height.value+' · detectionDistance='+sight.value+' · wakeDelay='+wake.value;
+  directionText.textContent=direction>0?'→':'←'; dogStateText.textContent=dogState;
+  distractionText.textContent=distracted?'Armed for next encounter':'Off';
+  countLabel.textContent=mishaps+' fox'+(mishaps===1?'':'es')+' harmed';
+ }
+ function hideEffects(){setOpacity(alert,0);setOpacity(questions,0);setOpacity(dust,0);setOpacity(ghost,0);}
+ function startJump(){
+  distracted=false; sync(); setOpacity(alert,0); setOpacity(questions,0);
+  state='Jumping';stateLabel.textContent=state;statusText.textContent=state;
+  caption.textContent='A clean, deliberate jump: the apex is directly over the dog.';
+  explanation.textContent='Detection succeeded. The fox follows a parabolic arc whose midpoint is aligned with the dog. Change jump height or speed to explore the geometry.';
+  jumpStart=x; jumpEnd=x+direction*168; jumpT=0; jumpDuration=Math.abs(jumpEnd-jumpStart)/Number(speed.value); 
+ }
+ function startScuffle(){
+  distracted=false;sync();dogState='Waking';wakeTimer=0;scuffleCounted=false;
+  setState('Distracted → Collision','The fox is distracted! No jump: the dog wakes, and a cloud of cartoon chaos erupts.','Question marks replaced the fox’s alert response, so the jump transition did not happen. The dog wakes after the configured delay.');
+  setOpacity(questions,0);setOpacity(alert,0);setOpacity(zzz,0);setOpacity(dust,1);
+  fox.setAttribute('transform','translate('+dogX+' '+(baseline-10)+')');x=dogX;
+ }
+ function finishScuffle(){
+  if(!scuffleCounted){mishaps++;scuffleCounted=true;sync();}
+  setOpacity(dust,0);setOpacity(ghost,1);phaseTime=0;
+  setState('Ghost Ascending','The dog lets go. One tiny ghost, complete with halo and harp, floats away.','The cartoon scuffle increments the counter once. The dog is unharmed, and the ghost is a deliberately silly visual metaphor—not a realistic depiction of injury.');
+ }
+ function resetAfterGhost(){
+  setOpacity(ghost,0);setOpacity(tombstone,1);dogState='Sleeping';setOpacity(zzz,1);
+  setState('Tombstone → Reset','The ghost fades; a tombstone marks the gag. The dog curls back up for another nap.','The outcome has been recorded. The demo resets the fox for another pass so the same inputs can be tested repeatedly.');
+  phaseTime=0;
+ }
+ function reset(){
+  x=left;direction=1;distracted=false;dogState='Sleeping';phaseTime=0;wakeTimer=0;scuffleCounted=false;
+  setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);setOpacity(foxArt,1);hideEffects();
+  fox.setAttribute('transform','translate('+x+' '+baseline+')');
+  setState('Walking','The fox is approaching. The dog is asleep. What happens next?','The fox is walking toward the sleeping dog. If it notices the dog in time, it calculates a jump over the dog’s position.');
+  sync();
+ }
+ button.addEventListener('click',()=>{distracted=!distracted;sync();button.textContent=distracted?'Distraction Armed ✓':'Distract Fox';if(distracted){setState(state,'Distraction armed for the next encounter.','The fox will show question marks instead of reacting normally when it detects the dog.');}else{button.textContent='Distract Fox';}});
+ $('resetButton').addEventListener('click',reset);
+ [speed,height,sight,wake].forEach(el=>el.addEventListener('input',sync));
+ function tick(now){
+  const dt=Math.min((now-last)/1000,.05);last=now;phaseTime+=dt;
+  if(state==='Walking'){
+   x+=direction*Number(speed.value)*dt;
+   if((direction>0&&x>=dogX-Number(sight.value)*84)||(direction<0&&x<=dogX+Number(sight.value)*84)){
+    x=direction>0?dogX-Number(sight.value)*84:dogX+Number(sight.value)*84;
+    if(distracted){setOpacity(questions,1);setState('Distracted','The fox sees question marks instead of danger.','The distraction input suppresses the normal jump response. The dog will wake when the fox blunders into its space.');phaseTime=0;state='Distracted';}
+    else {setOpacity(alert,1);startJump();}
+   }
+   if(x>right){x=right;direction=-1;setState('Turning','At the end of the line, the fox turns around.','Direction changed. The same sensing and jump rules apply on the return trip.');phaseTime=0;}
+   if(x<left){x=left;direction=1;setState('Turning','At the start, the fox turns around and tries again.','Direction changed. The same sensing and jump rules apply on the next trip.');phaseTime=0;}
+  }else if(state==='Jumping'){
+   jumpT=Math.min(1,jumpT+dt/jumpDuration);
+   x=jumpStart+(jumpEnd-jumpStart)*jumpT;
+   const arcY=-4*Number(height.value)*jumpT*(1-jumpT);
+   fox.setAttribute('transform','translate('+x+' '+(baseline+arcY)+')');
+   if(jumpT>=1){state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(alert,0);caption.textContent='Landed safely. The fox keeps walking toward the end, then turns back.';explanation.textContent='The jump is complete. Because the arc is a function of normalized time, its apex remains exactly at the midpoint even when speed and height change.';x=jumpEnd;direction=direction; }
+  }else if(state==='Distracted'){
+   x+=direction*Number(speed.value)*dt;
+   if(Math.abs(x-dogX)<Number(speed.value)*dt+3){x=dogX;state='Waking';dogState='Waking';wakeTimer=0;phaseTime=0;setState('Dog Waking','The distracted fox walks right into the sheepdog. Uh-oh.','The fox failed to jump, so their positions overlap. The dog wakes, then the harmless dust-cloud gag plays.');setOpacity(zzz,0);}
+   if(phaseTime>3){startScuffle();}
+  }else if(state==='Waking'){
+   wakeTimer+=dt;
+   if(wakeTimer>=Number(wake.value)){dogState='Awake';state='Scuffle';phaseTime=0;setOpacity(dust,1);setState('Cartoon Scuffle','A puff of dust, a few paws and tails, and absolutely no graphic detail.','The dog reacts to the collision. The dust cloud intentionally hides the action; visible shapes make it clear that a cartoon tussle is happening.');}
+  }else if(state==='Scuffle'){
+   if(phaseTime>=1.8)finishScuffle();
+  }else if(state==='Ghost Ascending'){
+   const y=baseline-20-phaseTime*44;
+   ghost.setAttribute('transform','translate('+dogX+' '+y+')');
+   if(phaseTime>=3.3)resetAfterGhost();
+  }else if(state==='Tombstone → Reset'){
+   if(phaseTime>=2.1){setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);x=direction>0?left:right;direction*=-1;dogState='Sleeping';state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(foxArt,1);fox.setAttribute('transform','translate('+x+' '+baseline+')');hideEffects();caption.textContent='Another pass. Try changing a parameter or arming the distraction again.';explanation.textContent='The scene has reset. The fox returns from the opposite end, making it easy to compare outcomes across repeated runs.';phaseTime=0;}
+  }else if(state==='Turning'&&phaseTime>.35){state='Walking';stateLabel.textContent=state;statusText.textContent=state;phaseTime=0;}
+  if(state!=='Jumping'&&state!=='Waking'&&state!=='Scuffle'&&state!=='Ghost Ascending'&&state!=='Tombstone → Reset'){
+   fox.setAttribute('transform','translate('+x+' '+baseline+')');
+  }
+  sync();requestAnimationFrame(tick);
+ }
+ reset();requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
