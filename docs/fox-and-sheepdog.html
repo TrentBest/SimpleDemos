@@ -136,7 +136,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
   $('wakeValue').textContent=Number(wake.value).toFixed(1)+' s';
   $('parameterReadout').textContent='speed='+speed.value+' · jumpHeight='+height.value+' · detectionDistance='+sight.value+' · wakeDelay='+wake.value;
   directionText.textContent=direction>0?'→':'←'; dogStateText.textContent=dogState;
-  distractionText.textContent=distracted?'Armed for next encounter':'Off';
+  distractionText.textContent=distracted?'Armed for next encounter':'Off'; button.textContent=distracted?'Distraction Armed ✓':'Distract Fox';
   countLabel.textContent=mishaps+' fox'+(mishaps===1?'':'es')+' harmed';
  }
  function hideEffects(){setOpacity(alert,0);setOpacity(questions,0);setOpacity(dust,0);setOpacity(ghost,0);}
