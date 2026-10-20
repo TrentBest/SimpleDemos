@@ -26,6 +26,15 @@ A small C#/.NET playground for learning how finite state machines (FSMs) coordin
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
+
+### The many-agent plane (concept SVG)
+
+The same small fox and sleeping sheepdog actors can be reused across a larger **isometric view of a 2D test plane**. The dashed lines are fox travel lanes; highlighted crossings are sensing/collision test points where sheepdogs sleep. Tombstones and harp-playing fox angels make the consequences of many overlapping behavior rules visible. This is an animated concept illustration, not yet a live trace from FSM_API.
+
+<p align="center">
+  <img src="docs/assets/fox-dog-3d-test-plane.svg" alt="Isometric concept view of many foxes moving along intersecting lanes around sleeping sheepdogs, with cartoon tombstones and ascending harp-playing fox angels." width="100%" />
+</p>
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
