@@ -46,14 +46,14 @@
   .zzz{transform-box:fill-box;transform-origin:center;animation:snooze 1.8s ease-in-out infinite}
   @keyframes snooze{0%,100%{transform:translateY(0)}50%{transform:translate(4px,-5px)}}
   .runA{animation:runA 12s linear infinite}.runB{animation:runB 14s linear infinite}.runC{animation:runC 10s linear infinite}
-  @keyframes runA{0%{transform:translate(300px,250px)}45%{transform:translate(580px,390px)}50%{transform:translate(610px,405px)}55%{transform:translate(640px,390px)}100%{transform:translate(900px,260px)}}
-  @keyframes runB{0%{transform:translate(800px,270px) scaleX(-1)}45%{transform:translate(560px,390px) scaleX(-1)}52%{transform:translate(520px,390px) scaleX(-1)}100%{transform:translate(260px,250px) scaleX(-1)}}
-  @keyframes runC{0%{transform:translate(510px,160px) rotate(90deg)}45%{transform:translate(570px,370px) rotate(90deg)}55%{transform:translate(610px,390px) rotate(90deg)}100%{transform:translate(700px,540px) rotate(90deg)}}
+  @keyframes runA{0%{transform:translate(-350px,-82px)}28%{transform:translate(-170px,-42px)}34%{transform:translate(-120px,-105px)}40%{transform:translate(-70px,-17px)}100%{transform:translate(350px,82px)}}
+  @keyframes runB{0%{transform:translate(350px,82px) scaleX(-1);opacity:1}43%{transform:translate(60px,13px) scaleX(-1);opacity:1}49%{transform:translate(0px,0px) scaleX(-1);opacity:1}51%{transform:translate(0px,0px) scaleX(-1);opacity:0}100%{transform:translate(350px,82px) scaleX(-1);opacity:0}}
+  @keyframes runC{0%{transform:translate(-80px,-245px) rotate(90deg);opacity:1}38%{transform:translate(120px,29px) rotate(90deg);opacity:1}42%{transform:translate(120px,29px) rotate(90deg);opacity:0}100%{transform:translate(-80px,-245px) rotate(90deg);opacity:0}}
   .angelA{animation:angelRise 4.5s ease-out infinite;transform-box:fill-box;transform-origin:center}
   .angelB{animation:angelRise 6s ease-out 2s infinite;transform-box:fill-box;transform-origin:center}
   @keyframes angelRise{0%,8%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:1}85%{opacity:1;transform:translateY(-150px) scale(1)}100%{opacity:0;transform:translateY(-190px) scale(1.1)}}
   .stoneA{animation:stoneShow 12s linear infinite}.stoneB{animation:stoneShow 14s linear infinite}
-  @keyframes stoneShow{0%,48%{opacity:0}52%,86%{opacity:1}100%{opacity:0}}
+  @keyframes stoneShow{0%,8%{opacity:0}10%,92%{opacity:1}100%{opacity:0}}
   @media(prefers-reduced-motion:reduce){.runA,.runB,.runC,.angelA,.angelB,.stoneA,.stoneB,.zzz{animation:none}.stoneA,.stoneB{opacity:.8}.angelA,.angelB{opacity:1}}
  </style>
 </defs>
@@ -77,14 +77,14 @@
  <g transform="translate(-80 45) scale(.78)"><use href="#dog"/></g>
  <g transform="translate(80 -45) scale(.78)"><use href="#dog"/></g>
  <!-- Tombstones persist after a fox's collision; angels are a separate ascending visual event. -->
- <g class="stoneA" transform="translate(150 75)"><use href="#stone"/></g>
- <g class="stoneB" transform="translate(-170 70)"><use href="#stone"/></g>
+ <g class="stoneA" transform="translate(0 0)"><use href="#stone"/></g>
+ <g class="stoneB" transform="translate(120 29)"><use href="#stone"/></g>
  <!-- Moving foxes use the same little 2D actor, projected onto different paths. -->
  <g class="runA"><use href="#fox"/></g>
  <g class="runB"><use href="#fox"/></g>
  <g class="runC"><use href="#fox"/></g>
- <g class="angelA" transform="translate(150 50)"><use href="#angel"/></g>
- <g class="angelB" transform="translate(-170 50)"><use href="#angel"/></g>
+ <g transform="translate(0 0)"><g class="angelA"><use href="#angel"/></g></g>
+ <g transform="translate(120 29)"><g class="angelB"><use href="#angel"/></g></g>
 </g>
 <g transform="translate(48 625)">
  <rect width="1104" height="92" rx="16" fill="#172b3d" stroke="#345064"/>
