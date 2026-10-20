@@ -35,6 +35,12 @@ The next scale-up is a **10×10 cell plane**. Its regular orthogonal lattice is 
   <img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg" alt="GUI.SVG 10 by 10 isometric test plane showing a fox encounter with a sleeping sheepdog, cartoon fight cloud, RIP stone and ascending harp-playing fox angel." width="100%" />
 </p>
 
+
+## Demonstration proof work
+
+The visual examples are being developed into a reproducible proof pipeline. Start with the [demonstrations index](demonstrations/README.md) and its [fox/sheepdog state-contract SVG](demonstrations/01-state-contract.svg). The diagram is derived from the existing C# FSM_API source; it is a source map, **not** a claim that the browser SVG is currently driven by live FSM execution.
+
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
