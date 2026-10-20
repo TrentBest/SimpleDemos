@@ -127,7 +127,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
  const speed=$('speed'), height=$('height'), sight=$('sight'), wake=$('wake');
  const dogX=332, left=80, right=920, baseline=262;
  let x=left, direction=1, state='Walking', dogState='Sleeping', distracted=false, mishaps=0;
- let last=performance.now(), phaseTime=0, jumpStart=0, jumpEnd=0, jumpT=0, jumpDuration=1, wakeTimer=0, scuffleCounted=false;
+ let last=performance.now(), phaseTime=0, jumpStart=0, jumpEnd=0, jumpT=0, jumpDuration=1, wakeTimer=0, scuffleCounted=false, alertTimer=0;
  const setOpacity=(el,v)=>el.setAttribute('opacity',String(v));
  function setState(s,cap,desc){state=s;stateLabel.textContent=s;statusText.textContent=s;caption.textContent=cap;explanation.textContent=desc;}
  function sync(){
@@ -141,7 +141,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
  }
  function hideEffects(){setOpacity(alert,0);setOpacity(questions,0);setOpacity(dust,0);setOpacity(ghost,0);}
  function startJump(){
-  distracted=false; sync(); setOpacity(alert,0); setOpacity(questions,0);
+  distracted=false; sync(); setOpacity(questions,0);
   state='Jumping';stateLabel.textContent=state;statusText.textContent=state;
   caption.textContent='A clean, deliberate jump: the apex is directly over the dog.';
   explanation.textContent='Detection succeeded. The fox follows a parabolic arc whose midpoint is aligned with the dog. Change jump height or speed to explore the geometry.';
@@ -160,7 +160,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
  function reset(){
   x=left;direction=1;distracted=false;dogState='Sleeping';phaseTime=0;wakeTimer=0;scuffleCounted=false;
   setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);setOpacity(foxArt,1);hideEffects();
-  fox.setAttribute('transform','translate('+x+' '+baseline+')');
+  fox.setAttribute('transform','translate('+x+' '+baseline+') scale('+direction+' 1)');
   setState('Walking','The fox is approaching. The dog is asleep. What happens next?','The fox is walking toward the sleeping dog. If it notices the dog in time, it calculates a jump over the dog’s position.');
   sync();
  }
@@ -174,7 +174,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
    if((direction>0&&x>=dogX-Number(sight.value)*84)||(direction<0&&x<=dogX+Number(sight.value)*84)){
     x=direction>0?dogX-Number(sight.value)*84:dogX+Number(sight.value)*84;
     if(distracted){setOpacity(questions,1);setState('Distracted','The fox sees question marks instead of danger.','The distraction input suppresses the normal jump response. The dog will wake when the fox blunders into its space.');phaseTime=0;state='Distracted';}
-    else {setOpacity(alert,1);startJump();}
+    else {setOpacity(alert,1);alertTimer=0.7;startJump();}
    }
    if(x>right){x=right;direction=-1;setState('Turning','At the end of the line, the fox turns around.','Direction changed. The same sensing and jump rules apply on the return trip.');phaseTime=0;}
    if(x<left){x=left;direction=1;setState('Turning','At the start, the fox turns around and tries again.','Direction changed. The same sensing and jump rules apply on the next trip.');phaseTime=0;}
@@ -183,7 +183,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
    x=jumpStart+(jumpEnd-jumpStart)*jumpT;
    const arcY=-4*Number(height.value)*jumpT*(1-jumpT);
    fox.setAttribute('transform','translate('+x+' '+(baseline+arcY)+')');
-   if(jumpT>=1){state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(alert,0);caption.textContent='Landed safely. The fox keeps walking toward the end, then turns back.';explanation.textContent='The jump is complete. Because the arc is a function of normalized time, its apex remains exactly at the midpoint even when speed and height change.';x=jumpEnd;direction=direction; }
+   if(jumpT>=1){state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(alert,0);alertTimer=0;caption.textContent='Landed safely. The fox keeps walking toward the end, then turns back.';explanation.textContent='The jump is complete. Because the arc is a function of normalized time, its apex remains exactly at the midpoint even when speed and height change.';x=jumpEnd;direction=direction; }
   }else if(state==='Distracted'){
    x+=direction*Number(speed.value)*dt;
    if(Math.abs(x-dogX)<Number(speed.value)*dt+3){x=dogX;state='Waking';dogState='Waking';wakeTimer=0;phaseTime=0;setState('Dog Waking','The distracted fox walks right into the sheepdog. Uh-oh.','The fox failed to jump, so their positions overlap. The dog wakes, then the harmless dust-cloud gag plays.');setOpacity(zzz,0);}
@@ -198,10 +198,11 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
    ghost.setAttribute('transform','translate('+dogX+' '+y+')');
    if(phaseTime>=3.3)resetAfterGhost();
   }else if(state==='Tombstone → Reset'){
-   if(phaseTime>=2.1){setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);x=direction>0?right:left;direction*=-1;dogState='Sleeping';state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(foxArt,1);fox.setAttribute('transform','translate('+x+' '+baseline+')');hideEffects();caption.textContent='Another pass. Try changing a parameter or arming the distraction again.';explanation.textContent='The scene has reset. The fox returns from the opposite end, making it easy to compare outcomes across repeated runs.';phaseTime=0;}
+   if(phaseTime>=2.1){setOpacity(tombstone,0);setOpacity(dogBody,1);setOpacity(zzz,1);x=direction>0?right:left;direction*=-1;dogState='Sleeping';state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(foxArt,1);fox.setAttribute('transform','translate('+x+' '+baseline+') scale('+direction+' 1)');hideEffects();caption.textContent='Another pass. Try changing a parameter or arming the distraction again.';explanation.textContent='The scene has reset. The fox returns from the opposite end, making it easy to compare outcomes across repeated runs.';phaseTime=0;}
   }else if(state==='Turning'&&phaseTime>.35){state='Walking';stateLabel.textContent=state;statusText.textContent=state;phaseTime=0;}
+  if(alertTimer>0){alertTimer-=dt;if(alertTimer<=0){alertTimer=0;setOpacity(alert,0);}}
   if(state!=='Jumping'&&state!=='Waking'&&state!=='Scuffle'&&state!=='Ghost Ascending'&&state!=='Tombstone → Reset'){
-   fox.setAttribute('transform','translate('+x+' '+baseline+')');
+   fox.setAttribute('transform','translate('+x+' '+baseline+') scale('+direction+' 1)');
   }
   sync();requestAnimationFrame(tick);
  }
