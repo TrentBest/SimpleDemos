@@ -110,6 +110,12 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
  <label class="field"><span>Dog wake-up delay <output id="wakeValue">1.2 s</output></span><input id="wake" type="range" min="0.4" max="2.5" value="1.2" step="0.2"></label>
 </div>
 </section>
+<section class="card" style="margin-top:18px">
+<h2>The 10 × 10 test plane</h2>
+<p>The original number-line sample is the small case. The GUI.SVG manifestation below expands the same actors onto a regular 10 × 10 isometric grid, where each cell can become a repeatable behavior test.</p>
+<a href="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg"><img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg" alt="Animated 10 by 10 isometric fox and sheepdog test plane" style="width:100%;height:auto;border-radius:12px;border:1px solid #2a4055"></a>
+<p class="tiny">Scene model and SVG manifestation: <a href="https://github.com/TrentBest/TheSingularityWorkshop.GUI/blob/development/samples/FoxSheepdogPlane/Program.cs">GUI.SVG sample source</a>. Animation is currently illustrative, not driven by live FSM_API traces.</p>
+</section>
 <section class="below">
  <article class="card"><h2>What just happened?</h2><p id="explanation">The fox is walking toward the sleeping dog. If it notices the dog in time, it calculates a jump over the dog's position.</p><p class="tiny">The jump uses an inverted parabola: <span class="code">y = -4 × height × t × (1 - t)</span>. At <span class="code">t = 0.5</span>, the fox is at the apex, horizontally centered over the dog.</p></article>
  <article class="card"><h2>Behavior parameters</h2><p class="tiny">These controls tune this browser illustration's behavior model. They are deliberately visible so readers can experiment with inputs and observe transitions.</p><p class="code" id="parameterReadout">speed=100 · jumpHeight=105 · detectionDistance=1.5 · wakeDelay=1.2</p><p class="tiny">This interactive page currently models the behavior in browser code; it does not execute the compiled FSM_API assembly. The C# project uses the published FSM_API NuGet package. A next step is to export real C# state/position traces so the visual can display the library-driven run.</p></article>
