@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">Foxes, sleeping sheepdogs, and intersecting paths on an isometric test plane</title>
+<desc id="desc">A stylized three-dimensional view of a two-dimensional test plane. Several foxes travel along crossing lanes, sleeping sheepdogs occupy intersections, and cartoon mishaps leave tombstones while tiny haloed harp-playing fox angels rise away. This is an animated concept map for exploring many-agent behavior.</desc>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1423"/><stop offset="1" stop-color="#1c3044"/></linearGradient>
+ <linearGradient id="plane" x1="0" y1="0" x2="0.8" y2="1"><stop stop-color="#1e4550"/><stop offset="1" stop-color="#142b3a"/></linearGradient>
+ <linearGradient id="foxFur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffc778"/><stop offset="1" stop-color="#e66b32"/></linearGradient>
+ <pattern id="grid" width="80" height="40" patternUnits="userSpaceOnUse"><path d="M0 0H80M0 0V40" fill="none" stroke="#74a5b4" stroke-opacity=".35" stroke-width="1"/></pattern>
+ <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+ <g id="fox">
+  <path d="M-11 4Q-35 2-32-13Q-28-22-18-13Q-24-8-15-3L-2 0" fill="#f7eee0" stroke="#d77a3e" stroke-width="2"/>
+  <ellipse cx="0" cy="0" rx="17" ry="10" fill="url(#foxFur)"/>
+  <path d="M7-7L14-22L25-25L31-16L24-5L13-2Z" fill="url(#foxFur)" stroke="#d96832" stroke-width="1.5"/>
+  <path d="M14-21L15-32L22-24M25-24L32-31L30-15" fill="#ef8b43" stroke="#d96832" stroke-width="1.5"/>
+  <circle cx="24" cy="-17" r="1.8" fill="#182638"/>
+  <path d="M-5 7L-7 13M9 7L11 13" stroke="#f4b46b" stroke-width="4" stroke-linecap="round"/>
+ </g>
+ <g id="dog">
+  <ellipse cx="0" cy="12" rx="28" ry="5" fill="#07111d" opacity=".35"/>
+  <path d="M-24-2Q-32-12-21-20Q-12-29-3-20Q8-29 17-17Q30-14 27-2L21 9L-19 9Z" fill="#d7d4ca" stroke="#9ba7ae" stroke-width="1.5"/>
+  <ellipse cx="-1" cy="2" rx="23" ry="13" fill="#eee9dd"/>
+  <path d="M13-7Q27-17 34-5Q38 3 27 9L12 6Z" fill="#f7f0e3" stroke="#aab0b2" stroke-width="1.5"/>
+  <path d="M13-3Q19-7 23-3M25-3Q29-7 32-2" fill="none" stroke="#6d625a" stroke-width="2" stroke-linecap="round"/>
+  <path d="M-18 7L-20 12M-4 8L-4 13M12 7L13 12" stroke="#e5dfd2" stroke-width="5" stroke-linecap="round"/>
+  <path d="M-20-5Q-30-12-27-23Q-21-29-15-17" fill="#aaa79e" stroke="#7e898e" stroke-width="1.5"/>
+  <path d="M-14 4Q-3 10 8 5" fill="none" stroke="#a93f4b" stroke-width="4" stroke-linecap="round"/>
+  <g class="zzz" fill="#d5e8f8" font-weight="800"><text x="26" y="-22" font-size="12">Z</text><text x="38" y="-30" font-size="9">z</text></g>
+ </g>
+ <g id="stone">
+  <path d="M-15 13V-7Q-15-20 0-20Q15-20 15-7V13Z" fill="#8998a7" stroke="#d1dbe4" stroke-width="1.5"/>
+  <text x="0" y="-1" fill="#182638" font-size="9" font-weight="900" text-anchor="middle">RIP</text><path d="M-6 5H6" stroke="#182638" stroke-width="1.5"/>
+ </g>
+ <g id="angel">
+  <ellipse cx="0" cy="-24" rx="10" ry="3" fill="none" stroke="#ffcf86" stroke-width="2"/>
+  <circle cx="0" cy="-17" r="7" fill="#fff0d5" stroke="#d6e6f2" stroke-width="1.2"/>
+  <path d="M-8-12Q-18-1-11 8L-4 3L0 10L4 3L11 8Q18-1 8-12Z" fill="#e8f5ff" stroke="#a7d4ed" stroke-width="1.2"/>
+  <path d="M-7-7Q-20-18-21-5Q-17 4-8 2M7-7Q20-18 21-5Q17 4 8 2" fill="#fff0d5" stroke="#ffcf86" stroke-width="1.5"/>
+  <path d="M13-5L20-1L17 7M16-2L22 3M15 1L21 6" fill="none" stroke="#ffcf86" stroke-width="1.5"/>
+  <path d="M-5-16L-8-12M5-16L8-12" stroke="#ffcf86" stroke-width="1.5"/>
+ </g>
+ <style>
+  text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  .lane{fill:none;stroke:#83e0c0;stroke-width:2.4;stroke-dasharray:8 8;opacity:.8}
+  .laneGlow{fill:none;stroke:#83e0c0;stroke-width:9;opacity:.08}
+  .node{fill:#ffcf86;stroke:#fff0d5;stroke-width:2}
+  .zzz{transform-box:fill-box;transform-origin:center;animation:snooze 1.8s ease-in-out infinite}
+  @keyframes snooze{0%,100%{transform:translateY(0)}50%{transform:translate(4px,-5px)}}
+  .runA{animation:runA 12s linear infinite}.runB{animation:runB 14s linear infinite}.runC{animation:runC 10s linear infinite}
+  @keyframes runA{0%{transform:translate(300px,250px)}45%{transform:translate(580px,390px)}50%{transform:translate(610px,405px)}55%{transform:translate(640px,390px)}100%{transform:translate(900px,260px)}}
+  @keyframes runB{0%{transform:translate(800px,270px) scaleX(-1)}45%{transform:translate(560px,390px) scaleX(-1)}52%{transform:translate(520px,390px) scaleX(-1)}100%{transform:translate(260px,250px) scaleX(-1)}}
+  @keyframes runC{0%{transform:translate(510px,160px) rotate(90deg)}45%{transform:translate(570px,370px) rotate(90deg)}55%{transform:translate(610px,390px) rotate(90deg)}100%{transform:translate(700px,540px) rotate(90deg)}}
+  .angelA{animation:angelRise 4.5s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  .angelB{animation:angelRise 6s ease-out 2s infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes angelRise{0%,8%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:1}85%{opacity:1;transform:translateY(-150px) scale(1)}100%{opacity:0;transform:translateY(-190px) scale(1.1)}}
+  .stoneA{animation:stoneShow 12s linear infinite}.stoneB{animation:stoneShow 14s linear infinite}
+  @keyframes stoneShow{0%,48%{opacity:0}52%,86%{opacity:1}100%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.runA,.runB,.runC,.angelA,.angelB,.stoneA,.stoneB,.zzz{animation:none}.stoneA,.stoneB{opacity:.8}.angelA,.angelB{opacity:1}}
+ </style>
+</defs>
+<rect width="1200" height="760" rx="24" fill="url(#sky)"/>
+<circle cx="1030" cy="100" r="100" fill="#d8ecff" opacity=".04" filter="url(#glow)"/>
+<text x="42" y="45" fill="#eaf2fb" font-size="23" font-weight="850" letter-spacing="1.4">THE MANY-AGENT TEST PLANE</text>
+<text x="42" y="73" fill="#9fb6cc" font-size="14">Same 2D actors · many paths · sleeping dogs at intersections · outcomes made visible</text>
+<g transform="translate(600 405)">
+ <!-- Isometric plane: the plane is 2D; perspective makes the lanes and intersections legible. -->
+ <path d="M0-285L440-65L0 155L-440-65Z" fill="url(#plane)" stroke="#527d8b" stroke-width="2"/>
+ <path d="M0-285L440-65L0 155L-440-65Z" fill="url(#grid)"/>
+ <!-- Grid-aligned agent paths on the plane. -->
+ <path class="laneGlow" d="M-360-85L360 85M-360-15L360 155M-360-155L360 15M-280 75L280-205M-180 125L180-235M-80 165L80-245"/>
+ <path class="lane" d="M-360-85L360 85M-360-15L360 155M-360-155L360 15M-280 75L280-205M-180 125L180-235M-80 165L80-245"/>
+ <!-- Intersections are explicit test points. -->
+ <g><circle class="node" cx="-120" cy="-29" r="6"/><circle class="node" cx="0" cy="0" r="6"/><circle class="node" cx="120" cy="29" r="6"/><circle class="node" cx="-80" cy="45" r="6"/><circle class="node" cx="80" cy="-45" r="6"/></g>
+ <!-- Dogs are sleeping at several path crossings. -->
+ <g transform="translate(-120 -29) scale(.78)"><use href="#dog"/></g>
+ <g transform="translate(0 0) scale(.78)"><use href="#dog"/></g>
+ <g transform="translate(120 29) scale(.78)"><use href="#dog"/></g>
+ <g transform="translate(-80 45) scale(.78)"><use href="#dog"/></g>
+ <g transform="translate(80 -45) scale(.78)"><use href="#dog"/></g>
+ <!-- Tombstones persist after a fox's collision; angels are a separate ascending visual event. -->
+ <g class="stoneA" transform="translate(150 75)"><use href="#stone"/></g>
+ <g class="stoneB" transform="translate(-170 70)"><use href="#stone"/></g>
+ <!-- Moving foxes use the same little 2D actor, projected onto different paths. -->
+ <g class="runA"><use href="#fox"/></g>
+ <g class="runB"><use href="#fox"/></g>
+ <g class="runC"><use href="#fox"/></g>
+ <g class="angelA" transform="translate(150 50)"><use href="#angel"/></g>
+ <g class="angelB" transform="translate(-170 50)"><use href="#angel"/></g>
+</g>
+<g transform="translate(48 625)">
+ <rect width="1104" height="92" rx="16" fill="#172b3d" stroke="#345064"/>
+ <g transform="translate(26 24)"><path d="M0 0H46" class="lane"/><text x="60" y="5" fill="#dce8f3" font-size="13">Fox travel lanes</text></g>
+ <g transform="translate(310 24)"><circle class="node" r="6"/><text x="17" y="5" fill="#dce8f3" font-size="13">Intersection / sensing test</text></g>
+ <g transform="translate(620 24)"><use href="#dog" transform="scale(.45)"/><text x="28" y="5" fill="#dce8f3" font-size="13">Sleeping sheepdog</text></g>
+ <g transform="translate(850 24)"><use href="#stone" transform="scale(.65)"/><text x="28" y="5" fill="#dce8f3" font-size="13">RIP marker + ascending angel</text></g>
+ <text x="26" y="64" fill="#8fa8bd" font-size="12">Conceptual SVG only · lanes and outcomes are illustrative, not a physics engine or a live FSM_API trace.</text>
+</g>
+</svg>
