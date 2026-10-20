@@ -13,6 +13,8 @@
       .zzz { transform-box: fill-box; transform-origin: center; animation: sleepy 1.8s ease-in-out infinite; }
       @keyframes sleepy { 0%,100% { transform:translate(0,0) rotate(-5deg); } 50% { transform:translate(7px,-9px) rotate(6deg); } }
       .walk-label { animation: walkState 18s linear infinite; }
+      #foxArt { transform-box: fill-box; transform-origin: center; animation: faceReturn 18s linear infinite; }
+      @keyframes faceReturn { 0%,49.9% { transform:scaleX(1); } 50%,100% { transform:scaleX(-1); } }
       .jump-label { animation: jumpState 18s linear infinite; }
       @keyframes alertFlash {
         0%, 6.6% { opacity:0; transform:translateY(7px) scale(.65); }
@@ -26,7 +28,7 @@
         0%,8.9% { opacity:0; } 9%,25% { opacity:1; } 25.1%,100% { opacity:0; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .alert,.walk-label,.jump-label,.zzz { animation:none; }
+        .alert,.walk-label,.jump-label,.zzz,#foxArt { animation:none; }
         .alert { opacity:0; }
         .walk-label { opacity:1; }
         .jump-label { opacity:0; }
@@ -74,10 +76,11 @@
     <path d="M-4 19 L3 23 L-3 29 L-10 24Z" fill="#e4c66b" stroke="#8b783c" stroke-width="1.5"/>
     <g class="zzz" fill="#c5d7e8" font-weight="700"><text x="50" y="-25" font-size="15">Z</text><text x="66" y="-37" font-size="11">z</text><text x="77" y="-45" font-size="9">z</text></g>
   </g>
-  <!-- Fox stays on the number line; the same motion path carries it out and back, with auto-rotation on the return. -->
+  <!-- Fox stays on the number line; the same motion path carries it out and back, while the fox faces the direction of travel on the return leg. -->
   <g transform="translate(100 181)">
     <animateMotion dur="18s" repeatCount="indefinite" path="M 0,0 L 150,0 L 150,0 Q 245,-210 320,0 L 800,0 L 800,0 L 320,0 Q 245,-210 150,0 L 0,0"/>
     <ellipse cx="2" cy="40" rx="29" ry="6" fill="#07111d" opacity=".45"/>
+    <g id="foxArt">
     <path d="M-12 23 Q-45 18 -39 0 Q-34 -13 -20 -3 Q-34 2 -21 10 Q-8 16 1 19" fill="#f7eee0" stroke="#dc8545" stroke-width="3" stroke-linejoin="round"/>
     <path d="M-12 23 Q-31 17 -29 5 Q-24 2 -19 10 Q-11 16 1 19" fill="#f6f0e6"/>
     <ellipse cx="2" cy="21" rx="24" ry="15" fill="url(#foxFur)"/>
@@ -92,6 +95,7 @@
     <g class="alert" transform="translate(36 -47)">
       <path d="M-3 -15 Q-3 -21 3 -21 Q9 -21 8 -15 L5 -2 Q4 2 1 2 Q-2 2 -2 -2Z" fill="#ff3b4f" stroke="#fff1d8" stroke-width="1.5"/>
       <circle cx="2" cy="9" r="3.5" fill="#ff3b4f" stroke="#fff1d8" stroke-width="1.5"/>
+    </g>
     </g>
   </g>
   <text x="36" y="306" fill="#7f98b0" font-size="11">Concept animation only · the C# FSM remains the source of actual demo behavior.</text>
