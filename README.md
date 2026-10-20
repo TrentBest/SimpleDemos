@@ -29,10 +29,10 @@ A small C#/.NET playground for learning how finite state machines (FSMs) coordin
 
 ### The many-agent plane (concept SVG)
 
-The same small fox and sleeping sheepdog actors can be reused across a larger **isometric view of a 2D test plane**. The dashed lines are fox travel lanes; highlighted crossings are sensing/collision test points where sheepdogs sleep. Tombstones and harp-playing fox angels make the consequences of many overlapping behavior rules visible. This is an animated concept illustration, not yet a live trace from FSM_API.
+The same small fox and sleeping sheepdog actors can be reused across a larger **isometric view of a 2D test plane**. The 10×10 grid and its cell geometry are maintained as a GUI.SVG scene model. Its dashed/solid grid lines are a regular orthogonal lattice projected onto an isometric plane. The sequence shows a fox entering the cell beside a sleeping sheepdog, the Zs stopping, the dog standing and reaching, a cartoon fight cloud, a limp fox, a tombstone, and a harp-playing angel ascending. This is SVG choreography, not yet a live trace from FSM_API.
 
 <p align="center">
-  <img src="docs/assets/fox-dog-3d-test-plane.svg" alt="Isometric concept view of many foxes moving along intersecting lanes around sleeping sheepdogs, with cartoon tombstones and ascending harp-playing fox angels." width="100%" />
+  <img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg" alt="Isometric concept view of many foxes moving along intersecting lanes around sleeping sheepdogs, with cartoon tombstones and ascending harp-playing fox angels." width="100%" />
 </p>
 
 ## 🔵 00 · The problem
