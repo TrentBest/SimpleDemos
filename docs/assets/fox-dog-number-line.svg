@@ -76,7 +76,7 @@
   </g>
   <!-- Fox stays on the number line; the same motion path carries it out and back, with auto-rotation on the return. -->
   <g transform="translate(100 181)">
-    <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" path="M 0,0 L 150,0 L 150,0 Q 245,-210 320,0 L 800,0 L 800,0 L 320,0 Q 245,-210 150,0 L 0,0"/>
+    <animateMotion dur="18s" repeatCount="indefinite" path="M 0,0 L 150,0 L 150,0 Q 245,-210 320,0 L 800,0 L 800,0 L 320,0 Q 245,-210 150,0 L 0,0"/>
     <ellipse cx="2" cy="40" rx="29" ry="6" fill="#07111d" opacity=".45"/>
     <path d="M-12 23 Q-45 18 -39 0 Q-34 -13 -20 -3 Q-34 2 -21 10 Q-8 16 1 19" fill="#f7eee0" stroke="#dc8545" stroke-width="3" stroke-linejoin="round"/>
     <path d="M-12 23 Q-31 17 -29 5 Q-24 2 -19 10 Q-11 16 1 19" fill="#f6f0e6"/>
