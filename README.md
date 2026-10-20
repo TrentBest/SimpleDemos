@@ -27,12 +27,12 @@ A small C#/.NET playground for learning how finite state machines (FSMs) coordin
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
 
-### The many-agent plane (concept SVG)
+### The 10×10 plane (GUI.SVG)
 
-The same small fox and sleeping sheepdog actors can be reused across a larger **isometric view of a 2D test plane**. The 10×10 grid and its cell geometry are maintained as a GUI.SVG scene model. Its dashed/solid grid lines are a regular orthogonal lattice projected onto an isometric plane. The sequence shows a fox entering the cell beside a sleeping sheepdog, the Zs stopping, the dog standing and reaching, a cartoon fight cloud, a limp fox, a tombstone, and a harp-playing angel ascending. This is SVG choreography, not yet a live trace from FSM_API.
+The next scale-up is a **10×10 cell plane**. Its regular orthogonal lattice is projected isometrically, so each of the two grid-line families stays parallel and each cell has a stable coordinate. One fox follows a row into the cell beside a sleeping sheepdog: the Zs stop, the dog stands and reaches, a cartoon fight cloud hides the tussle, then a limp fox, RIP stone, and harp-playing angel make the outcome visible. The GUI.SVG repo now contains the scene model and a CI-verified renderer sample; this remains illustrative SVG choreography, not yet a live FSM_API trace.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg" alt="Isometric concept view of many foxes moving along intersecting lanes around sleeping sheepdogs, with cartoon tombstones and ascending harp-playing fox angels." width="100%" />
+  <img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg" alt="GUI.SVG 10 by 10 isometric test plane showing a fox encounter with a sleeping sheepdog, cartoon fight cloud, RIP stone and ascending harp-playing fox angel." width="100%" />
 </p>
 
 ## 🔵 00 · The problem
