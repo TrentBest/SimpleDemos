@@ -182,7 +182,7 @@ button{border:1px solid #456078;background:#20394f;color:var(--ink);border-radiu
    jumpT=Math.min(1,jumpT+dt/jumpDuration);
    x=jumpStart+(jumpEnd-jumpStart)*jumpT;
    const arcY=-4*Number(height.value)*jumpT*(1-jumpT);
-   fox.setAttribute('transform','translate('+x+' '+(baseline+arcY)+')');
+   fox.setAttribute('transform','translate('+x+' '+(baseline+arcY)+') scale('+direction+' 1)');
    if(jumpT>=1){state='Walking';stateLabel.textContent=state;statusText.textContent=state;setOpacity(alert,0);alertTimer=0;caption.textContent='Landed safely. The fox keeps walking toward the end, then turns back.';explanation.textContent='The jump is complete. Because the arc is a function of normalized time, its apex remains exactly at the midpoint even when speed and height change.';x=jumpEnd;direction=direction; }
   }else if(state==='Distracted'){
    x+=direction*Number(speed.value)*dt;
