@@ -1,6 +1,8 @@
 name: CiAi Live Run Demonstration
 
 on:
+  push:
+    branches: [development]
   workflow_dispatch:
     inputs:
       repository:

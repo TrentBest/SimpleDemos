@@ -4,12 +4,9 @@ This demonstration uses the read-only CiAi client from [TheSingularityWorkshop.C
 
 ## Run the demonstration
 
-1. Open [CiAi Live Run Demonstration](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml).
-2. Select **Run workflow** on the `development` branch.
-3. Enter a public repository in `owner/repository` form and an existing Actions run ID.
-4. Inspect the workflow log for the normalized run facts and evidence URL.
+The workflow runs automatically when a commit is pushed to `development`. It checks out CiAi from its `development` branch and observes the known-good completed run `40027841199` in `TrentBest/TheSingularityWorkshop.CiAi`. Inspect the [workflow runs](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) for the normalized facts and evidence URL.
 
-For a known-good first pass, use `TrentBest/TheSingularityWorkshop.CiAi` and run ID `40027841199`, a successful CiAi contract-verification run. You can also choose another public repository and an existing run ID. A token is not required for public repositories. A private target requires a suitably scoped token stored as the optional `CIAI_GITHUB_TOKEN` repository secret.
+The workflow also declares inputs for selecting another public repository and existing run ID when manually dispatched from a branch where GitHub makes that workflow available. A token is not required for public repositories. A private target requires a suitably scoped token stored as the optional `CIAI_GITHUB_TOKEN` repository secret.
 
 ## What this proves
 

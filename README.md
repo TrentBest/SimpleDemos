@@ -40,7 +40,7 @@ This bounded mode disables console chatter, runs the real processing groups and 
 
 ## AI-facing CI proof
 
-SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](demonstrations/02-ciai-live-run.md). Launch the [manual GitHub Actions workflow](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) on `development`, provide a repository and existing workflow-run ID, and inspect the read-only facts returned by CiAi. A known-good first target is `TrentBest/TheSingularityWorkshop.CiAi`, run `40027841199`. This is provider-ingestion proof—not yet an LLM-driven or action-executing workflow.
+SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](demonstrations/02-ciai-live-run.md). The [GitHub Actions workflow](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) runs automatically on pushes to `development`, observing a known-good run from CiAi. Inspect its logs for the read-only facts and evidence URL. The default target is `TrentBest/TheSingularityWorkshop.CiAi`, run `40027841199`. This is provider-ingestion proof—not yet an LLM-driven or action-executing workflow.
 
 ## 🔵 00 · The problem
 
