@@ -38,6 +38,10 @@ dotnet run --project QuickBrownFox/QuickBrownFox.csproj -- --export-trace docs/f
 
 This bounded mode disables console chatter, runs the real processing groups and agent FSMs, and writes per-frame agent state, position, and speed snapshots to the requested JSON path. It stops when the sample reaches its normal end or after 30 updates. The trace is an exported observation of the C# run, not an animation by itself. Open `samples/PrimitiveGallery/fsm-trace-replay.html` from a local checkout of [Visualize](https://github.com/TrentBest/TheSingularityWorkshop.Visualize), choose the JSON file you exported, and scrub or play the recorded frames. The browser replays recorded values; it does not execute FSM_API.
 
+## AI-facing CI proof
+
+SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](demonstrations/02-ciai-live-run.md). Launch the [manual GitHub Actions workflow](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) on `development`, provide a repository and existing workflow-run ID, and inspect the read-only facts returned by CiAi. This is provider-ingestion proof—not yet an LLM-driven or action-executing workflow.
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
