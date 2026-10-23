@@ -13,6 +13,7 @@ on:
       run_id:
         description: Existing GitHub Actions run ID to inspect
         required: true
+        default: '40027841199'
         type: string
 
 permissions:
@@ -39,6 +40,6 @@ jobs:
       - name: Observe and validate the requested CI run
         env:
           CIAI_GITHUB_TOKEN: ${{ secrets.CIAI_GITHUB_TOKEN }}
-          TARGET_REPOSITORY: ${{ inputs.repository }}
-          TARGET_RUN_ID: ${{ inputs.run_id }}
+          TARGET_REPOSITORY: ${{ inputs.repository || 'TrentBest/TheSingularityWorkshop.CiAi' }}
+          TARGET_RUN_ID: ${{ inputs.run_id || '40027841199' }}
         run: dotnet run --project CiAi/samples/TheSingularityWorkshop.CiAi.ObserveRun -- "$TARGET_REPOSITORY" "$TARGET_RUN_ID"
