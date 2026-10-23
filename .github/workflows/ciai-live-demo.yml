@@ -1,0 +1,42 @@
+name: CiAi Live Run Demonstration
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: Public GitHub repository in owner/repository form
+        required: true
+        default: TrentBest/SimpleDemos
+        type: string
+      run_id:
+        description: Existing GitHub Actions run ID to inspect
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ciai-live-demo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrentBest/TheSingularityWorkshop.CiAi
+          ref: development
+          path: CiAi
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
+        with:
+          dotnet-version: 8.0.x
+      - name: Observe and validate the requested CI run
+        env:
+          CIAI_GITHUB_TOKEN: ${{ secrets.CIAI_GITHUB_TOKEN }}
+          TARGET_REPOSITORY: ${{ inputs.repository }}
+          TARGET_RUN_ID: ${{ inputs.run_id }}
+        run: dotnet run --project CiAi/samples/TheSingularityWorkshop.CiAi.ObserveRun -- "$TARGET_REPOSITORY" "$TARGET_RUN_ID"
