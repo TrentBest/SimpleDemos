@@ -9,7 +9,7 @@ This demonstration uses the read-only CiAi client from [TheSingularityWorkshop.C
 3. Enter a public repository in `owner/repository` form and an existing Actions run ID.
 4. Inspect the workflow log for the normalized run facts and evidence URL.
 
-For example, use `TrentBest/SimpleDemos` and a recent run ID from its Actions page. A token is not required for public repositories. A private target requires a suitably scoped token stored as the optional `CIAI_GITHUB_TOKEN` repository secret.
+For a known-good first pass, use `TrentBest/TheSingularityWorkshop.CiAi` and run ID `40027841199`, a successful CiAi contract-verification run. You can also choose another public repository and an existing run ID. A token is not required for public repositories. A private target requires a suitably scoped token stored as the optional `CIAI_GITHUB_TOKEN` repository secret.
 
 ## What this proves
 

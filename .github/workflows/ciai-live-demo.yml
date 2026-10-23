@@ -6,7 +6,7 @@ on:
       repository:
         description: Public GitHub repository in owner/repository form
         required: true
-        default: TrentBest/SimpleDemos
+        default: TrentBest/TheSingularityWorkshop.CiAi
         type: string
       run_id:
         description: Existing GitHub Actions run ID to inspect
