@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="TheSingularityWorkshop.Ontology" Version="0.1.0-alpha.3" />
+    <PackageReference Include="TheSingularityWorkshop.Ontology" Version="0.1.0-alpha.2" />
     <PackageReference Include="TheSingularityWorkshop.ProtocolAi" Version="0.1.0-alpha.2" />
   </ItemGroup>
 </Project>
