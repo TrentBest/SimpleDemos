@@ -14,7 +14,24 @@ var manifest = JsonSerializer.Deserialize<DemoManifest>(
     await File.ReadAllTextAsync(manifestPath),
     new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
     ?? throw new InvalidDataException("The example manifest could not be parsed.");
-var bundleNames = manifest.LoadOrder;
+var bundleNames = manifest.LoadOrder
+    ?? throw new InvalidDataException("The manifest must define loadOrder.");
+var configurationFiles = manifest.ConfigurationFiles
+    ?? throw new InvalidDataException("The manifest must define configurationFiles.");
+
+Require(manifest.SchemaVersion == 1, $"Unsupported manifest schema version: {manifest.SchemaVersion}.");
+Require(bundleNames.Length > 0, "The manifest loadOrder must contain at least one bundle.");
+Require(bundleNames.All(name => !string.IsNullOrWhiteSpace(name)),
+    "Bundle names must not be empty.");
+Require(bundleNames.Distinct(StringComparer.Ordinal).Count() == bundleNames.Length,
+    "Bundle names in loadOrder must be unique.");
+Require(configurationFiles.Keys.All(bundleNames.Contains),
+    "Configuration entries must reference bundle names declared in loadOrder.");
+Require(configurationFiles.Values.All(path =>
+        !string.IsNullOrWhiteSpace(path) &&
+        !Path.IsPathRooted(path) &&
+        !path.Replace('\\\\', '/').Split('/').Contains("..", StringComparer.Ordinal)),
+    "Configuration paths must be non-empty relative paths without parent-directory segments.");
 
 // ProtocolAI vocabulary IDs are semantic lookup keys, NOT physical repository bundle IDs.
 var protocolBuilder = new ProtocolBuilder(protocolId, "SimpleDemos MicroBundle vocabulary");
@@ -54,7 +71,7 @@ var entries = bundleNames.Select((name, i) =>
         SymbolId: symbol.SymbolId,
         SemanticAddress: semanticAddress,
         ArtifactAddress: artifactAddress,
-        ConfigurationFile: manifest.ConfigurationFiles.GetValueOrDefault(name),
+        ConfigurationFile: configurationFiles.GetValueOrDefault(name),
         Defaults: new Dictionary<string, string>
         {
             ["enabled"] = "true",
