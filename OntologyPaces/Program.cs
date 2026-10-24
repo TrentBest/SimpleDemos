@@ -112,14 +112,27 @@ foreach (var (bundleName, relativePath) in configurationFiles)
     parsedConfigurations.Add(bundleName, overrides);
 }
 
-// Optional configuration overlays defaults; bundles without configuration retain defaults.
-var fox = entries.Single(x => x.BundleName == "agents.fox");
-var foxEffective = fox.Defaults.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
-if (parsedConfigurations.TryGetValue(fox.BundleName, out var foxOverrides))
+// Apply every declared configuration overlay, not just the fox example.
+// Bundles without configuration retain their defaults; future manifest entries
+// automatically receive the same overlay behavior.
+var effectiveConfigurations = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
+foreach (var entry in entries)
 {
-    foreach (var pair in foxOverrides)
-        foxEffective[pair.Key] = pair.Value;
+    var effective = entry.Defaults.ToDictionary(
+        pair => pair.Key,
+        pair => pair.Value,
+        StringComparer.Ordinal);
+
+    if (parsedConfigurations.TryGetValue(entry.BundleName, out var overrides))
+    {
+        foreach (var pair in overrides)
+            effective[pair.Key] = pair.Value;
+    }
+
+    effectiveConfigurations.Add(entry.BundleName, effective);
 }
+
+var foxEffective = effectiveConfigurations["agents.fox"];
 
 var cacheRoot = Path.Combine(Path.GetTempPath(), "SimpleDemos-OntologyPaces", Guid.NewGuid().ToString("N"));
 var cache = new VerifiedFileCache(cacheRoot);
@@ -144,8 +157,10 @@ Require(entries.All(x => x.SymbolId != x.BundleId),
     "Protocol symbol IDs and physical bundle IDs must not be conflated.");
 Require(foxEffective["speed"] == "7" && foxEffective["mode"] == "demonstration",
     "Configuration values must override bundle defaults.");
-Require(entries.Single(x => x.BundleName == "agents.sheepdog").Defaults["speed"] == "1",
+Require(effectiveConfigurations["agents.sheepdog"]["speed"] == "1",
     "Bundles without a configuration file must retain their defaults.");
+Require(effectiveConfigurations.Count == entries.Length,
+    "Every manifest bundle must receive an effective configuration.");
 Require(ontologySet.TryGet(ontologyId, version, out _), "OntologySet should register the definition.");
 
 // Prove that content-addressing rejects tampered bytes and that the file cache
