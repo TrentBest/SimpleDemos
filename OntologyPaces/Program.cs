@@ -8,18 +8,12 @@ const ulong ontologyId = 7300;
 const ulong protocolId = 7301;
 const string version = "1.0.0";
 
-var bundleNames = new[]
-{
-    "workshop.core",
-    "world.rules",
-    "agents.fox",
-    "agents.sheepdog",
-    "behaviors.walk",
-    "behaviors.jump",
-    "behaviors.sleep",
-    "presentation.scene",
-    "application.entry"
-};
+var manifestPath = Path.Combine(AppContext.BaseDirectory, "manifest.example.json");
+var manifest = JsonSerializer.Deserialize<DemoManifest>(
+    await File.ReadAllTextAsync(manifestPath),
+    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+    ?? throw new InvalidDataException("The example manifest could not be parsed.");
+var bundleNames = manifest.LoadOrder;
 
 // ProtocolAI owns the vocabulary-to-integer mapping. Ontology remains protocol-neutral.
 var protocolBuilder = new ProtocolBuilder(protocolId, "SimpleDemos MicroBundle vocabulary");
@@ -56,7 +50,7 @@ var entries = bundleNames.Select((name, i) =>
         OntologyIndex: index.Value,
         RepositoryBlob: $"microbundles/artifacts/{reference.SymbolId}/1.0.0/{hash}.bundle",
         ContentHash: hash,
-        ConfigurationFile: name == "agents.fox" ? "configuration/agents.fox.json" : null,
+        ConfigurationFile: manifest.ConfigurationFiles.GetValueOrDefault(name),
         Defaults: new Dictionary<string, string>
         {
             ["enabled"] = "true",
@@ -67,10 +61,19 @@ var entries = bundleNames.Select((name, i) =>
 
 // Optional configuration overlays defaults; absence means defaults remain untouched.
 var fox = entries.Single(x => x.BundleName == "agents.fox");
-var foxOverrides = new Dictionary<string, string> { ["speed"] = "7", ["mode"] = "demonstration" };
 var foxEffective = fox.Defaults.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
-foreach (var pair in foxOverrides)
-    foxEffective[pair.Key] = pair.Value;
+if (fox.ConfigurationFile is { } foxConfigPath)
+{
+    var fullConfigPath = Path.Combine(AppContext.BaseDirectory, foxConfigPath.Replace('/', Path.DirectorySeparatorChar));
+    if (File.Exists(fullConfigPath))
+    {
+        var overrides = JsonSerializer.Deserialize<Dictionary<string, string>>(
+            await File.ReadAllTextAsync(fullConfigPath))
+            ?? throw new InvalidDataException($"Configuration '{foxConfigPath}' could not be parsed.");
+        foreach (var pair in overrides)
+            foxEffective[pair.Key] = pair.Value;
+    }
+}
 
 // The fake repository/cache is deliberately local and deterministic. It proves identity,
 // integrity, cache-key separation, and manifest order without claiming Azure is contacted.
@@ -117,6 +120,12 @@ static void Require(bool condition, string message)
     if (!condition)
         throw new InvalidOperationException(message);
 }
+
+sealed record DemoManifest(
+    int SchemaVersion,
+    string Purpose,
+    string[] LoadOrder,
+    Dictionary<string, string> ConfigurationFiles);
 
 sealed record DemoManifestEntry(
     int Order,
