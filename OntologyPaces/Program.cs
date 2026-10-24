@@ -194,9 +194,44 @@ catch (ArgumentException)
 }
 Require(constructorRejectedCorruption, "Artifact construction must reject bytes that do not match the address hash.");
 
+// Exercise the repository's real FSMB envelope without pretending the demo bytes
+// are a compiled assembly. Executable assembly materialization is a separate gate.
+var payloadBytes = new MicroBundleAssemblyPayload(integrityProbe.BundleId, originalBytes).ToBytes();
+var decodedPayload = MicroBundleAssemblyPayload.FromBytes(payloadBytes);
+Require(decodedPayload.BundleId == integrityProbe.BundleId,
+    "MicroBundleAssemblyPayload must preserve the physical bundle ID.");
+Require(decodedPayload.AssemblyBytes.Span.SequenceEqual(originalBytes),
+    "MicroBundleAssemblyPayload must preserve its enclosed bytes exactly.");
+
+var invalidMagic = payloadBytes.ToArray();
+invalidMagic[0] ^= 0x01;
+var payloadRejectedInvalidMagic = false;
+try
+{
+    _ = MicroBundleAssemblyPayload.FromBytes(invalidMagic);
+}
+catch (InvalidDataException)
+{
+    payloadRejectedInvalidMagic = true;
+}
+Require(payloadRejectedInvalidMagic, "MicroBundleAssemblyPayload must reject invalid magic bytes.");
+
+var trailingData = payloadBytes.Concat(new byte[] { 0x00 }).ToArray();
+var payloadRejectedTrailingData = false;
+try
+{
+    _ = MicroBundleAssemblyPayload.FromBytes(trailingData);
+}
+catch (InvalidDataException)
+{
+    payloadRejectedTrailingData = true;
+}
+Require(payloadRejectedTrailingData, "MicroBundleAssemblyPayload must reject trailing bytes.");
+
 Console.WriteLine();
-Console.WriteLine($"PASS: {loaded.Count} bundle keys mapped; manifest order preserved; real Core artifact contract exercised; SHA-256 corruption rejected; overrides applied.");
-Console.WriteLine("NOTE: repository transport is an in-memory implementation of the real contract; Azure and AnyApp materialization are not yet connected.");
+Console.WriteLine($"PASS: {loaded.Count} bundle keys mapped; manifest order preserved; Core artifact contract exercised; SHA-256 corruption rejected; overrides applied.");
+Console.WriteLine("PASS: real FSMB payload envelope round-tripped; invalid magic and trailing bytes rejected.");
+Console.WriteLine("NOTE: payload test uses synthetic demo bytes, not a compiled assembly; FSM_COS materialization, Azure, and AnyApp remain unconnected.");
 
 static string GetBlobName(MicroBundleArtifactAddress address) =>
     $"artifacts/{address.BundleId}/{address.Version}/{address.ContentHash}.bundle";
