@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout MicroBundleRepository Core at a pinned commit
+      - name: Checkout MicroBundleRepository at a pinned commit
         uses: actions/checkout@v4
         with:
           repository: TrentBest/TheSingularityWorkshop.MicroBundleRepository
@@ -31,9 +31,15 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
-      - name: Restore
+      - name: Restore Core-backed demonstration
         run: dotnet restore OntologyPaces/OntologyPaces.csproj
-      - name: Build
+      - name: Build Core-backed demonstration
         run: dotnet build OntologyPaces/OntologyPaces.csproj --no-restore --configuration Release
       - name: Run Core-backed contract demonstration
         run: dotnet run --project OntologyPaces/OntologyPaces.csproj --no-build --configuration Release
+      - name: Restore compiled materializer probe
+        run: dotnet restore OntologyPaces/MaterializerProbe/MaterializerProbe.csproj
+      - name: Build compiled fixture and FSM_COS adapter
+        run: dotnet build OntologyPaces/MaterializerProbe/MaterializerProbe.csproj --no-restore --configuration Release
+      - name: Run real assembly materialization integration probe
+        run: dotnet run --project OntologyPaces/MaterializerProbe/MaterializerProbe.csproj --no-build --configuration Release
