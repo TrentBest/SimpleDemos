@@ -22,6 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout MicroBundleRepository Core at a pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: TrentBest/TheSingularityWorkshop.MicroBundleRepository
+          ref: 6098a455bb77009688021b41a2faa415c3392526
+          path: MicroBundleRepository
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
@@ -29,5 +35,5 @@ jobs:
         run: dotnet restore OntologyPaces/OntologyPaces.csproj
       - name: Build
         run: dotnet build OntologyPaces/OntologyPaces.csproj --no-restore --configuration Release
-      - name: Run contract demonstration
+      - name: Run Core-backed contract demonstration
         run: dotnet run --project OntologyPaces/OntologyPaces.csproj --no-build --configuration Release
