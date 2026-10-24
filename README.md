@@ -45,7 +45,7 @@ SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](
 
 ## Ontology and manifest-driven bundle resolution
 
-The new [OntologyPaces project](OntologyPaces/README.md) is the executable proving ground for semantic identity and MicroBundle delivery. It maps nine readable bundle keys through ProtocolAI integer symbols into Ontology addresses while keeping the physical repository blob path separate. The first CI-verified slice exercises manifest order, SHA-256 verification, local cache behavior, and optional configuration overrides using deterministic local test doubles; Azure, real compiled-bundle materialization, FSM_COS, and AnyApp integration remain the next stage.
+The new [OntologyPaces project](OntologyPaces/README.md) is the executable proving ground for semantic identity and MicroBundle delivery. It maps nine readable bundle keys through ProtocolAI integer symbols into Ontology addresses while keeping the physical repository blob path separate. CI now verifies two layers: the deterministic manifest/Core demo (identity separation, order, SHA-256 cache integrity, and configuration overrides) and a compiled-fixture probe that passes real assembly bytes through the FSMB envelope and FSM_COS assembly materializer, including malformed/mismatched input rejection. The full repository-retrieval-to-catalog path, Azure storage, and AnyApp integration remain the next stage.
 
 Run it with:
 
