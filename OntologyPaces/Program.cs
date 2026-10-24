@@ -89,20 +89,36 @@ foreach (var entry in entries)
     await repository.PutAsync(artifact);
 }
 
-// Optional configuration overlays defaults; absent configuration leaves defaults untouched.
+// Validate and parse every declared configuration before resolving any artifacts.
+// A typo in the manifest must fail loudly rather than silently dropping an override.
+var parsedConfigurations = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
+foreach (var (bundleName, relativePath) in configurationFiles)
+{
+    var fullConfigPath = Path.Combine(
+        AppContext.BaseDirectory,
+        relativePath.Replace('/', Path.DirectorySeparatorChar));
+    if (!File.Exists(fullConfigPath))
+        throw new FileNotFoundException(
+            $"Configuration '{relativePath}' for bundle '{bundleName}' was not found.",
+            fullConfigPath);
+
+    var overrides = JsonSerializer.Deserialize<Dictionary<string, string>>(
+        await File.ReadAllTextAsync(fullConfigPath))
+        ?? throw new InvalidDataException($"Configuration '{relativePath}' could not be parsed.");
+    Require(overrides.Keys.All(key => !string.IsNullOrWhiteSpace(key)),
+        $"Configuration '{relativePath}' contains an empty setting name.");
+    Require(overrides.Values.All(value => value is not null),
+        $"Configuration '{relativePath}' contains a null setting value.");
+    parsedConfigurations.Add(bundleName, overrides);
+}
+
+// Optional configuration overlays defaults; bundles without configuration retain defaults.
 var fox = entries.Single(x => x.BundleName == "agents.fox");
 var foxEffective = fox.Defaults.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
-if (fox.ConfigurationFile is { } foxConfigPath)
+if (parsedConfigurations.TryGetValue(fox.BundleName, out var foxOverrides))
 {
-    var fullConfigPath = Path.Combine(AppContext.BaseDirectory, foxConfigPath.Replace('/', Path.DirectorySeparatorChar));
-    if (File.Exists(fullConfigPath))
-    {
-        var overrides = JsonSerializer.Deserialize<Dictionary<string, string>>(
-            await File.ReadAllTextAsync(fullConfigPath))
-            ?? throw new InvalidDataException($"Configuration '{foxConfigPath}' could not be parsed.");
-        foreach (var pair in overrides)
-            foxEffective[pair.Key] = pair.Value;
-    }
+    foreach (var pair in foxOverrides)
+        foxEffective[pair.Key] = pair.Value;
 }
 
 var cacheRoot = Path.Combine(Path.GetTempPath(), "SimpleDemos-OntologyPaces", Guid.NewGuid().ToString("N"));
