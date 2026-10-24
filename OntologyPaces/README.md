@@ -6,7 +6,7 @@ This is an executable experiment inside SimpleDemos, not a new runtime framework
 
 ## Run it
 
-The project references the actual MicroBundleRepository Core source. From the SimpleDemos repository root, check out that repository into the expected sibling folder at the same pinned commit used by CI:
+The core project references the actual MicroBundleRepository Core source. From the SimpleDemos repository root, check out that repository into the expected sibling folder at the same pinned commit used by CI:
 
 ```bash
 git clone https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository.git MicroBundleRepository
@@ -14,7 +14,13 @@ git -C MicroBundleRepository checkout 6098a455bb77009688021b41a2faa415c3392526
 dotnet run --project OntologyPaces/OntologyPaces.csproj
 ```
 
-The demo uses the published Ontology and ProtocolAI packages. CI checks out the real `TheSingularityWorkshop.MicroBundleRepository.Core` project at the pinned source commit, keeping integration reproducible without assuming that a NuGet package is published. It defines nine human-readable MicroBundle keys, maps those keys to ProtocolAI integer symbol IDs, uses those IDs as OntologyIndex values, and separately assigns each artifact a physical bundle ID and content-addressed artifact address.
+The separate compiled-materializer probe is also part of CI and can be run with:
+
+```bash
+dotnet run --project OntologyPaces/MaterializerProbe/MaterializerProbe.csproj
+```
+
+The demo uses the published Ontology and ProtocolAI packages. CI checks out the real MicroBundleRepository source at the pinned commit, keeping integration reproducible without assuming that a NuGet package is published. It defines nine human-readable MicroBundle keys, maps those keys to ProtocolAI integer symbol IDs, uses those IDs as OntologyIndex values, and separately assigns each artifact a physical bundle ID and content-addressed artifact address.
 
 ## What this slice proves
 
@@ -25,20 +31,21 @@ The demo uses the published Ontology and ProtocolAI packages. CI checks out the 
 - **Integrity and local cache behavior:** the in-memory repository implements the real interface; the local file cache verifies SHA-256 and stores bytes under bundle/version/hash.
 - **Explicit order:** artifact retrieval and cache preparation follow the manifest order in this baseline.
 - **Defaults and overrides:** the optional configuration overlay changes the fox bundle's values; a bundle without configuration retains defaults.
+- **Real compiled assembly materialization:** CI compiles a fixture implementing `IMicroBundle`, packages its assembly bytes in the actual FSMB envelope, and invokes the real `AssemblyMicroBundleArtifactMaterializer` from the FSM_COS adapter. It verifies the discovered bundle descriptor/provider and rejection of mismatched artifact/envelope IDs, missing matching bundle IDs, and malformed FSMB bytes.
 
-## Integration boundary: implemented elsewhere, not wired into this demo
+## Integration boundary: proven building block, end-to-end flow still open
 
-At the pinned MicroBundleRepository commit, the repository already contains additional adapters:
+At the pinned MicroBundleRepository commit, the repository contains these adapters:
 
 - `src/Azure/TheSingularityWorkshop.MicroBundleRepository.Azure/AzureMicroBundleRepository.cs` implements `IMicroBundleRepository` using Azure Blob Storage and `DefaultAzureCredential`.
-- `src/REST/TheSingularityWorkshop.MicroBundleRepository.FSM_COS/AssemblyMicroBundleArtifactMaterializer.cs` converts a verified assembly artifact into an `IMicroBundle`.
+- `src/REST/TheSingularityWorkshop.MicroBundleRepository.FSM_COS/AssemblyMicroBundleArtifactMaterializer.cs` converts an assembly artifact into an `IMicroBundle`.
 - `src/REST/TheSingularityWorkshop.MicroBundleRepository.FSM_COS/RestMicroBundleCatalog.cs` preloads a dependency closure and exposes loaded bundles through the FSM_COS catalog interface.
 
-OntologyPaces currently exercises **Core only**: its repository is in-memory and its SHA-256-verified file cache is demo-local. It does not yet instantiate the Azure adapter, produce or load real compiled MicroBundle assembly payloads, call the FSM_COS catalog/materializer, or change AnyApp's compiled-in catalog. These are existing integration building blocks, but end-to-end wiring and evidence are still outstanding. The CI checkout compiles against the Core project; it does not establish NuGet package consumption or validate Azure credentials/storage.
+The current demo still uses an in-memory repository and a demo-local SHA-256-verified file cache. The compiled materializer probe proves assembly-to-`IMicroBundle` materialization independently, but it does **not yet connect repository retrieval/cache verification to materialization and catalog resolution in one end-to-end path**. It also does not instantiate Azure, validate Azure credentials/storage, consume a published adapter package, or change AnyApp's compiled-in catalog.
 
 ## Next integration milestone
 
-Add a deterministic test fixture containing a real serialized MicroBundle assembly payload, then prove the sequence from artifact address through repository retrieval and hash verification to materialization and FSM_COS catalog resolution. Keep Azure as a separate opt-in integration test requiring explicitly configured storage credentials. Only after that contract path passes should AnyApp replace its hard-coded catalog or the demo add parallel download/cache preparation.
+Wire the existing verified artifact retrieval path to the compiled FSMB fixture and materializer, then prove the resulting bundle through the FSM_COS catalog contract. Keep Azure as a separate opt-in integration test requiring explicitly configured storage credentials. Only after that end-to-end contract path passes should AnyApp replace its hard-coded catalog or the demo add parallel download/cache preparation.
 
 Parallel batches remain deferred until correctness of identity, integrity, configuration precedence, materialization, and manifest ordering is demonstrated.
 
@@ -66,6 +73,12 @@ semantic meaning                  MicroBundle artifact address
                                           |
                                           v
                                       local cache
+                                          |
+                                          v
+                           FSMB envelope + compiled assembly
+                                          |
+                                          v
+                           FSM_COS materializer / catalog
                                           |
                                           v
                          defaults + optional configuration
