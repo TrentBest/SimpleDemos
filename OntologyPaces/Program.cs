@@ -116,8 +116,39 @@ Require(entries.Single(x => x.BundleName == "agents.sheepdog").Defaults["speed"]
     "Bundles without a configuration file must retain their defaults.");
 Require(ontologySet.TryGet(ontologyId, version, out _), "OntologySet should register the definition.");
 
+// Prove that content-addressing rejects tampered bytes and that the file cache
+// refuses to silently accept a corrupted local copy.
+var integrityProbe = entries[0];
+var integrityPath = cache.GetPath(integrityProbe.ArtifactAddress);
+var originalBytes = await File.ReadAllBytesAsync(integrityPath);
+var corruptedBytes = originalBytes.ToArray();
+corruptedBytes[0] ^= 0x01;
+await File.WriteAllBytesAsync(integrityPath, corruptedBytes);
+var cacheRejectedCorruption = false;
+try
+{
+    await cache.GetOrDownloadAsync(integrityProbe.ArtifactAddress, repository);
+}
+catch (InvalidDataException)
+{
+    cacheRejectedCorruption = true;
+}
+Require(cacheRejectedCorruption, "The cache must reject bytes that do not match the expected SHA-256.");
+await File.WriteAllBytesAsync(integrityPath, originalBytes);
+
+var constructorRejectedCorruption = false;
+try
+{
+    _ = new DemoArtifact(integrityProbe.ArtifactAddress, corruptedBytes);
+}
+catch (ArgumentException)
+{
+    constructorRejectedCorruption = true;
+}
+Require(constructorRejectedCorruption, "Artifact construction must reject bytes that do not match the address hash.");
+
 Console.WriteLine();
-Console.WriteLine($"PASS: {loaded.Count} bundle keys mapped; manifest order preserved; artifact contract exercised; overrides applied.");
+Console.WriteLine($"PASS: {loaded.Count} bundle keys mapped; manifest order preserved; artifact contract exercised; SHA-256 corruption rejected; overrides applied.");
 Console.WriteLine("NOTE: repository transport is an in-memory implementation of the real contract; Azure and AnyApp materialization are not yet connected.");
 
 static string GetBlobName(DemoArtifactAddress address) =>
