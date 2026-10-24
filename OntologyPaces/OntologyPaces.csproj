@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="TheSingularityWorkshop.Ontology" Version="0.1.0-alpha.2" />
     <PackageReference Include="TheSingularityWorkshop.ProtocolAi" Version="0.1.0-alpha.2" />
-    <PackageReference Include="TheSingularityWorkshop.MicroBundleRepository.Core" Version="0.1.0-alpha.3" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="manifest.example.json" CopyToOutputDirectory="PreserveNewest" />
