@@ -30,7 +30,7 @@ Require(configurationFiles.Keys.All(bundleNames.Contains),
 Require(configurationFiles.Values.All(path =>
         !string.IsNullOrWhiteSpace(path) &&
         !Path.IsPathRooted(path) &&
-        !path.Replace('\\\\', '/').Split('/').Contains("..", StringComparer.Ordinal)),
+        !path.Replace('\\', '/').Split('/').Contains("..", StringComparer.Ordinal)),
     "Configuration paths must be non-empty relative paths without parent-directory segments.");
 
 // ProtocolAI vocabulary IDs are semantic lookup keys, NOT physical repository bundle IDs.
