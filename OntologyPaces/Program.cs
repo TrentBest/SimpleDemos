@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using TheSingularityWorkshop.MicroBundleRepository.Core;
 using TheSingularityWorkshop.Ontology;
 using TheSingularityWorkshop.ProtocolAi;
 
@@ -45,7 +44,7 @@ var entries = bundleNames.Select((name, i) =>
     var bundleId = (ulong)(50001 + i);
     var bytes = Encoding.UTF8.GetBytes($"demo-artifact:{name}:{version}");
     var hash = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
-    var artifactAddress = new MicroBundleArtifactAddress(bundleId, version, hash);
+    var artifactAddress = new DemoArtifactAddress(bundleId, version, hash);
 
     return new DemoManifestEntry(
         Order: i,
@@ -69,7 +68,7 @@ var repository = new InMemoryArtifactRepository();
 foreach (var entry in entries)
 {
     var bytes = Encoding.UTF8.GetBytes($"demo-artifact:{entry.BundleName}:{version}");
-    var artifact = new MicroBundleArtifact(entry.ArtifactAddress, bytes, entry.SemanticAddress);
+    var artifact = new DemoArtifact(entry.ArtifactAddress, bytes, entry.SemanticAddress);
     await repository.PutAsync(artifact);
 }
 
@@ -145,7 +144,7 @@ sealed record DemoManifestEntry(
     string? ConfigurationFile,
     IReadOnlyDictionary<string, string> Defaults);
 
-sealed class InMemoryArtifactRepository : IMicroBundleRepository
+sealed class InMemoryArtifactRepository : IDemoArtifactRepository
 {
     private readonly Dictionary<MicroBundleArtifactAddress, MicroBundleArtifact> _artifacts = [];
 
