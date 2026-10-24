@@ -42,6 +42,17 @@ This bounded mode disables console chatter, runs the real processing groups and 
 
 SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](demonstrations/02-ciai-live-run.md). The [GitHub Actions workflow](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) runs automatically on pushes to `development`, observing a known-good run from CiAi. Inspect its logs for the read-only facts and evidence URL. The default target is `TrentBest/TheSingularityWorkshop.CiAi`, run `40027841199`. This is provider-ingestion proof—not yet an LLM-driven or action-executing workflow.
 
+
+## Ontology and manifest-driven bundle resolution
+
+The new [OntologyPaces project](OntologyPaces/README.md) is the executable proving ground for semantic identity and MicroBundle delivery. It maps nine readable bundle keys through ProtocolAI integer symbols into Ontology addresses while keeping the physical repository blob path separate. CI now verifies two layers: the deterministic manifest/Core demo (identity separation, order, SHA-256 cache integrity, and configuration overrides) and a compiled-fixture probe that passes real assembly bytes through the FSMB envelope and FSM_COS assembly materializer, including malformed/mismatched input rejection. The full repository-retrieval-to-catalog path, Azure storage, and AnyApp integration remain the next stage.
+
+Run it with:
+
+```bash
+dotnet run --project OntologyPaces/OntologyPaces.csproj
+```
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.

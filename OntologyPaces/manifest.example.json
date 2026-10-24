@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Illustrative manifest consumed by the OntologyPaces executable. Artifact hashes and physical blob paths are resolved by the repository test double.",
+  "loadOrder": [
+    "workshop.core",
+    "world.rules",
+    "agents.fox",
+    "agents.sheepdog",
+    "behaviors.walk",
+    "behaviors.jump",
+    "behaviors.sleep",
+    "presentation.scene",
+    "application.entry"
+  ],
+  "configurationFiles": {
+    "agents.fox": "configuration/agents.fox.json"
+  },
+  "configurationPolicy": "Bundle defaults apply first; an optional per-bundle configuration overlays matching values."
+}
