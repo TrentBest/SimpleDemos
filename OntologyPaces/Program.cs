@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TheSingularityWorkshop.Ontology;
-using SimpleDemos.OntologyPaces;
+using TheSingularityWorkshop.MicroBundleRepository.Core;
 using TheSingularityWorkshop.ProtocolAi;
 
 const ulong ontologyId = 7300;
@@ -45,7 +45,7 @@ var entries = bundleNames.Select((name, i) =>
     var bundleId = (ulong)(50001 + i);
     var bytes = Encoding.UTF8.GetBytes($"demo-artifact:{name}:{version}");
     var hash = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
-    var artifactAddress = new DemoArtifactAddress(bundleId, version, hash);
+    var artifactAddress = new MicroBundleArtifactAddress(bundleId, version, hash);
 
     return new DemoManifestEntry(
         Order: i,
@@ -69,7 +69,7 @@ var repository = new InMemoryArtifactRepository();
 foreach (var entry in entries)
 {
     var bytes = Encoding.UTF8.GetBytes($"demo-artifact:{entry.BundleName}:{version}");
-    var artifact = new DemoArtifact(entry.ArtifactAddress, bytes, entry.SemanticAddress);
+    var artifact = new MicroBundleArtifact(entry.ArtifactAddress, bytes, entry.SemanticAddress);
     await repository.PutAsync(artifact);
 }
 
@@ -176,7 +176,7 @@ sealed record DemoManifestEntry(
     string? ConfigurationFile,
     IReadOnlyDictionary<string, string> Defaults);
 
-sealed class InMemoryArtifactRepository : IDemoArtifactRepository
+sealed class InMemoryArtifactRepository : IMicroBundleRepository
 {
     private readonly Dictionary<DemoArtifactAddress, DemoArtifact> _artifacts = [];
 
