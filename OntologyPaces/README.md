@@ -6,11 +6,15 @@ This is an executable experiment inside SimpleDemos, not a new runtime framework
 
 ## Run it
 
+The project references the actual MicroBundleRepository Core source. From the SimpleDemos repository root, check out that repository into the expected sibling folder at the same pinned commit used by CI:
+
 ```bash
+git clone https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository.git MicroBundleRepository
+git -C MicroBundleRepository checkout 6098a455bb77009688021b41a2faa415c3392526
 dotnet run --project OntologyPaces/OntologyPaces.csproj
 ```
 
-The project uses the published Ontology and ProtocolAI packages. The demo builds against the real `TheSingularityWorkshop.MicroBundleRepository.Core` project, checked out at a pinned source commit by CI. This keeps the integration reproducible without assuming that a NuGet package is published. It defines nine human-readable MicroBundle keys, maps those keys to ProtocolAI integer symbol IDs, uses those IDs as OntologyIndex values, and separately assigns each artifact a physical bundle ID and content-addressed artifact address.
+The demo uses the published Ontology and ProtocolAI packages. CI checks out the real `TheSingularityWorkshop.MicroBundleRepository.Core` project at the pinned source commit, keeping integration reproducible without assuming that a NuGet package is published. It defines nine human-readable MicroBundle keys, maps those keys to ProtocolAI integer symbol IDs, uses those IDs as OntologyIndex values, and separately assigns each artifact a physical bundle ID and content-addressed artifact address.
 
 ## What this slice proves
 
@@ -24,9 +28,9 @@ The project uses the published Ontology and ProtocolAI packages. The demo builds
 
 ## What this does not claim yet
 
-The repository transport is an in-memory implementation of the real `IMicroBundleRepository` interface, and the file cache remains demo-local. CI checks out MicroBundleRepository at a pinned commit and compiles against its actual Core project. This proves source-level contract integration, not NuGet package consumption. The demo still does not contact Azure, deserialize real compiled MicroBundles, invoke FSM_COS composition, or alter AnyApp. This slice does not contact Azure, deserialize real compiled MicroBundles, invoke FSM_COS composition, or alter AnyApp. Those are separate integration steps.
+The repository transport is an in-memory implementation of the real `IMicroBundleRepository` interface, and the file cache remains demo-local. CI checks out MicroBundleRepository at a pinned commit and compiles against its actual Core project. This proves source-level contract integration, not NuGet package consumption. The demo still does not contact Azure, deserialize real compiled MicroBundles, invoke FSM_COS composition, or alter AnyApp. Those are separate integration steps.
 
-The Azure repository implementation uses the same artifact address contract and deterministic path. A next slice should exercise it with a controlled storage test or emulator, then establish how verified artifact bytes become materialized `IMicroBundle` instances and how AnyApp adopts a persistent local cache.
+The Azure repository implementation should next be exercised with a controlled storage test or emulator, then the integration should establish how verified artifact bytes become materialized `IMicroBundle` instances and how AnyApp adopts a persistent local cache.
 
 Parallel batches are intentionally deferred: first establish correctness of identity, integrity, configuration precedence, and deterministic ordering. Then add parallel download/cache preparation while preserving manifest-defined composition order.
 
