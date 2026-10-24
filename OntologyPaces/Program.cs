@@ -68,7 +68,7 @@ var entries = bundleNames.Select((name, i) =>
 // Optional configuration overlays defaults; absence means defaults remain untouched.
 var fox = entries.Single(x => x.BundleName == "agents.fox");
 var foxOverrides = new Dictionary<string, string> { ["speed"] = "7", ["mode"] = "demonstration" };
-var foxEffective = new Dictionary<string, string>(fox.Defaults, StringComparer.Ordinal);
+var foxEffective = fox.Defaults.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
 foreach (var pair in foxOverrides)
     foxEffective[pair.Key] = pair.Value;
 
