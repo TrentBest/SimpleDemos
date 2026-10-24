@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TheSingularityWorkshop.Ontology;
+using SimpleDemos.OntologyPaces;
 using TheSingularityWorkshop.ProtocolAi;
 
 const ulong ontologyId = 7300;
