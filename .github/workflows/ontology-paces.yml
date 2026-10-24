@@ -1,0 +1,32 @@
+name: OntologyPaces
+
+on:
+  pull_request:
+    paths:
+      - "OntologyPaces/**"
+      - "SimpleDemos.slnx"
+      - ".github/workflows/ontology-paces.yml"
+  push:
+    branches: [development, master]
+    paths:
+      - "OntologyPaces/**"
+      - "SimpleDemos.slnx"
+      - ".github/workflows/ontology-paces.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Restore
+        run: dotnet restore OntologyPaces/OntologyPaces.csproj
+      - name: Build
+        run: dotnet build OntologyPaces/OntologyPaces.csproj --no-restore --configuration Release
+      - name: Run contract demonstration
+        run: dotnet run --project OntologyPaces/OntologyPaces.csproj --no-build --configuration Release
