@@ -5,6 +5,7 @@ on:
     paths:
       - "OntologyPaces/**"
       - "SimpleDemos.slnx"
+      - "README.md"
       - ".github/workflows/ontology-paces.yml"
   push:
     branches: [development, master]
