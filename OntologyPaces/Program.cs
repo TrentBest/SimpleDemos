@@ -63,8 +63,7 @@ var entries = bundleNames.Select((name, i) =>
         });
 }).ToArray();
 
-// Exercise a demo-local contract-shaped repository with deterministic in-memory transport.
-// This is intentionally not presented as a reference to the unpublished Core package.
+// Exercise the real Core repository interface with deterministic in-memory transport.
 var repository = new InMemoryArtifactRepository();
 foreach (var entry in entries)
 {
@@ -139,7 +138,7 @@ await File.WriteAllBytesAsync(integrityPath, originalBytes);
 var constructorRejectedCorruption = false;
 try
 {
-    _ = new DemoArtifact(integrityProbe.ArtifactAddress, corruptedBytes);
+    _ = new MicroBundleArtifact(integrityProbe.ArtifactAddress, corruptedBytes);
 }
 catch (ArgumentException)
 {
@@ -148,10 +147,10 @@ catch (ArgumentException)
 Require(constructorRejectedCorruption, "Artifact construction must reject bytes that do not match the address hash.");
 
 Console.WriteLine();
-Console.WriteLine($"PASS: {loaded.Count} bundle keys mapped; manifest order preserved; artifact contract exercised; SHA-256 corruption rejected; overrides applied.");
+Console.WriteLine($"PASS: {loaded.Count} bundle keys mapped; manifest order preserved; real Core artifact contract exercised; SHA-256 corruption rejected; overrides applied.");
 Console.WriteLine("NOTE: repository transport is an in-memory implementation of the real contract; Azure and AnyApp materialization are not yet connected.");
 
-static string GetBlobName(DemoArtifactAddress address) =>
+static string GetBlobName(MicroBundleArtifactAddress address) =>
     $"artifacts/{address.BundleId}/{address.Version}/{address.ContentHash}.bundle";
 
 static void Require(bool condition, string message)
@@ -172,16 +171,16 @@ sealed record DemoManifestEntry(
     ulong BundleId,
     ulong SymbolId,
     OntologyAddress SemanticAddress,
-    DemoArtifactAddress ArtifactAddress,
+    MicroBundleArtifactAddress ArtifactAddress,
     string? ConfigurationFile,
     IReadOnlyDictionary<string, string> Defaults);
 
 sealed class InMemoryArtifactRepository : IMicroBundleRepository
 {
-    private readonly Dictionary<DemoArtifactAddress, DemoArtifact> _artifacts = [];
+    private readonly Dictionary<MicroBundleArtifactAddress, MicroBundleArtifact> _artifacts = [];
 
-    public ValueTask<DemoArtifact?> GetAsync(
-        DemoArtifactAddress address,
+    public ValueTask<MicroBundleArtifact?> GetAsync(
+        MicroBundleArtifactAddress address,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -190,7 +189,7 @@ sealed class InMemoryArtifactRepository : IMicroBundleRepository
     }
 
     public ValueTask PutAsync(
-        DemoArtifact artifact,
+        MicroBundleArtifact artifact,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -202,19 +201,19 @@ sealed class InMemoryArtifactRepository : IMicroBundleRepository
 
 sealed class VerifiedFileCache(string root)
 {
-    public string GetPath(DemoArtifactAddress address) =>
+    public string GetPath(MicroBundleArtifactAddress address) =>
         Path.Combine(root, address.BundleId.ToString(), address.Version, $"{address.ContentHash}.bundle");
 
-    public async Task<DemoArtifact> GetOrDownloadAsync(
-        DemoArtifactAddress address,
-        IDemoArtifactRepository repository)
+    public async Task<MicroBundleArtifact> GetOrDownloadAsync(
+        MicroBundleArtifactAddress address,
+        IMicroBundleRepository repository)
     {
         var path = GetPath(address);
         if (File.Exists(path))
         {
             var cached = await File.ReadAllBytesAsync(path);
             Verify(cached, address.ContentHash, "cached");
-            return new DemoArtifact(address, cached);
+            return new MicroBundleArtifact(address, cached);
         }
 
         var artifact = await repository.GetAsync(address)
