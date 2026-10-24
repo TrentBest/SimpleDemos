@@ -10,4 +10,8 @@
     <PackageReference Include="TheSingularityWorkshop.Ontology" Version="0.1.0-alpha.2" />
     <PackageReference Include="TheSingularityWorkshop.ProtocolAi" Version="0.1.0-alpha.2" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="manifest.example.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="configuration/**/*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
