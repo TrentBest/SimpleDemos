@@ -2,7 +2,7 @@
 
 A runnable contract-level proving ground for **Ontology + ProtocolAI + manifest-driven MicroBundle delivery**.
 
-This is an executable experiment inside SimpleDemos, not a new runtime framework and not a claim that Azure transport or AnyApp runtime materialization is already integrated.
+This is an executable experiment inside SimpleDemos, not a new runtime framework. It deliberately keeps the demo's current in-memory transport separate from production adapters.
 
 ## Run it
 
@@ -26,13 +26,21 @@ The demo uses the published Ontology and ProtocolAI packages. CI checks out the 
 - **Explicit order:** artifact retrieval and cache preparation follow the manifest order in this baseline.
 - **Defaults and overrides:** the optional configuration overlay changes the fox bundle's values; a bundle without configuration retains defaults.
 
-## What this does not claim yet
+## Integration boundary: implemented elsewhere, not wired into this demo
 
-The repository transport is an in-memory implementation of the real `IMicroBundleRepository` interface, and the file cache remains demo-local. CI checks out MicroBundleRepository at a pinned commit and compiles against its actual Core project. This proves source-level contract integration, not NuGet package consumption. The demo still does not contact Azure, deserialize real compiled MicroBundles, invoke FSM_COS composition, or alter AnyApp. Those are separate integration steps.
+At the pinned MicroBundleRepository commit, the repository already contains additional adapters:
 
-The Azure repository implementation should next be exercised with a controlled storage test or emulator, then the integration should establish how verified artifact bytes become materialized `IMicroBundle` instances and how AnyApp adopts a persistent local cache.
+- `src/Azure/TheSingularityWorkshop.MicroBundleRepository.Azure/AzureMicroBundleRepository.cs` implements `IMicroBundleRepository` using Azure Blob Storage and `DefaultAzureCredential`.
+- `src/REST/TheSingularityWorkshop.MicroBundleRepository.FSM_COS/AssemblyMicroBundleArtifactMaterializer.cs` converts a verified assembly artifact into an `IMicroBundle`.
+- `src/REST/TheSingularityWorkshop.MicroBundleRepository.FSM_COS/RestMicroBundleCatalog.cs` preloads a dependency closure and exposes loaded bundles through the FSM_COS catalog interface.
 
-Parallel batches are intentionally deferred: first establish correctness of identity, integrity, configuration precedence, and deterministic ordering. Then add parallel download/cache preparation while preserving manifest-defined composition order.
+OntologyPaces currently exercises **Core only**: its repository is in-memory and its SHA-256-verified file cache is demo-local. It does not yet instantiate the Azure adapter, produce or load real compiled MicroBundle assembly payloads, call the FSM_COS catalog/materializer, or change AnyApp's compiled-in catalog. These are existing integration building blocks, but end-to-end wiring and evidence are still outstanding. The CI checkout compiles against the Core project; it does not establish NuGet package consumption or validate Azure credentials/storage.
+
+## Next integration milestone
+
+Add a deterministic test fixture containing a real serialized MicroBundle assembly payload, then prove the sequence from artifact address through repository retrieval and hash verification to materialization and FSM_COS catalog resolution. Keep Azure as a separate opt-in integration test requiring explicitly configured storage credentials. Only after that contract path passes should AnyApp replace its hard-coded catalog or the demo add parallel download/cache preparation.
+
+Parallel batches remain deferred until correctness of identity, integrity, configuration precedence, materialization, and manifest ordering is demonstrated.
 
 ## Architecture under test
 
