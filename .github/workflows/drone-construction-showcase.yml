@@ -62,3 +62,79 @@ jobs:
           path: ./artifacts/drone-construction-showcase.html
           if-no-files-found: error
           retention-days: 14
+
+  renderer-presentation-proof:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout SimpleDemos
+        uses: actions/checkout@v7
+
+      - name: Checkout Visualize integration proof
+        uses: actions/checkout@v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Visualize
+          ref: development
+          path: VisualizeSource
+
+      - name: Checkout authoritative Experiences simulation
+        uses: actions/checkout@v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Experiences
+          ref: development
+          path: VisualizeSource/ExperiencesSource
+
+      - name: Checkout Renderer source
+        uses: actions/checkout@v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Renderer
+          ref: development
+          path: VisualizeSource/integrations/RendererAdapter/RendererSource
+
+      - name: Checkout GUI.SVG source
+        uses: actions/checkout@v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.GUI
+          ref: development
+          path: VisualizeSource/integrations/GuiSvg/GuiSource
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore real snapshot-to-Renderer-to-Visualize proof
+        env:
+          WorkshopGuiSvgProjectPath: GuiSource/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj
+        run: dotnet restore VisualizeSource/integrations/RendererAdapter/DroneConstructionProof/DroneConstructionFrameProof.csproj
+
+      - name: Build cross-repository presentation proof
+        env:
+          WorkshopGuiSvgProjectPath: GuiSource/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj
+        run: dotnet build VisualizeSource/integrations/RendererAdapter/DroneConstructionProof/DroneConstructionFrameProof.csproj --configuration Release --no-restore
+
+      - name: Generate SVG from an actual committed construction snapshot
+        env:
+          WorkshopGuiSvgProjectPath: GuiSource/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj
+        run: dotnet run --project VisualizeSource/integrations/RendererAdapter/DroneConstructionProof/DroneConstructionFrameProof.csproj --configuration Release --no-build -- ./artifacts/drone-construction-frame.svg
+
+      - name: Verify frame and provenance manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s ./artifacts/drone-construction-frame.svg
+          test -s ./artifacts/drone-construction-frame.manifest.txt
+          grep -q "backend=CPU/SVG" ./artifacts/drone-construction-frame.manifest.txt
+          grep -q "submittedDraws=3" ./artifacts/drone-construction-frame.manifest.txt
+          grep -q "entityIds=101,202,303" ./artifacts/drone-construction-frame.manifest.txt
+          grep -q "observerSequence=1" ./artifacts/drone-construction-frame.manifest.txt
+          cat ./artifacts/drone-construction-frame.manifest.txt
+
+      - name: Upload Renderer-to-GUI.SVG evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: drone-construction-renderer-gui-svg-proof
+          path: |
+            ./artifacts/drone-construction-frame.svg
+            ./artifacts/drone-construction-frame.manifest.txt
+          if-no-files-found: error
+          retention-days: 14
