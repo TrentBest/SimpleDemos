@@ -24,6 +24,8 @@
 
 **[Interactive visual primitive playground](docs/visual-primitives.html)** — clone the repo and open this HTML file in a browser to explore the drawing-side visual-test progression: one point, many points (up to 10,000), connected points, one line, and many lines. Change counts, colours, sizes, and position spread. GitHub shows the HTML source rather than running it in the README. This SVG browser experiment is separate from the C# FSM_API console demo and from Visualize's C# backend contracts.
 
+**[Open the guided demonstration gallery](demonstrations/README.md)** — follow the progression from illustration, to actual FSM_API execution and replayable traces, to FSM_COS equivalence checks, advanced simulation, and measured stress workloads. Each stage states what its evidence does—and does not—establish.
+
 A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, inspect the larger 2D multi-agent implementation, or run the separate worker-throughput benchmark.
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
