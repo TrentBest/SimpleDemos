@@ -16,6 +16,11 @@ public class Stress : IStateContext
     public long LastFrameOps { get; set; }
 
     public Stress(int workerCount, int tickInterval, string groupName = "Stress")
+        : this(workerCount, tickInterval, groupName, createManagerInstance: true)
+    {
+    }
+
+    private Stress(int workerCount, int tickInterval, string groupName, bool createManagerInstance)
     {
         this.WorkerCount = workerCount;
         this.TickInterval = tickInterval;
@@ -40,8 +45,12 @@ public class Stress : IStateContext
                 .BuildDefinition();
         }
 
-        // Create Manager Instance
-        Status = FSM_API.Create.CreateInstance("StressManagerFSM", this, GroupName);
+        // Only the top-level context needs the manager instance. Worker contexts are
+        // bound directly to WorkerFSM_{TickInterval}; creating a manager instance for
+        // every worker leaks instances that the benchmark never destroys.
+        if (createManagerInstance)
+            Status = FSM_API.Create.CreateInstance("StressManagerFSM", this, GroupName);
+
         IsValid = true;
     }
 
@@ -52,7 +61,7 @@ public class Stress : IStateContext
 
         for (int i = 0; i < WorkerCount; i++)
         {
-            var workerCtx = new Stress(0, TickInterval, GroupName) { Name = $"Worker_{i}" };
+            var workerCtx = new Stress(0, TickInterval, GroupName, createManagerInstance: false) { Name = $"Worker_{i}" };
             workerCtx.Status = FSM_API.Create.CreateInstance(workerFsmName, workerCtx, GroupName);
             Workers.Add(workerCtx.Status);
         }
