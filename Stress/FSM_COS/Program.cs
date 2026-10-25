@@ -30,9 +30,24 @@ for (var trial = 1; trial <= trials; trial++)
     }
 }
 
+// Refuse to publish timing rows unless both implementations completed the same expected work.
+foreach (var result in results)
+{
+    if (result.PayloadOpsPerTick != expectedPayloadOpsPerTick)
+        throw new InvalidOperationException($"{result.Path} trial {result.Trial} completed {result.PayloadOpsPerTick:N0} payload operations/tick; expected {expectedPayloadOpsPerTick:N0}. Timing comparison is invalid.");
+}
+
+foreach (var trial in Enumerable.Range(1, trials))
+{
+    var direct = results.Single(result => result.Path == "FSM_API" && result.Trial == trial);
+    var composed = results.Single(result => result.Path == "FSM_COS" && result.Trial == trial);
+    if (direct.Workers != composed.Workers || direct.PayloadOpsPerTick != composed.PayloadOpsPerTick)
+        throw new InvalidOperationException($"Trial {trial} does not have equivalent direct and FSM_COS work.");
+}
+
 await File.WriteAllTextAsync(outputPath,
-    "Path,Trial,Workers,TickInterval,WarmupTicks,MeasuredTicks,SetupOrCompositionMs,BundleLoadMs,CompositionResidualMs,MeanTickMs,TicksPerSecond,PayloadOpsPerTick,AllocatedBytesPerTick\n" +
-    string.Join("\n", results.Select(result => result.ToCsv())) + "\n");
+    "Path,Trial,Workers,TickInterval,WarmupTicks,MeasuredTicks,SetupOrCompositionMs,BundleLoadMs,CompositionResidualMs,MeanTickMs,TicksPerSecond,PayloadOpsPerTick,AllocatedBytesPerTick,Runtime,OS,LogicalProcessors,Configuration,Commit,ExpectedPayloadOpsPerTick\n" +
+    string.Join("\n", results.Select(result => result.ToCsv(runtime, os, processorCount, configuration, commit, expectedPayloadOpsPerTick))) + "\n");
 
 Console.WriteLine();
 Console.WriteLine("Path       Trial   Setup/compose ms   Mean tick ms   Ticks/sec   Payload ops/tick   Allocated bytes/tick");
