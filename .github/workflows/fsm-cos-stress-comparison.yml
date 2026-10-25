@@ -160,10 +160,17 @@ jobs:
         working-directory: SimpleDemos
         run: dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release --no-build
 
-      - name: Upload raw smoke-run output
+      - name: Analyze paired benchmark output
+        working-directory: SimpleDemos
+        run: python3 Stress/FSM_COS/analyze_results.py fsm_cos_stress_comparison.csv fsm_cos_paired_analysis.md
+
+      - name: Upload raw and paired benchmark evidence
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: fsm-cos-stress-comparison-smoke-${{ github.run_id }}
-          path: SimpleDemos/fsm_cos_stress_comparison.csv
+          name: fsm-cos-stress-comparison-evidence-${{ github.run_id }}
+          path: |
+            SimpleDemos/fsm_cos_stress_comparison.csv
+            SimpleDemos/fsm_cos_paired_analysis.md
+            SimpleDemos/fsm_cos_paired_analysis.csv
           if-no-files-found: error
           retention-days: 14
