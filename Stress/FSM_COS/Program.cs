@@ -68,15 +68,17 @@ BenchResult RunDirect(int trial)
 BenchResult RunFsmCos(int trial)
 {
     var group = $"Stress.FSM_COS.{trial}";
+
+    // Include bundle, catalog, and manifest preparation in the full composition/startup
+    // measurement. Bundle.Load is timed separately so the residual is interpretable.
+    var composition = Stopwatch.StartNew();
     var bundle = new StressMicroBundle(workerCount, tickInterval, group);
     var catalog = new StressCatalog(bundle);
     var manifest = new RuntimeManifest(
         RuntimeId: (ulong)(50_000 + trial),
         Bundles: [new MicroBundleManifestEntry(bundle.Id, "1.0.0")]);
 
-    RuntimeAssembly assembly;
-    var composition = Stopwatch.StartNew();
-    assembly = new FsmCos(catalog).Execute(manifest);
+    RuntimeAssembly assembly = new FsmCos(catalog).Execute(manifest);
     composition.Stop();
 
     if (!assembly.TryGetBundle<StressMicroBundle>(bundle.Id, out var loadedBundle) || loadedBundle?.Workload is null)
