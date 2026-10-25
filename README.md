@@ -48,9 +48,9 @@ This project references the sibling FSM_COS repository source so the experiment 
 dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release
 ~~~
 
-The runner uses an in-memory catalog to isolate composition from artifact delivery. It emits `fsm_cos_stress_comparison.csv` in the current working directory. Direct setup, FSM_COS composition, bundle-load time, and steady-state updates are reported separately. The CI equivalence gate requires **1,000 worker updates and 3,000 payload operations per measured tick** from both paths before it writes the CSV. Raw trial rows include runtime, OS, logical processor count, configuration, commit, and allocation observations; the console reports minimum, median, and maximum across three trials.
+The runner uses an in-memory catalog to isolate composition from artifact delivery. It emits `fsm_cos_stress_comparison.csv` in the current working directory. Direct setup, FSM_COS composition, bundle-load time, and steady-state updates are reported separately. The CI equivalence gate requires **1,000 worker updates and 3,000 payload operations per measured tick** from both paths before it writes the CSV. Raw trial rows include runtime, OS, logical processor count, configuration, commit, and allocation observations; the console reports minimum, median, and maximum across seven trials.
 
-[The latest passing CI run](https://github.com/TrentBest/SimpleDemos/actions/runs/40161851834) validates the build, execution, work-equivalence gate, and artifact upload. Its [raw CSV artifact](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586244305) is an early three-trial sample with startup outliers, not a statistically conclusive benchmark. It does **not** establish a universal speedup or overhead claim.
+[The latest passing CI run](https://github.com/TrentBest/SimpleDemos/actions/runs/40161851834) validates the build, execution, work-equivalence gate, and artifact upload. Its [raw CSV artifact](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586244305) is an early seven-trial sample with startup outliers, not a statistically conclusive benchmark. It does **not** establish a universal speedup or overhead claim.
 
 ### Run the original fox-and-dog demo through FSM_COS
 
