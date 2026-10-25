@@ -1,0 +1,51 @@
+name: SimpleDemos CI
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.slnx'
+      - '**/*.props'
+      - '**/*.targets'
+      - 'NuGet.config'
+      - '.github/workflows/simpledemos-ci.yml'
+  pull_request:
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.slnx'
+      - '**/*.props'
+      - '**/*.targets'
+      - 'NuGet.config'
+      - '.github/workflows/simpledemos-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: simpledemos-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Restore and build demo solution
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore solution
+        run: dotnet restore SimpleDemos.slnx
+
+      - name: Build solution
+        run: dotnet build SimpleDemos.slnx --configuration Release --no-restore
