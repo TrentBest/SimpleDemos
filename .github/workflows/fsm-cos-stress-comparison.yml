@@ -95,6 +95,16 @@ jobs:
           print(f"PASS: direct FSM_API and FSM_COS-composed demo produced {len(direct_frames)} identical observable frames.")
           PY
 
+      - name: Upload direct and composed fox-and-dog trace evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: fsm-cos-fox-dog-trace-comparison-${{ github.run_id }}
+          path: |
+            SimpleDemos/fox-dog-direct-trace.json
+            SimpleDemos/fox-dog-fsm-cos-trace.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Execute comparison smoke run
         working-directory: SimpleDemos
         run: dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release --no-build
