@@ -11,4 +11,9 @@
     <PackageReference Include="TheSingularityWorkshop.FSM_API" Version="1.0.13" />
   </ItemGroup>
 
+  <!-- The FSM_COS composition runner is a separate executable project. -->
+  <ItemGroup>
+    <Compile Remove="FSM_COS/**/*.cs" />
+  </ItemGroup>
+
 </Project>
