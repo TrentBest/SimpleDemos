@@ -1,0 +1,64 @@
+name: Drone Construction showcase artifact
+
+on:
+  push:
+    branches:
+      - master
+      - development
+    paths:
+      - "projects/DroneConstruction/**"
+      - ".github/workflows/drone-construction-showcase.yml"
+  pull_request:
+    branches:
+      - master
+      - development
+    paths:
+      - "projects/DroneConstruction/**"
+      - ".github/workflows/drone-construction-showcase.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-showcase:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout SimpleDemos
+        uses: actions/checkout@v7
+
+      - name: Checkout authoritative Experiences simulation
+        uses: actions/checkout@v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Experiences
+          ref: development
+          path: ExperiencesSource
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Run real Drone Construction simulation and capture snapshots
+        run: |
+          set -euo pipefail
+          dotnet run --project ExperiencesSource/samples/DroneConstructionShowcase/DroneConstructionShowcase.csproj --configuration Release -- ./artifacts/drone-construction-showcase.html
+
+      - name: Verify generated browser artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s ./artifacts/drone-construction-showcase.html
+          grep -q "Drone Construction" ./artifacts/drone-construction-showcase.html
+          grep -q "blocks placed" ./artifacts/drone-construction-showcase.html
+          grep -q "captured snapshots" ./artifacts/drone-construction-showcase.html
+          grep -q "committed simulation snapshots" ./artifacts/drone-construction-showcase.html
+          echo "Verified generated Drone Construction HTML artifact."
+
+      - name: Upload replayable browser showcase
+        uses: actions/upload-artifact@v7
+        with:
+          name: drone-construction-browser-showcase
+          path: ./artifacts/drone-construction-showcase.html
+          if-no-files-found: error
+          retention-days: 14
