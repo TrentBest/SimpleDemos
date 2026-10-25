@@ -78,7 +78,12 @@ class Program
 
                     FSM_API.Interaction.Update("Stress");
 
-                    // Aggregate metrics
+                    // Time only the workload update. Metrics aggregation is host/reporting
+                    // overhead and must not be charged to the measured update interval.
+                    batchTimer.Stop();
+                    totalTimeMs += batchTimer.Elapsed.TotalMilliseconds;
+
+                    // Aggregate metrics outside the timed interval.
                     foreach (var wHandle in stressContext.Workers)
                     {
                         if (wHandle.Context is Stress wCtx)
@@ -87,9 +92,6 @@ class Program
                             wCtx.LastFrameOps = 0;
                         }
                     }
-
-                    batchTimer.Stop();
-                    totalTimeMs += batchTimer.Elapsed.TotalMilliseconds;
                 }
 
                 // 3. Analysis
