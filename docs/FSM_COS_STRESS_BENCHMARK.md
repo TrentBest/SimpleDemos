@@ -22,11 +22,14 @@ Each run must record:
 - setup and composition elapsed time;
 - warm-up count and measured tick count;
 - elapsed tick time and throughput;
-- completed payload-operation count;
-- allocated bytes and managed-memory observations;
-- failures, skipped ticks, and actual number of worker updates.
+- completed worker updates per measured tick and expected worker-update count;
+- completed payload-operation count per measured tick and expected payload-operation count;
+- allocated bytes per measured tick and managed-memory observations where collected;
+- failures or skipped work (the current runner fails closed when worker-update or payload-operation counts differ from the expected workload).
 
 Do not treat FPS alone as the result. The number of completed worker updates and payload operations is the equivalence check.
+
+The current `Stress/FSM_COS` runner records raw per-trial samples, runtime/OS/logical-processor/configuration/commit metadata, worker updates, payload operations, and allocation observations. Before writing the CSV it asserts the expected worker-update and payload-operation counts for every direct and composed trial. The CI artifact is raw evidence for that exact run; a passing equivalence gate does not establish that FSM_COS is faster or that it reproduces the fox-and-dog demonstration.
 
 ## Timing boundaries
 
