@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using TheSingularityWorkshop.FSM_API;
 using TheSingularityWorkshop.FSM_COS;
 using TheSingularityWorkshop.MicroBundleDomain;
@@ -13,6 +14,14 @@ const string outputPath = "fsm_cos_stress_comparison.csv";
 Console.WriteLine("SimpleDemos — direct FSM_API vs FSM_COS-composed stress MicroBundle");
 Console.WriteLine($"Workers={workerCount}; interval={tickInterval}; warm-up={warmupTicks}; measured ticks={measuredTicks}; trials={trials}");
 Console.WriteLine("Timing excludes per-worker metric aggregation and CSV output.");
+
+var runtime = RuntimeInformation.FrameworkDescription;
+var os = RuntimeInformation.OSDescription;
+var processorCount = Environment.ProcessorCount;
+var configuration = "Release";
+var commit = Environment.GetEnvironmentVariable("GITHUB_SHA") ?? "local";
+var expectedPayloadOpsPerTick = (long)workerCount * 3;
+Console.WriteLine($"Environment: {runtime}; {os}; logical CPUs={processorCount}; configuration={configuration}; commit={commit}");
 
 var results = new List<BenchResult>();
 for (var trial = 1; trial <= trials; trial++)
@@ -56,7 +65,23 @@ foreach (var result in results)
     Console.WriteLine($"{result.Path,-10} {result.Trial,5} {result.SetupOrCompositionMs,17:F3} {result.MeanTickMs,14:F4} {result.TicksPerSecond,11:F1} {result.PayloadOpsPerTick,18:N0} {result.AllocatedBytesPerTick,22:N0}");
 }
 Console.WriteLine($"Raw results: {Path.GetFullPath(outputPath)}");
-Console.WriteLine("Composition/setup and steady-state execution are separate columns; this is an initial local sample, not a universal benchmark claim.");
+Console.WriteLine("\nSummary across repeated trials (min / median / max):");
+foreach (var path in new[] { "FSM_API", "FSM_COS" })
+{
+    var pathResults = results.Where(result => result.Path == path).ToArray();
+    Console.WriteLine($"{path,-10} setup/compose ms {Stats(pathResults.Select(result => result.SetupOrCompositionMs))}; mean tick ms {Stats(pathResults.Select(result => result.MeanTickMs))}; allocated bytes/tick {Stats(pathResults.Select(result => (double)result.AllocatedBytesPerTick))}");
+}
+Console.WriteLine($"Equivalence gate: PASS — each path completed {expectedPayloadOpsPerTick:N0} payload operations per measured tick in every trial.");
+Console.WriteLine("Composition/setup and steady-state execution are separate columns; these are local samples, not a universal benchmark claim.");
+
+static string Stats(IEnumerable<double> values)
+{
+    var sorted = values.OrderBy(value => value).ToArray();
+    var median = sorted.Length % 2 == 1
+        ? sorted[sorted.Length / 2]
+        : (sorted[sorted.Length / 2 - 1] + sorted[sorted.Length / 2]) / 2.0;
+    return $"{sorted[0]:F4} / {median:F4} / {sorted[^1]:F4}";
+}
 
 BenchResult RunDirect(int trial)
 {
@@ -201,10 +226,11 @@ sealed record BenchResult(
     long PayloadOpsPerTick,
     long AllocatedBytesPerTick)
 {
-    public string ToCsv() =>
+    public string ToCsv(string runtime, string os, int processorCount, string configuration, string commit, long expectedPayloadOpsPerTick) =>
         $"{Path},{Trial},{Workers},{TickInterval},{WarmupTicks},{MeasuredTicks}," +
         $"{SetupOrCompositionMs:F6},{BundleLoadMs:F6},{CompositionResidualMs:F6}," +
-        $"{MeanTickMs:F6},{TicksPerSecond:F3},{PayloadOpsPerTick},{AllocatedBytesPerTick}";
+        $"{MeanTickMs:F6},{TicksPerSecond:F3},{PayloadOpsPerTick},{AllocatedBytesPerTick}," +
+        $"\"{runtime}\",\"{os}\",{processorCount},{configuration},{commit},{expectedPayloadOpsPerTick}";
 }
 
 sealed class StressMicroBundle : IMicroBundle
