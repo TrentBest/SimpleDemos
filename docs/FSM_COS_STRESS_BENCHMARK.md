@@ -58,10 +58,10 @@ If the host has to perform work that is also required in the direct baseline, ke
 The current `Stress/Program.cs` is a useful historical starting point, but its existing output is not yet a strict comparative benchmark:
 
 - It uses one 60-frame batch per configuration, so there is no repeated-sample distribution.
-- It times each frame separately and then scans every worker handle to aggregate counters; aggregation cost is inside the measured frame.
+- The development baseline now stops the timer immediately after `FSM_API.Interaction.Update("Stress")` and aggregates worker counters outside the timed interval. Older CSVs were measured with aggregation inside the timer and must remain labeled as historical.
 - It records a managed-memory delta, which is not equivalent to total allocation volume and can be affected by GC timing.
 - Its worker callback converts an integer to a string, so the workload includes an allocation-heavy operation. Keep this in both paths initially; add a separately named allocation-free payload only as a second experiment.
-- The worker setup path should be audited for accidental manager-instance creation and cleanup before treating setup cost as representative.
+- The development baseline now creates a manager FSM instance only for the top-level context. Worker contexts bind directly to their worker FSM, avoiding an untracked manager instance per worker. Setup and teardown still need automated validation before setup timings are treated as final.
 
 Do not silently change these behaviors and then compare new results with old numbers. Version the protocol and label historical measurements.
 
