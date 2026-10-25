@@ -11,4 +11,9 @@
     <PackageReference Include="TheSingularityWorkshop.FSM_API" Version="1.0.13" />
   </ItemGroup>
 
+  <!-- The comparison runner is built by its own project, which supplies FSM_COS and MicroBundleDomain references. -->
+  <ItemGroup>
+    <Compile Remove="FSM_COS/**/*.cs" />
+  </ItemGroup>
+
 </Project>
