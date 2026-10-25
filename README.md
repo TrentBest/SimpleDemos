@@ -48,7 +48,19 @@ This project references the sibling FSM_COS repository source so the experiment 
 dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release
 ~~~
 
-The initial runner uses an in-memory catalog to isolate composition from artifact delivery. It emits `fsm_cos_stress_comparison.csv` in the current working directory. The output separates direct setup from FSM_COS composition, reports bundle-load time and a composition residual, and measures steady-state updates separately. This is an initial local experiment; the run has not yet been validated in this session, so no speedup or overhead result is claimed.
+The runner uses an in-memory catalog to isolate composition from artifact delivery. It emits `fsm_cos_stress_comparison.csv` in the current working directory. Direct setup, FSM_COS composition, bundle-load time, and steady-state updates are reported separately. The CI equivalence gate requires **1,000 worker updates and 3,000 payload operations per measured tick** from both paths before it writes the CSV. Raw trial rows include runtime, OS, logical processor count, configuration, commit, and allocation observations; the console reports minimum, median, and maximum across three trials.
+
+[The latest passing CI run](https://github.com/TrentBest/SimpleDemos/actions/runs/40161851834) validates the build, execution, work-equivalence gate, and artifact upload. Its [raw CSV artifact](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586244305) is an early three-trial sample with startup outliers, not a statistically conclusive benchmark. It does **not** establish a universal speedup or overhead claim.
+
+### Run the original fox-and-dog demo through FSM_COS
+
+The separate [`QuickBrownFox/FSM_COS`](QuickBrownFox/FSM_COS/Program.cs) runner loads the existing `SimpleDemoContext` as a MicroBundle, then lets the host drive the same `Main` processing group and export observable frames:
+
+```powershell
+dotnet run --project QuickBrownFox/FSM_COS/QuickBrownFox.FSM_COS.csproj --configuration Release -- fox-dog-fsm-cos-trace.json
+```
+
+This source-integrated runner expects the FSM_COS repository checked out beside `SimpleDemos`, as described above. The validation workflow also exports the direct FSM_API trace and compares its frame snapshots with the FSM_COS-composed trace. The current CI check passed with identical observable frames. This demonstrates behavior preservation through composition; it does not claim FSM_COS owns the update loop or that the composition layer is faster.
 
 The direct baseline remains in [`Stress/Program.cs`](Stress/Program.cs). The measurement rules and known historical-baseline caveats are in [`FSM_COS stress benchmark protocol`](docs/FSM_COS_STRESS_BENCHMARK.md).
 
