@@ -84,7 +84,7 @@ SimpleDemos should link to published articles rather than reproduce their narrat
 ## SimpleDemos
 
 - [Repository README](../README.md)
-- [Demonstrations: prove the behavior, not just the picture](README.md)
+- [Demonstrations: prove the behavior, not just the picture](../demonstrations/README.md)
 - [Fox-and-sheepdog browser playground source](fox-and-sheepdog.html)
 - [FSM_API repository](https://github.com/TrentBest/FSM_API)
 - [The Singularity Workshop Coder Legion profile](https://coderlegion.com/user/The%2BSingularity%2BWorkshop)
