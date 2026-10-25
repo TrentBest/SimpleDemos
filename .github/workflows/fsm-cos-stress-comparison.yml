@@ -105,6 +105,57 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Restore advanced fox-and-dog FSM_COS runner
+        working-directory: SimpleDemos
+        run: dotnet restore QuickBrownFox/FSM_COS/Advanced/Advanced.FSM_COS.csproj
+
+      - name: Build advanced fox-and-dog FSM_COS runner
+        working-directory: SimpleDemos
+        run: dotnet build QuickBrownFox/FSM_COS/Advanced/Advanced.FSM_COS.csproj --configuration Release --no-restore
+
+      - name: Export direct advanced 2D FSM_API trace
+        working-directory: SimpleDemos
+        run: dotnet run --project QuickBrownFox/QuickBrownFox.csproj --configuration Release --no-build -- --export-advanced-trace advanced-fox-dog-direct-trace.json
+
+      - name: Export FSM_COS-composed advanced 2D trace
+        working-directory: SimpleDemos
+        run: dotnet run --project QuickBrownFox/FSM_COS/Advanced/Advanced.FSM_COS.csproj --configuration Release --no-build -- advanced-fox-dog-fsm-cos-trace.json
+
+      - name: Verify direct and composed advanced 2D behavior is identical
+        working-directory: SimpleDemos
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          with open("advanced-fox-dog-direct-trace.json", encoding="utf-8") as stream:
+              direct = json.load(stream)
+          with open("advanced-fox-dog-fsm-cos-trace.json", encoding="utf-8") as stream:
+              composed = json.load(stream)
+
+          direct_frames = direct.get("frames", [])
+          composed_frames = composed.get("frames", [])
+          if not direct_frames or direct_frames != composed_frames:
+              print(f"Advanced trace mismatch: direct={len(direct_frames)} frames, FSM_COS={len(composed_frames)} frames")
+              for index, (left, right) in enumerate(zip(direct_frames, composed_frames)):
+                  if left != right:
+                      print(f"First differing frame {index}: direct={left!r}; FSM_COS={right!r}")
+                      break
+              sys.exit(1)
+
+          print(f"PASS: direct FSM_API and FSM_COS-composed advanced simulation produced {len(direct_frames)} identical observable frames.")
+          PY
+
+      - name: Upload direct and composed advanced fox-and-dog trace evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: fsm-cos-advanced-fox-dog-trace-comparison-${{ github.run_id }}
+          path: |
+            SimpleDemos/advanced-fox-dog-direct-trace.json
+            SimpleDemos/advanced-fox-dog-fsm-cos-trace.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Execute comparison smoke run
         working-directory: SimpleDemos
         run: dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release --no-build
