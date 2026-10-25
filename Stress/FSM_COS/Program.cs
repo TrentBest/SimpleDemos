@@ -8,7 +8,7 @@ const int workerCount = 1_000;
 const int tickInterval = 1;
 const int warmupTicks = 20;
 const int measuredTicks = 200;
-const int trials = 3;
+const int trials = 7;
 const string outputPath = "fsm_cos_stress_comparison.csv";
 
 Console.WriteLine("SimpleDemos — direct FSM_API vs FSM_COS-composed stress MicroBundle");
