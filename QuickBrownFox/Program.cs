@@ -4,7 +4,7 @@ using TheSingularityWorkshop.FSM_API;
 if (args.Length == 2 && args[0] == "--export-trace")
 {
     SimpleDemoContext.EnableLogging = false;
-    var traceContext = new SimpleDemoContext();
+    var traceContext = new SimpleDemoContext(allowConsoleInput: false);
     var frames = new List<object>();
 
     // Run the real C# FSMs for a bounded number of updates, stopping at the demo's normal end.
