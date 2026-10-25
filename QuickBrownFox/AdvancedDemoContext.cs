@@ -98,13 +98,16 @@ public class AdvancedDemoContext : IStateContext
 
     private void OnUpdateExecuting(IStateContext context)
     {
-        Console.WriteLine("\n--- Simulation Step ---");
-        // 1. Update the environment (Vision and Collision)
-        FSM_API.Interaction.Update("Environment");
-        // 2. Update the agents
-        FSM_API.Interaction.Update("Dogs");
-        FSM_API.Interaction.Update("Foxes");
-        adc.CurrentFrame++;
+        if (context is AdvancedDemoContext adc)
+        {
+            Console.WriteLine("\n--- Simulation Step ---");
+            // 1. Update the environment (Vision and Collision)
+            FSM_API.Interaction.Update("Environment");
+            // 2. Update the agents
+            FSM_API.Interaction.Update("Dogs");
+            FSM_API.Interaction.Update("Foxes");
+            adc.CurrentFrame++;
+        }
     }
 
     private void OnExitExecuting(IStateContext context)
