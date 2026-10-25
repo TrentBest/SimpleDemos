@@ -6,10 +6,10 @@
 
 1. Open the latest [Drone Construction showcase workflow runs](https://github.com/TrentBest/SimpleDemos/actions/workflows/drone-construction-showcase.yml).
 2. Choose the latest successful run.
-3. Under **Artifacts**, download `drone-construction-browser-showcase`.
+3. Under **Artifacts**, download `drone-construction-browser-showcase` for the animated simulation replay and `drone-construction-renderer-gui-svg-proof` for the downstream frame and provenance manifest.
 4. Extract the HTML file and open it in a modern browser.
 
-The workflow checks out the current `development` source of [Experiences](https://github.com/TrentBest/TheSingularityWorkshop.Experiences/tree/development/experiences/DroneConstruction), runs its real `ConstructionSimulation`, checks that the generated HTML is non-empty and contains the run summary, and uploads the artifact. The page is generated from captured simulation snapshots; it is not a prerecorded storyboard.
+The [verified workflow run](https://github.com/TrentBest/SimpleDemos/actions/runs/40218426226) checks out the current `development` source of Experiences, Visualize, Renderer, and GUI; runs the real `ConstructionSimulation`; verifies the generated HTML; then builds and runs Visualize's existing Drone Construction proof against that same source set. Both jobs passed and uploaded artifacts. The HTML page is generated from captured simulation snapshots; it is not a prerecorded storyboard. The second artifact is a real CPU/SVG presentation proof with stable entity IDs and run/tick/observer-sequence provenance.
 
 ## What this small run demonstrates
 
@@ -39,6 +39,8 @@ The browser artifact currently proves the small simulation-to-SVG replay path. T
 This is **not** evidence of 100,000 construction agents, starvation-free routing, a production GPU path, or a deployed live web application. The current scoped readiness estimate for the broader 100,000-agent showcase is **60%**. We will raise that estimate only as those milestones are implemented and verified.
 
 ## Evidence
+
+- [Passing cross-repository build + both downloadable artifacts](https://github.com/TrentBest/SimpleDemos/actions/runs/40218426226) — browser replay and Renderer → Visualize → GUI.SVG frame/manifest.
 
 - [Experiences implementation and gallery](https://github.com/TrentBest/TheSingularityWorkshop.Experiences/tree/development/experiences/DroneConstruction)
 - [Drone Construction integration proof](https://github.com/TrentBest/TheSingularityWorkshop.Visualize/tree/development/integrations/RendererAdapter/DroneConstructionProof)
