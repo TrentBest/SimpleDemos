@@ -69,7 +69,7 @@ sealed class AdvancedFoxDogMicroBundle : IMicroBundle
     public AdvancedDemoContext? Context { get; private set; }
 
     public void Load(IMicroBundleLoadContext context) =>
-        Context = new AdvancedDemoContext(randomSeed: 42, allowConsoleInput: false);
+        Context = new AdvancedDemoContext(randomSeed: 42, allowConsoleInput: false, stopWhenAllFoxesDone: false);
 
     public bool Arbitrate(IMicroBundleArbitrationContext context, int roundIndex) => false;
 }
