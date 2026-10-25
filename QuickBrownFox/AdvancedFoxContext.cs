@@ -5,7 +5,7 @@ using TheSingularityWorkshop.FSM_API;
 internal class AdvancedFoxContext : IFoxAgent
 {
     private AdvancedDemoEnvironment Environment { get; }
-    private Random random = new Random();
+    private Random random;
     private Vector2 JumpStart; // Tracks the position before the jump
     private Vector2 JumpEnd;   // Tracks the intended landing position
     private int Speed { get; set; } = 1;
@@ -20,8 +20,9 @@ internal class AdvancedFoxContext : IFoxAgent
     public bool IsValid { get; set; } = true;
     public string Name { get; set; }
 
-    public AdvancedFoxContext(int id, Vector2 pos, AdvancedDemoEnvironment environment)
+    public AdvancedFoxContext(int id, Vector2 pos, AdvancedDemoEnvironment environment, int randomSeed = 0)
     {
+        random = new Random(randomSeed);
         this.Position = pos;
         this.Environment = environment;
         this.Name = $"Fox[{id}]";
