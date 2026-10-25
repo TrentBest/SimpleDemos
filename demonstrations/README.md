@@ -87,6 +87,17 @@ The [CiAi live-run demonstration](02-ciai-live-run.md) uses a GitHub Actions wor
 **Shows:** a read-only cross-repository run-evidence workflow.  
 **Does not prove:** LLM-driven decisions, arbitrary tool execution, or a production orchestration loop.
 
+## 7. Drone Construction: simulation to living artifact
+
+**Start:** [Drone Construction project](../projects/DroneConstruction/README.md)  
+**Implementation:** [Experiences Drone Construction](https://github.com/TrentBest/TheSingularityWorkshop.Experiences/tree/development/experiences/DroneConstruction)  
+**Presentation handoff:** [Visualize Drone Construction proof](https://github.com/TrentBest/TheSingularityWorkshop.Visualize/tree/development/integrations/RendererAdapter/DroneConstructionProof)
+
+Run the reproducible showcase workflow and download its `drone-construction-browser-showcase` artifact. It runs the actual deterministic construction simulation, captures committed snapshots, and generates an animated HTML page.
+
+**Shows:** a small real simulation run, snapshot-derived SVG frames, and a downloadable browser artifact.  
+**Does not prove:** the full observer-relative Renderer policy, a hosted live application, GPU submission, starvation freedom, or 100,000 construction agents.
+
 ---
 
 ## Evidence vocabulary
