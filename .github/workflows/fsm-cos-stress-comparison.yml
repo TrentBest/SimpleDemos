@@ -5,6 +5,8 @@ on:
     branches: [development]
     paths:
       - 'Stress/**'
+      - 'QuickBrownFox/**'
+      - 'docs/FSM_COS_STRESS_BENCHMARK.md'
       - '.github/workflows/fsm-cos-stress-comparison.yml'
       - 'README.md'
   pull_request:
@@ -51,6 +53,47 @@ jobs:
       - name: Build comparison runner
         working-directory: SimpleDemos
         run: dotnet build Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release --no-restore
+
+      - name: Restore fox-and-dog FSM_COS runner
+        working-directory: SimpleDemos
+        run: dotnet restore QuickBrownFox/FSM_COS/QuickBrownFox.FSM_COS.csproj
+
+      - name: Build fox-and-dog FSM_COS runner
+        working-directory: SimpleDemos
+        run: dotnet build QuickBrownFox/FSM_COS/QuickBrownFox.FSM_COS.csproj --configuration Release --no-restore
+
+      - name: Export direct FSM_API fox-and-dog trace
+        working-directory: SimpleDemos
+        run: dotnet run --project QuickBrownFox/QuickBrownFox.csproj --configuration Release --no-build -- --export-trace fox-dog-direct-trace.json
+
+      - name: Export FSM_COS-composed fox-and-dog trace
+        working-directory: SimpleDemos
+        run: dotnet run --project QuickBrownFox/FSM_COS/QuickBrownFox.FSM_COS.csproj --configuration Release --no-build -- fox-dog-fsm-cos-trace.json
+
+      - name: Verify direct and composed fox-and-dog behavior is identical
+        working-directory: SimpleDemos
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          with open("fox-dog-direct-trace.json", encoding="utf-8") as stream:
+              direct = json.load(stream)
+          with open("fox-dog-fsm-cos-trace.json", encoding="utf-8") as stream:
+              composed = json.load(stream)
+
+          direct_frames = direct.get("frames", [])
+          composed_frames = composed.get("frames", [])
+          if not direct_frames or direct_frames != composed_frames:
+              print(f"Trace mismatch: direct={len(direct_frames)} frames, FSM_COS={len(composed_frames)} frames")
+              for index, (left, right) in enumerate(zip(direct_frames, composed_frames)):
+                  if left != right:
+                      print(f"First differing frame {index}: direct={left!r}; FSM_COS={right!r}")
+                      break
+              sys.exit(1)
+
+          print(f"PASS: direct FSM_API and FSM_COS-composed demo produced {len(direct_frames)} identical observable frames.")
+          PY
 
       - name: Execute comparison smoke run
         working-directory: SimpleDemos
