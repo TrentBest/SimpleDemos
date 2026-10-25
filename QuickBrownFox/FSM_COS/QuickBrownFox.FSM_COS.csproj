@@ -9,4 +9,9 @@
     <ProjectReference Include="../../QuickBrownFox/QuickBrownFox.csproj" />
     <ProjectReference Include="../../../TheSingularityWorkshop.FSM_COS/src/FSM_COS/FSM_COS.csproj" />
   </ItemGroup>
+
+  <!-- The advanced 2D runner is a separate executable project. -->
+  <ItemGroup>
+    <Compile Remove="Advanced/**/*.cs" />
+  </ItemGroup>
 </Project>
