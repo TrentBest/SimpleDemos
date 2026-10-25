@@ -12,12 +12,16 @@ public class AdvancedDemoContext : IStateContext
     public int EngironmentHeight { get; private set; } = 100; // Keeping original typo for consistency, updated value
     public int FoxCount { get; private set; } = 15;
     public int DogCount { get; private set; } = 5;
+    public int CurrentFrame { get; private set; }
+    public bool AllowConsoleInput { get; }
 
     private AdvancedDemoEnvironment environment;
-    private Random random = new Random();
+    private Random random;
 
-    public AdvancedDemoContext()
+    public AdvancedDemoContext(int randomSeed = 42, bool allowConsoleInput = true)
     {
+        random = new Random(randomSeed);
+        AllowConsoleInput = allowConsoleInput;
         FSM_API.Internal.ResetAPI(true);
 
         if (!FSM_API.Interaction.Exists("AdvancedDemoFSM", "Update"))
@@ -79,7 +83,7 @@ public class AdvancedDemoContext : IStateContext
 
                 if (ade.IsEmptyAt(pos))
                 {
-                    var fox = new AdvancedFoxContext(f, pos, ade); // Updated constructor
+                    var fox = new AdvancedFoxContext(f, pos, ade, random.Next()); // Updated constructor
                     // The FindRandomDestination logic inside AdvancedFoxContext handles the quadrant exclusion.
                     fox.Destination = fox.FindRandomDestination();
                     ade.AddAgent(fox);
@@ -100,6 +104,7 @@ public class AdvancedDemoContext : IStateContext
         // 2. Update the agents
         FSM_API.Interaction.Update("Dogs");
         FSM_API.Interaction.Update("Foxes");
+        adc.CurrentFrame++;
     }
 
     private void OnExitExecuting(IStateContext context)
@@ -136,8 +141,28 @@ public class AdvancedDemoContext : IStateContext
                 .Where(a => a is AdvancedFoxContext)
                 .All(fox => fox.Status.CurrentState == "Idle" || fox.Status.CurrentState == "Mangled");
 
-            return Console.KeyAvailable || allFoxesAreDone;
+            return (adc.AllowConsoleInput && Console.KeyAvailable) || allFoxesAreDone;
         }
         return false;
     }
+
+    
+    /// <summary>Captures deterministic, observable state for direct-versus-composed demo comparison.</summary>
+    public object CaptureSnapshot() => new
+    {
+        Frame = CurrentFrame,
+        Width = EnvironmentWidth,
+        Height = EngironmentHeight,
+        Agents = environment.GetAgents()
+            .OrderBy(agent => agent.Name, StringComparer.Ordinal)
+            .Select(agent => new
+            {
+                agent.Name,
+                State = agent.Status.CurrentState,
+                X = agent.Position.X,
+                Y = agent.Position.Y,
+                VisibleAgents = agent.VisibleAgents.Select(other => other.Name).OrderBy(name => name, StringComparer.Ordinal).ToArray(),
+                CollidingAgents = agent.CollidingAgents.Select(other => other.Name).OrderBy(name => name, StringComparer.Ordinal).ToArray()
+            }).ToArray()
+    };
 }
