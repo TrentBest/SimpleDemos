@@ -85,3 +85,38 @@ For the first proof, an in-memory catalog is acceptable if the bundle uses the c
 7. **Advanced 2D fox/dog:** preserve the same observable behavior contract while expanding the world and agent layout.
 
 The goal is evidence that lets us quantify the overhead for a specific use case on a specified machine—not a universal performance claim.
+
+
+## Next experiment: determine what the apparent 21% means
+
+The first seven-trial hosted run is a **hypothesis generator**. Its reported steady-state medians were 0.1808 ms/tick for direct FSM_API and 0.1436 ms/tick for FSM_COS composition, approximately 20.6% lower median tick time for the composed path in that run. This is not yet a reliable estimate of the true effect: the run had wide ranges and a large composition-startup outlier.
+
+The next question is not simply “can we reproduce 21%?” It is: **where does the difference come from, under what workload, and does it survive the one-time composition cost?**
+
+### Separate the hypotheses
+
+1. **Steady-state effect:** paired per-trial tick-time ratio for identical completed work, with alternating order. Report every pair and the median paired ratio; do not infer a paired effect by comparing two unrelated aggregate medians alone.
+2. **Startup cost:** compare full setup/composition time separately. Keep bundle load and the remaining composition path visible.
+3. **Amortization / break-even:** for each paired trial where FSM_COS ticks faster, estimate the tick count needed to recover extra composition time:
+
+   `break_even_ticks = max(0, composed_setup_ms - direct_setup_ms) / (direct_mean_tick_ms - composed_mean_tick_ms)`
+
+   If the composed tick is not faster, report “no steady-state break-even” for that pair. This is a model derived from measured means, not a guarantee; show the input values and never hide negative or unstable cases behind a single headline.
+4. **Allocation and GC:** retain allocated bytes per tick, but label it as current-thread allocation observed around the tick call. It is not total process allocation and does not by itself prove lower GC pressure.
+5. **Workload scaling:** after the current 1,000-worker comparison is repeatable, add a separate named scale experiment (for example 100, 500, 1,000, and 2,500 workers) and keep all workload semantics and equivalence assertions identical. Do not mix scale results with the historical 1,000-worker series.
+
+### Evidence required before describing a speedup
+
+- At least three independent hosted workflow runs, each preserving its raw CSV and commit/environment metadata.
+- Equal worker updates and payload operations for every direct/composed pair.
+- Paired ratios and medians, plus spread/range; retain all outliers rather than deleting inconvenient samples.
+- No regression hidden by combining setup and steady-state time. Report both steady-state and a few explicit lifetimes (e.g. 100, 1,000, and 10,000 ticks) including startup.
+- A follow-up local run on a stable, otherwise-idle machine before treating a CI-hosted result as a performance conclusion.
+
+If repeated runs do not reproduce the apparent advantage, that is a useful result: it means the initial 21% was likely noise or environment-sensitive. If the advantage persists, scales consistently, and survives startup amortization, we can narrow the claim to the tested runtime, machine, workload, and lifecycle. A real result can be smaller than 21% and still be valuable.
+
+### Current evidence status
+
+- Behavior-equivalence proof gates: **3/3 passed (100% of these specific gates)** in the recorded SimpleDemos validation.
+- Performance conclusion: **exploratory; not yet validated across independent workflow runs**.
+- Publication: no performance claim should be presented as a universal speedup, and no package publication is implied by these experiments.
