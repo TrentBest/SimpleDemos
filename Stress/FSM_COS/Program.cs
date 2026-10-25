@@ -20,7 +20,8 @@ var os = RuntimeInformation.OSDescription;
 var processorCount = Environment.ProcessorCount;
 var configuration = "Release";
 var commit = Environment.GetEnvironmentVariable("GITHUB_SHA") ?? "local";
-var expectedPayloadOpsPerTick = (long)workerCount * 3;
+var expectedWorkerUpdatesPerTick = (long)workerCount;
+var expectedPayloadOpsPerTick = expectedWorkerUpdatesPerTick * 3;
 Console.WriteLine($"Environment: {runtime}; {os}; logical CPUs={processorCount}; configuration={configuration}; commit={commit}");
 
 var results = new List<BenchResult>();
@@ -42,27 +43,29 @@ for (var trial = 1; trial <= trials; trial++)
 // Refuse to publish timing rows unless both implementations completed the same expected work.
 foreach (var result in results)
 {
-    if (result.PayloadOpsPerTick != expectedPayloadOpsPerTick)
-        throw new InvalidOperationException($"{result.Path} trial {result.Trial} completed {result.PayloadOpsPerTick:N0} payload operations/tick; expected {expectedPayloadOpsPerTick:N0}. Timing comparison is invalid.");
+    if (result.WorkerUpdatesPerTick != expectedWorkerUpdatesPerTick || result.PayloadOpsPerTick != expectedPayloadOpsPerTick)
+        throw new InvalidOperationException($"{result.Path} trial {result.Trial} completed {result.WorkerUpdatesPerTick:N0} worker updates and {result.PayloadOpsPerTick:N0} payload operations/tick; expected {expectedWorkerUpdatesPerTick:N0} updates and {expectedPayloadOpsPerTick:N0} operations. Timing comparison is invalid.");
 }
 
 foreach (var trial in Enumerable.Range(1, trials))
 {
     var direct = results.Single(result => result.Path == "FSM_API" && result.Trial == trial);
     var composed = results.Single(result => result.Path == "FSM_COS" && result.Trial == trial);
-    if (direct.Workers != composed.Workers || direct.PayloadOpsPerTick != composed.PayloadOpsPerTick)
+    if (direct.Workers != composed.Workers ||
+        direct.WorkerUpdatesPerTick != composed.WorkerUpdatesPerTick ||
+        direct.PayloadOpsPerTick != composed.PayloadOpsPerTick)
         throw new InvalidOperationException($"Trial {trial} does not have equivalent direct and FSM_COS work.");
 }
 
 await File.WriteAllTextAsync(outputPath,
-    "Path,Trial,Workers,TickInterval,WarmupTicks,MeasuredTicks,SetupOrCompositionMs,BundleLoadMs,CompositionResidualMs,MeanTickMs,TicksPerSecond,PayloadOpsPerTick,AllocatedBytesPerTick,Runtime,OS,LogicalProcessors,Configuration,Commit,ExpectedPayloadOpsPerTick\n" +
+    "Path,Trial,Workers,TickInterval,WarmupTicks,MeasuredTicks,SetupOrCompositionMs,BundleLoadMs,CompositionResidualMs,MeanTickMs,TicksPerSecond,WorkerUpdatesPerTick,PayloadOpsPerTick,AllocatedBytesPerTick,Runtime,OS,LogicalProcessors,Configuration,Commit,ExpectedPayloadOpsPerTick\n" +
     string.Join("\n", results.Select(result => result.ToCsv(runtime, os, processorCount, configuration, commit, expectedPayloadOpsPerTick))) + "\n");
 
 Console.WriteLine();
-Console.WriteLine("Path       Trial   Setup/compose ms   Mean tick ms   Ticks/sec   Payload ops/tick   Allocated bytes/tick");
+Console.WriteLine("Path       Trial   Setup/compose ms   Mean tick ms   Ticks/sec   Worker updates/tick   Payload ops/tick   Allocated bytes/tick");
 foreach (var result in results)
 {
-    Console.WriteLine($"{result.Path,-10} {result.Trial,5} {result.SetupOrCompositionMs,17:F3} {result.MeanTickMs,14:F4} {result.TicksPerSecond,11:F1} {result.PayloadOpsPerTick,18:N0} {result.AllocatedBytesPerTick,22:N0}");
+    Console.WriteLine($"{result.Path,-10} {result.Trial,5} {result.SetupOrCompositionMs,17:F3} {result.MeanTickMs,14:F4} {result.TicksPerSecond,11:F1} {result.WorkerUpdatesPerTick,21:N0} {result.PayloadOpsPerTick,18:N0} {result.AllocatedBytesPerTick,22:N0}");
 }
 Console.WriteLine($"Raw results: {Path.GetFullPath(outputPath)}");
 Console.WriteLine("\nSummary across repeated trials (min / median / max):");
@@ -71,7 +74,7 @@ foreach (var path in new[] { "FSM_API", "FSM_COS" })
     var pathResults = results.Where(result => result.Path == path).ToArray();
     Console.WriteLine($"{path,-10} setup/compose ms {Stats(pathResults.Select(result => result.SetupOrCompositionMs))}; mean tick ms {Stats(pathResults.Select(result => result.MeanTickMs))}; allocated bytes/tick {Stats(pathResults.Select(result => (double)result.AllocatedBytesPerTick))}");
 }
-Console.WriteLine($"Equivalence gate: PASS — each path completed {expectedPayloadOpsPerTick:N0} payload operations per measured tick in every trial.");
+Console.WriteLine($"Equivalence gate: PASS — each path completed {expectedWorkerUpdatesPerTick:N0} worker updates and {expectedPayloadOpsPerTick:N0} payload operations per measured tick in every trial.");
 Console.WriteLine("Composition/setup and steady-state execution are separate columns; these are local samples, not a universal benchmark claim.");
 
 static string Stats(IEnumerable<double> values)
@@ -157,6 +160,7 @@ BenchResult Measure(
         FSM_API.Interaction.Update(group);
 
     var elapsedTicks = 0L;
+    long workerUpdates = 0;
     long payloadOps = 0;
     long allocatedBytes = 0;
 
@@ -176,7 +180,10 @@ BenchResult Measure(
         {
             if (handle.Context is Stress worker)
             {
-                payloadOps += worker.LastFrameOps;
+                var operationsThisTick = worker.LastFrameOps;
+                payloadOps += operationsThisTick;
+                if (operationsThisTick > 0)
+                    workerUpdates++;
                 worker.LastFrameOps = 0;
             }
         }
@@ -196,6 +203,7 @@ BenchResult Measure(
         path == "FSM_COS" ? Math.Max(0, compositionMs - bundleLoadMs) : 0,
         meanTickMs,
         ticksPerSecond,
+        workerUpdates / measuredTicks,
         payloadOps / measuredTicks,
         allocatedBytes / measuredTicks);
 }
@@ -223,13 +231,14 @@ sealed record BenchResult(
     double CompositionResidualMs,
     double MeanTickMs,
     double TicksPerSecond,
+    long WorkerUpdatesPerTick,
     long PayloadOpsPerTick,
     long AllocatedBytesPerTick)
 {
     public string ToCsv(string runtime, string os, int processorCount, string configuration, string commit, long expectedPayloadOpsPerTick) =>
         $"{Path},{Trial},{Workers},{TickInterval},{WarmupTicks},{MeasuredTicks}," +
         $"{SetupOrCompositionMs:F6},{BundleLoadMs:F6},{CompositionResidualMs:F6}," +
-        $"{MeanTickMs:F6},{TicksPerSecond:F3},{PayloadOpsPerTick},{AllocatedBytesPerTick}," +
+        $"{MeanTickMs:F6},{TicksPerSecond:F3},{WorkerUpdatesPerTick},{PayloadOpsPerTick},{AllocatedBytesPerTick}," +
         $"\"{runtime}\",\"{os}\",{processorCount},{configuration},{commit},{expectedPayloadOpsPerTick}";
 }
 
