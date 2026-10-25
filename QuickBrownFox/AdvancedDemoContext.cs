@@ -19,9 +19,9 @@ public class AdvancedDemoContext : IStateContext
     private AdvancedDemoEnvironment environment;
     private Random random;
 
-    public AdvancedDemoContext(int randomSeed = 42, bool allowConsoleInput = true, bool stopWhenAllFoxesDone = true)
+    public AdvancedDemoContext(int? randomSeed = null, bool allowConsoleInput = true, bool stopWhenAllFoxesDone = true)
     {
-        random = new Random(randomSeed);
+        random = randomSeed.HasValue ? new Random(randomSeed.Value) : new Random();
         AllowConsoleInput = allowConsoleInput;
         StopWhenAllFoxesDone = stopWhenAllFoxesDone;
         FSM_API.Internal.ResetAPI(true);
