@@ -10,7 +10,7 @@ if (args.Length == 2 && args[0] == "--export-advanced-trace")
     try
     {
         Console.SetOut(TextWriter.Null);
-        traceContext = new AdvancedDemoContext(randomSeed: 42, allowConsoleInput: false);
+        traceContext = new AdvancedDemoContext(randomSeed: 42, allowConsoleInput: false, stopWhenAllFoxesDone: false);
         for (var i = 0; i < 30 && traceContext.IsValid; i++)
         {
             FSM_API.Interaction.Update("Update");
