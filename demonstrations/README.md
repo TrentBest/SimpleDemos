@@ -93,10 +93,10 @@ The [CiAi live-run demonstration](02-ciai-live-run.md) uses a GitHub Actions wor
 **Implementation:** [Experiences Drone Construction](https://github.com/TrentBest/TheSingularityWorkshop.Experiences/tree/development/experiences/DroneConstruction)  
 **Presentation handoff:** [Visualize Drone Construction proof](https://github.com/TrentBest/TheSingularityWorkshop.Visualize/tree/development/integrations/RendererAdapter/DroneConstructionProof)
 
-Run the reproducible showcase workflow and download its `drone-construction-browser-showcase` artifact. It runs the actual deterministic construction simulation, captures committed snapshots, and generates an animated HTML page.
+Run the [verified showcase workflow](https://github.com/TrentBest/SimpleDemos/actions/runs/40218426226). Download `drone-construction-browser-showcase` for the actual deterministic simulation's snapshot replay and `drone-construction-renderer-gui-svg-proof` for the separate real Renderer → Visualize → GUI.SVG output plus provenance manifest. Both CI jobs passed.
 
-**Shows:** a small real simulation run, snapshot-derived SVG frames, and a downloadable browser artifact.  
-**Does not prove:** the full observer-relative Renderer policy, a hosted live application, GPU submission, starvation freedom, or 100,000 construction agents.
+**Shows:** a small real simulation run, snapshot-derived browser frames, and an automated cross-repository CPU/SVG frame submission with stable entity IDs and run/tick/sequence provenance.  
+**Does not prove:** a hosted live application, GPU submission, starvation freedom, or 100,000 construction agents.
 
 ---
 
