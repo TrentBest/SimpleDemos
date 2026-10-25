@@ -50,9 +50,9 @@ dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Releas
 
 The runner uses an in-memory catalog to isolate composition from artifact delivery. It emits `fsm_cos_stress_comparison.csv` in the current working directory. Direct setup, FSM_COS composition, bundle-load time, and steady-state updates are reported separately. The CI equivalence gate requires **1,000 worker updates and 3,000 payload operations per measured tick** from both paths before it writes the CSV. Raw trial rows include runtime, OS, logical processor count, configuration, commit, and allocation observations; the console reports minimum, median, and maximum across seven trials.
 
-[The latest passing CI run](https://github.com/TrentBest/SimpleDemos/actions/runs/40161994689) validates the build, execution, work-equivalence gate, and artifact upload. Its [raw CSV artifact](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586559359) is an early seven-trial sample with startup outliers, not a statistically conclusive benchmark. It does **not** establish a universal speedup or overhead claim.
+[The latest passing CI run](https://github.com/TrentBest/SimpleDemos/actions/runs/40162275106) validates the build, execution, work-equivalence gate, and artifact upload. Its [raw CSV artifact](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586693154) is an early seven-trial sample with startup outliers, not a statistically conclusive benchmark. It does **not** establish a universal speedup or overhead claim.
 
-The same run preserves the [direct and FSM_COS-composed fox-and-dog trace files](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586985447) so the identical-frame comparison can be inspected and replayed.
+The same run preserves the [direct and FSM_COS-composed fox-and-dog trace files](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586867871) so the identical-frame comparison can be inspected and replayed.
 
 ### Run the original fox-and-dog demo through FSM_COS
 
@@ -63,6 +63,16 @@ dotnet run --project QuickBrownFox/FSM_COS/QuickBrownFox.FSM_COS.csproj --config
 ```
 
 This source-integrated runner expects the FSM_COS repository checked out beside `SimpleDemos`, as described above. The validation workflow also exports the direct FSM_API trace and compares its frame snapshots with the FSM_COS-composed trace. The current CI check passed with identical observable frames. This demonstrates behavior preservation through composition; it does not claim FSM_COS owns the update loop or that the composition layer is faster.
+
+### Run the advanced 2D fox-and-dog simulation through FSM_COS
+
+The advanced 100 × 100 simulation now has a separate [FSM_COS runner](QuickBrownFox/FSM_COS/Advanced/Program.cs). It uses a fixed seed and a bounded 30-frame trace so the direct and composed paths can be compared reproducibly:
+
+```powershell
+dotnet run --project QuickBrownFox/FSM_COS/Advanced/Advanced.FSM_COS.csproj --configuration Release -- advanced-fox-dog-fsm-cos-trace.json
+```
+
+The direct control is `dotnet run --project QuickBrownFox/QuickBrownFox.csproj --configuration Release -- --export-advanced-trace advanced-fox-dog-direct-trace.json`. CI compares the full observable snapshots for all foxes and dogs, including state, position, visibility, and collision data. The passing run produced identical frames and preserves both trace files in the [advanced trace artifact](https://api.github.com/repos/TrentBest/SimpleDemos/actions/artifacts/12586753025).
 
 The direct baseline remains in [`Stress/Program.cs`](Stress/Program.cs). The measurement rules and known historical-baseline caveats are in [`FSM_COS stress benchmark protocol`](docs/FSM_COS_STRESS_BENCHMARK.md).
 
