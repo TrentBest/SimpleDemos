@@ -1,6 +1,44 @@
 ﻿using System.Text.Json;
 using TheSingularityWorkshop.FSM_API;
 
+if (args.Length == 2 && args[0] == "--export-advanced-trace")
+{
+    var originalOutput = Console.Out;
+    var frames = new List<object>();
+    AdvancedDemoContext traceContext;
+
+    try
+    {
+        Console.SetOut(TextWriter.Null);
+        traceContext = new AdvancedDemoContext(randomSeed: 42, allowConsoleInput: false);
+        for (var i = 0; i < 30 && traceContext.IsValid; i++)
+        {
+            FSM_API.Interaction.Update("Update");
+            frames.Add(traceContext.CaptureSnapshot());
+        }
+    }
+    finally
+    {
+        Console.SetOut(originalOutput);
+    }
+
+    var outputPath = Path.GetFullPath(args[1]);
+    Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+    var trace = new
+    {
+        schemaVersion = 1,
+        source = "SimpleDemos Advanced 2D fox-and-dog simulation running through FSM_API",
+        frames
+    };
+    File.WriteAllText(outputPath, JsonSerializer.Serialize(trace, new JsonSerializerOptions
+    {
+        WriteIndented = true
+    }));
+
+    Console.WriteLine($"Exported {frames.Count} deterministic advanced FSM snapshots to {outputPath}");
+    return;
+}
+
 if (args.Length == 2 && args[0] == "--export-trace")
 {
     SimpleDemoContext.EnableLogging = false;
