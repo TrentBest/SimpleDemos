@@ -1,0 +1,45 @@
+name: OntologyPaces
+
+on:
+  pull_request:
+    paths:
+      - "OntologyPaces/**"
+      - "SimpleDemos.slnx"
+      - "README.md"
+      - ".github/workflows/ontology-paces.yml"
+  push:
+    branches: [development, master]
+    paths:
+      - "OntologyPaces/**"
+      - "SimpleDemos.slnx"
+      - ".github/workflows/ontology-paces.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout MicroBundleRepository at a pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: TrentBest/TheSingularityWorkshop.MicroBundleRepository
+          ref: 6098a455bb77009688021b41a2faa415c3392526
+          path: MicroBundleRepository
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Restore Core-backed demonstration
+        run: dotnet restore OntologyPaces/OntologyPaces.csproj
+      - name: Build Core-backed demonstration
+        run: dotnet build OntologyPaces/OntologyPaces.csproj --no-restore --configuration Release
+      - name: Run Core-backed contract demonstration
+        run: dotnet run --project OntologyPaces/OntologyPaces.csproj --no-build --configuration Release
+      - name: Restore compiled materializer probe
+        run: dotnet restore OntologyPaces/MaterializerProbe/MaterializerProbe.csproj
+      - name: Build compiled fixture and FSM_COS adapter
+        run: dotnet build OntologyPaces/MaterializerProbe/MaterializerProbe.csproj --no-restore --configuration Release
+      - name: Run real assembly materialization integration probe
+        run: dotnet run --project OntologyPaces/MaterializerProbe/MaterializerProbe.csproj --no-build --configuration Release
