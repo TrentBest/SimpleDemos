@@ -167,7 +167,8 @@ This is an excerpt of the pattern in the source, not a standalone program: the c
 
 ### Documentation and theory
 
-- [Coder Legion article index](docs/CODER_LEGION_ARTICLES.md) — published articles about FSM_API, the fox-and-dog demo, performance experiments, and the wider Workshop
+- [Coder Legion article index](docs/CODER_LEGION_ARTICLES.md) — links to published stories and readership snapshot
+- [Article notebook](docs/ARTICLE_NOTEBOOK.md) — cross-project story ideas, questions, and evidence requirements
 - [FSM_API repository](https://github.com/TrentBest/FSM_API) — source, guides, and tests
 - [FSM_API on NuGet](https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API/) — install the package
 - [FSM builder deep dive](https://github.com/TrentBest/FSM_API/blob/development/Documentation/User%20Guide/04_FSM_Builder_Deep_Dive.md) — states, transitions, and construction
