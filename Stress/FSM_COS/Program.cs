@@ -31,7 +31,7 @@ for (var trial = 1; trial <= trials; trial++)
 }
 
 await File.WriteAllTextAsync(outputPath,
-    "Path,Trial,Workers,TickInterval,WarmupTicks,MeasuredTicks,SetupOrCompositionMs,BundleLoadMs,KernelResidualMs,MeanTickMs,TicksPerSecond,PayloadOpsPerTick,AllocatedBytesPerTick\n" +
+    "Path,Trial,Workers,TickInterval,WarmupTicks,MeasuredTicks,SetupOrCompositionMs,BundleLoadMs,CompositionResidualMs,MeanTickMs,TicksPerSecond,PayloadOpsPerTick,AllocatedBytesPerTick\n" +
     string.Join("\n", results.Select(result => result.ToCsv())) + "\n");
 
 Console.WriteLine();
@@ -180,7 +180,7 @@ sealed record BenchResult(
     int MeasuredTicks,
     double SetupOrCompositionMs,
     double BundleLoadMs,
-    double KernelResidualMs,
+    double CompositionResidualMs,
     double MeanTickMs,
     double TicksPerSecond,
     long PayloadOpsPerTick,
@@ -188,7 +188,7 @@ sealed record BenchResult(
 {
     public string ToCsv() =>
         $"{Path},{Trial},{Workers},{TickInterval},{WarmupTicks},{MeasuredTicks}," +
-        $"{SetupOrCompositionMs:F6},{BundleLoadMs:F6},{KernelResidualMs:F6}," +
+        $"{SetupOrCompositionMs:F6},{BundleLoadMs:F6},{CompositionResidualMs:F6}," +
         $"{MeanTickMs:F6},{TicksPerSecond:F3},{PayloadOpsPerTick},{AllocatedBytesPerTick}";
 }
 
