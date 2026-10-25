@@ -9,19 +9,21 @@ public class SimpleDemoContext : IStateContext
     public string Name { get; set; } = "SimpleDemo";
     public int WinPosition { get; } = 10;
     public int CurrentFrame { get; private set; } = 0;
-    public static bool EnableLogging { get; internal set; } = true;
+    public static bool EnableLogging { get; set; } = true;
+    public bool AllowConsoleInput { get; }
 
     private List<ISimpleAgent> agents = new List<ISimpleAgent>();
 
-    public SimpleDemoContext()
+    public SimpleDemoContext(bool allowConsoleInput = true)
     {
+        AllowConsoleInput = allowConsoleInput;
         if (!FSM_API.Interaction.Exists("AppFSM", "Main"))
         {
             FSM_API.Create.CreateProcessingGroup("Main");
             FSM_API.Create.CreateFiniteStateMachine("AppFSM", -1, "Main")
                 .State("Executing", OnEnterExecuting, OnUpdateExecuting, OnExitExecuting)
                 .State("Shutdown", OnEnterShutdown, null, null)
-                .Transition("Executing", "Shutdown", (ctx) => Console.KeyAvailable
+                .Transition("Executing", "Shutdown", (ctx) => (((SimpleDemoContext)ctx).AllowConsoleInput && Console.KeyAvailable)
                 || agents.Any(s => s.State.CurrentState == "Mangled")
                 || agents.Any(s => s is QuickBrownFox fox && fox.Position == ((SimpleDemoContext)ctx).WinPosition))
                 .BuildDefinition();
