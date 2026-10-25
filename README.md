@@ -38,6 +38,20 @@ dotnet run --project QuickBrownFox/QuickBrownFox.csproj -- --export-trace docs/f
 
 This bounded mode disables console chatter, runs the real processing groups and agent FSMs, and writes per-frame agent state, position, and speed snapshots to the requested JSON path. It stops when the sample reaches its normal end or after 30 updates. The trace is an exported observation of the C# run, not an animation by itself. Open `samples/PrimitiveGallery/fsm-trace-replay.html` from a local checkout of [Visualize](https://github.com/TrentBest/TheSingularityWorkshop.Visualize), choose the JSON file you exported, and scrub or play the recorded frames. The browser replays recorded values; it does not execute FSM_API.
 
+## FSM_COS stress comparison
+
+The first source-integrated comparison runner is in [`Stress/FSM_COS`](Stress/FSM_COS/Program.cs). It composes the existing worker workload as a MicroBundle through FSM_COS, then lets the local console host own warm-up, ticking, timing, aggregation, and CSV output.
+
+This project references the sibling FSM_COS repository source so the experiment can move with the active development branch before any NuGet release is assumed. Clone `TheSingularityWorkshop.FSM_COS` beside `SimpleDemos`, then run:
+
+~~~powershell
+dotnet run --project Stress/FSM_COS/Stress.FSM_COS.csproj --configuration Release
+~~~
+
+The initial runner uses an in-memory catalog to isolate composition from artifact delivery. It emits `fsm_cos_stress_comparison.csv` in the current working directory. The output separates direct setup from FSM_COS composition, reports bundle-load time and a composition residual, and measures steady-state updates separately. This is an initial local experiment; the run has not yet been validated in this session, so no speedup or overhead result is claimed.
+
+The direct baseline remains in [`Stress/Program.cs`](Stress/Program.cs). The measurement rules and known historical-baseline caveats are in [`FSM_COS stress benchmark protocol`](docs/FSM_COS_STRESS_BENCHMARK.md).
+
 ## AI-facing CI proof
 
 SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](demonstrations/02-ciai-live-run.md). The [GitHub Actions workflow](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) runs automatically on pushes to `development`, observing a known-good run from CiAi. Inspect its logs for the read-only facts and evidence URL. The default target is `TrentBest/TheSingularityWorkshop.CiAi`, run `40027841199`. This is provider-ingestion proof—not yet an LLM-driven or action-executing workflow.
