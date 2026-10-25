@@ -14,14 +14,16 @@ public class AdvancedDemoContext : IStateContext
     public int DogCount { get; private set; } = 5;
     public int CurrentFrame { get; private set; }
     public bool AllowConsoleInput { get; }
+    public bool StopWhenAllFoxesDone { get; }
 
     private AdvancedDemoEnvironment environment;
     private Random random;
 
-    public AdvancedDemoContext(int randomSeed = 42, bool allowConsoleInput = true)
+    public AdvancedDemoContext(int randomSeed = 42, bool allowConsoleInput = true, bool stopWhenAllFoxesDone = true)
     {
         random = new Random(randomSeed);
         AllowConsoleInput = allowConsoleInput;
+        StopWhenAllFoxesDone = stopWhenAllFoxesDone;
         FSM_API.Internal.ResetAPI(true);
 
         if (!FSM_API.Interaction.Exists("AdvancedDemoFSM", "Update"))
@@ -144,7 +146,7 @@ public class AdvancedDemoContext : IStateContext
                 .Where(a => a is AdvancedFoxContext)
                 .All(fox => fox.Status.CurrentState == "Idle" || fox.Status.CurrentState == "Mangled");
 
-            return (adc.AllowConsoleInput && Console.KeyAvailable) || allFoxesAreDone;
+            return (adc.AllowConsoleInput && Console.KeyAvailable) || (adc.StopWhenAllFoxesDone && allFoxesAreDone);
         }
         return false;
     }
