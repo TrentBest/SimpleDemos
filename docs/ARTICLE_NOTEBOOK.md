@@ -182,7 +182,133 @@ Write as an investigator, not a product brochure: start with a question, inspect
 **Coverage:** A narrative map of the larger domain, but only through working paths. This is a later synthesis article, not a substitute for proving each layer.  
 **Proof needed:** One complete path, source links, and a table separating demonstrated, in-progress, and planned capabilities.
 
-## 8. Suggested investigation order
+## 8. FSM_REST and FSM_Serialization: capability recipes and byte boundaries
+
+### 8.1 An API Description Is Not an API Call
+**Question:** What is the difference between describing a remote capability, binding one request, transporting it, and interpreting the response?  
+**Coverage:** FSM_REST's operation descriptors, bindings, request construction, transport abstraction, and runtime response. Follow one small example from reusable recipe to response without treating a descriptor as fetched data.  
+**Proof needed:** Contract tests for request construction and transport behavior; label any provider-specific importer or GUI integration as separate until verified.
+
+### 8.2 A Serializer Should Not Invent Domain Meaning
+**Question:** Which representation rules belong to a domain type, and which belong to a byte-oriented serialization boundary?  
+**Coverage:** FSM_Serialization's explicit binary/stream contracts, supported ownership rules, and limits versus general object-graph serialization.  
+**Proof needed:** Round-trip, malformed-input, truncation, boundary, and compatibility tests against the current source and package versions.
+
+### 8.3 Benchmarking the Boundary Without Mixing the Lanes
+**Question:** How do we compare encoding and buffer strategies without accidentally comparing different code or different work?  
+**Coverage:** The benchmark repository's stable SER identities, published-package baseline versus development-source lane, encode/decode separation, buffer ownership, allocations, and retained artifacts.  
+**Proof needed:** Green, reproducible runs from both lanes, source/package identity attached to each result, and comparable workloads before naming a winner.
+
+## 9. CiAi's five Cogs: from isolated contracts to a working coordinator
+
+### 9.1 Five Small Cogs Are Not Yet One Machine
+**Question:** What becomes possible when capability catalog, request book, result correlation, policy gate, and lifecycle projection are composed—and what is still missing?  
+**Coverage:** CogA declares version-pinned capabilities; CogB creates bounded, correlated, idempotent requests; CogC correlates provider results; CogD applies exact-match default-deny policy; CogE projects lifecycle evidence and contradictions. Their README files currently describe isolated, offline contract slices, with cross-Cog and parent-coordinator integration still outstanding.  
+**Proof needed:** A tested end-to-end flow with shared contracts, durable identity/provenance, and negative cases; do not describe the isolated cogs as a complete remote execution system.
+
+### 9.2 Permission Is Not Proof, and a Hash Is Not Acceptance
+**Question:** Why must authorization, execution outcome, artifact identity, and semantic acceptance remain separate facts?  
+**Coverage:** Use CogB/C/D/E boundaries to show that a permitted request does not prove execution, matching metadata does not prove semantic correctness, and an acknowledgement does not prove reclamation.  
+**Proof needed:** Tests that inject conflicting, missing, out-of-order, cancelled, and unknown evidence and verify none is silently upgraded to success.
+
+### 9.3 The Observer Must Report the Candidate It Actually Saw
+**Question:** Can a read-only CI observer report exact commit, workflow attempts, jobs, and steps without confusing a candidate with the default branch or a later run?  
+**Coverage:** Inspect the CiAi release-candidate observer workflow and FSM_COS pilot contract. Keep observation separate from runtime dependency and publication authority.  
+**Proof needed:** A real run for a full commit SHA, links to the source workflow evidence, and demonstrated handling of missing, failed, skipped, and in-progress jobs.
+
+## 10. StoryBuilder, Experiences, AnyApp, and WebPage: an Experience across hosts
+
+### 10.1 A Story Has a Build Record and a Fictional Canon
+**Question:** How can a creative workbench keep implementation facts separate from the fictional world's accepted facts?  
+**Coverage:** StoryBuilder's project identity, premise/manuscript fields, stable-ID timeline events, passage anchors, chronology, and local save/reopen. Distinguish the existing Core slice from the not-yet-implemented AnyApp launch/render integration and interactive authoring surface.  
+**Proof needed:** Run the Core tests and local persistence example; show the actual gap register before claiming a usable desktop authoring experience.
+
+### 10.2 An Experience Is Not Its Window
+**Question:** What should remain stable when the same Experience gains browser, desktop, or future VR manifestations?  
+**Coverage:** Experience identity, immutable artifact identity, session state, protocol envelopes, and explicit bridge contracts. Use the Experiences repository's architecture to frame the boundary, not as proof that every bridge or client exists.  
+**Proof needed:** A runnable cross-manifestation path with versioned messages, identity checks, and tested failure handling.
+
+### 10.3 Local-First Is a Testable Deployment Claim
+**Question:** Can a creator author and reopen a project without a hosted service being available?  
+**Coverage:** StoryBuilder's initial local-first target, desktop-host direction, and the difference between a deployment decision and implemented integration.  
+**Proof needed:** An offline save/reopen test through the intended host—not merely a Core persistence unit test.
+
+### 10.4 The Landing Page Is a Demonstration, Not an Architecture Diagram
+**Question:** Which effects on the current WebPage are implemented today, and which are still a destination?  
+**Coverage:** Inspect the actual branch and runtime before repeating the README's evolving visual plan. Reconcile current renderer, GUI, physics, and host code with older descriptions that may no longer match the chosen implementation route.  
+**Proof needed:** A current, reproducible walkthrough with a feature-by-feature implementation map and no claims based solely on architectural diagrams.
+
+## 11. MicroBundleDomain, MicroBundleRepository, and FSM_COS: artifact identity end to end
+
+### 11.1 What Exactly Is a MicroBundle?
+**Question:** Which identity, dependency, configuration, and lifecycle information must a capability expose—and what remains private to its domain?  
+**Coverage:** MicroBundleDomain's neutral contract, using real producer and consumer code to distinguish a domain model from composition policy.  
+**Proof needed:** Contract tests and a consumer that builds against the published or explicitly pinned source contract.
+
+### 11.2 A Repository Is Not the Composer
+**Question:** How should immutable artifact retrieval stay separate from dependency resolution and runtime assembly?  
+**Coverage:** MicroBundleRepository's repository/cache/provider boundary versus FSM_COS's resolution, validation, ordering, arbitration, and assembly responsibilities. The README describes Azure Blob as the intended remote substrate; verify the current implementation before claiming that remote path works.  
+**Proof needed:** Exercise the local artifact path, integrity/identity validation, missing-artifact behavior, and only then any remote provider.
+
+### 11.3 From Manifest to Artifact to RuntimeAssembly
+**Question:** Can we follow one requested capability through manifest intent, repository retrieval, dependency closure, composition, and host handoff?  
+**Coverage:** Tie together only the concrete handoffs that exist; make absent links visible.  
+**Proof needed:** One runnable vertical slice with exact artifact identities, testable failures, and separately measured retrieval, composition, and execution costs.
+
+## 12. GUI, Renderer, Visualize, Physics, and Gestures: meaning, perception, and cost
+
+### 12.1 One Semantic GUI, Several Honest Manifestations
+**Question:** Which meaning belongs in GUI.Core, and which behavior belongs to Blazor, WPF, or SVG adapters?  
+**Coverage:** Use the recursive GuiNode model and adapter boundaries. GUI's current status document says SVG is early, some semantic contracts are not yet stable, WPF still lacks a dedicated test project, and animated docs are illustrations rather than renderer output.  
+**Proof needed:** Adapter-by-adapter test evidence and explicit unsupported semantics; never imply feature parity because adapters share a model.
+
+### 12.2 Render Less by Understanding the Observer
+**Question:** Can Event Horizons reduce computational work by changing what representation exists, rather than merely lowering polygon count?  
+**Coverage:** Renderer’s hypothesis about observer-relative computational detail; separate conceptual architecture from measured implementation.  
+**Proof needed:** A bounded benchmark or demo that measures update/render work at each horizon, with a clear baseline and observable correctness.
+
+### 12.3 A Scene Is More Than an Image
+**Question:** How should authored environment, physical meaning, rendering, and optional sensory capabilities remain separate but composable?  
+**Coverage:** Visualize's environment/scene direction alongside Physics and Gestures contracts. The current Visualize README describes architecture direction, not production volumetric rendering, a selected GPU backend, or working audio/haptic integration.  
+**Proof needed:** A small vertical proof with real inputs and outputs; explicitly label any planned backend or modality.
+
+### 12.4 When Does a Picture Become Evidence?
+**Question:** How can a visualization be regenerated from authoritative state without drifting into an independent hand-authored simulation?  
+**Coverage:** Connect SimpleDemos traces, GUI.SVG output, Renderer textual portrayal, and Visualize scene output only where a common data contract actually exists.  
+**Proof needed:** Shared input identity, a reproducible generation command, and a drift/failure test.
+
+## 13. DataWarehouse and Foundry: earn the architecture with a first vertical slice
+
+### 13.1 What Does the Data Warehouse Actually Guarantee?
+**Question:** What are the first observable data contracts, ownership rules, and failure semantics of the warehouse?  
+**Coverage:** Start from the current repository skeleton and benchmark-repository skeleton. Treat names, diagrams, and initial README files as scaffolding, not implemented storage behavior.  
+**Proof needed:** A defined minimal data model, executable write/read or ingest/query path, tests, and retained benchmark output before making performance or durability claims.
+
+### 13.2 Benchmarking Before There Is a Benchmarkable Contract
+**Question:** What should a benchmark suite refuse to measure until workload semantics are stable?  
+**Coverage:** Define stable benchmark identities, datasets, correctness gates, and output provenance before comparing data strategies.  
+**Proof needed:** A runnable baseline with validated fixtures, named scenarios, and raw output tied to an exact source revision.
+
+### 13.3 Foundry: What Is the Smallest Useful Artifact Pipeline?
+**Question:** Which build, validation, identity, and publication steps must an artifact pipeline prove before it can be trusted?  
+**Coverage:** Investigate the new repository's intended responsibility against concrete upstream/downstream consumers; do not infer a complete pipeline from an initial commit.  
+**Proof needed:** One bounded artifact from input through validation to a verifiable output, with failure cases and explicit publication authorization.
+
+## Repository reality check — reviewed 2026-10-26
+
+The current review covered 2026-active repositories plus FSM_API. The latest commit is a navigation hint, not proof of a feature: several repositories' newest commits are shared-documentation updates, while some new repositories still contain only initial scaffolding. Recheck source, tests, workflows, and branch-specific status before every story.
+
+Current editorial guardrails from that review:
+
+- **CiAi:** the coordinator README is only a heading; its current observer workflow is a manual, read-only release-candidate observation slice. CogA–CogE have useful isolated contracts, but their own READMEs identify parent integration, durable storage, authenticated dispatch, and end-to-end orchestration as outstanding.
+- **StoryBuilder:** the Core model and local save/reopen slice exist; AnyApp launch/render integration and the interactive authoring surface are explicitly not implemented yet.
+- **FSM_Serialization_Benchmarks:** the published-package and development-source lanes are intentionally distinct. The latest README reports the development-source benchmark correction still needs a green CI run.
+- **GUI:** semantic Core and adapters exist at different maturity levels; GUI.SVG remains early and must not be presented as a proven, feature-complete renderer.
+- **Visualize / Renderer / Physics:** current docs include substantial architectural direction; claims about production rendering, GPU backend selection, and sensory integration require concrete executable evidence.
+- **DataWarehouse / its benchmark repository / Foundry:** latest commits are initial scaffolding or README-only changes; no mature behavior should be presumed.
+- **FSM_API:** retain it as the explicit historical exception and keep its 2026 integer-backed V2 work and benchmark evidence separate from older published-package behavior.
+
+## 14. Suggested investigation order
 
 This is a provisional order based on evidence dependencies, not a promise of publication dates:
 
