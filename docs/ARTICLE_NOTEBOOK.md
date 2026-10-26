@@ -89,6 +89,11 @@ Write as an investigator, not a product brochure: start with a question, inspect
 **Coverage:** Readiness criteria, blocked acceptance paths, reproducibility, release gates, and how the percentage changes when an audit discovers missing proof.  
 **Proof needed:** A versioned checklist tied to artifacts and passing checks; no unsupported readiness percentage.
 
+### 3.6 Measure the Front Loader One Phase at a Time
+**Question:** What does FSM_COS actually cost before a host receives its RuntimeAssembly?  
+**Coverage:** Build the benchmark matrix around distinct phases—manifest validation, dependency closure, catalog lookup, loading, arbitration, assembly, failure paths, and repeated composition—then separate cold/setup costs from reuse and steady-state host execution.  
+**Proof needed:** Stable unique benchmark identities, validated fixtures, named workload sizes, raw BenchmarkDotNet artifacts, source/runtime identity, and repeated runs. The benchmark repository's initial scaffold is not itself performance evidence.
+
 ## 4. CiAi: CI exposed to AI
 
 ### 4.1 CiAi Does Not Mean AI-Powered CI
@@ -296,7 +301,17 @@ Write as an investigator, not a product brochure: start with a question, inspect
 
 ## Repository reality check — reviewed 2026-10-26
 
-The current review covered 2026-active repositories plus FSM_API. The latest commit is a navigation hint, not proof of a feature: several repositories' newest commits are shared-documentation updates, while some new repositories still contain only initial scaffolding. Recheck source, tests, workflows, and branch-specific status before every story.
+The first-pass inventory checked latest commits and sampled README, status, and workflow content across 2026-active repositories plus FSM_API. The latest commit is a navigation hint, not proof of a feature: several repositories' newest commits are shared-documentation updates, while some new repositories still contain only initial scaffolding. Recheck source, tests, workflows, and branch-specific status before every story.
+
+Repository map for story discovery:
+
+- **Runtime and composition:** FSM_API, FSM_COS, FSM_REST, FSM_Serialization, MicroBundleDomain, and MicroBundleRepository.
+- **AI-facing contracts and CI:** ProtocolAi, GrammarAi, HeadlessAi, CiAi, and CiAi.CogA–CogE.
+- **Experiences and hosts:** AnyApp, Experiences, StoryBuilder, WebPage, WebApp, and MyVR.
+- **Semantic UI, perception, and simulation:** GUI, Renderer, Visualize, Physics, and Gestures.
+- **Performance evidence:** FSM_COS_Benchmarks, FSM_Serialization_Benchmarks, MicroBundleDomain_Benchmarks, and Renderer.Benchmarks.
+- **Early data/artifact work:** DataWarehouse, Benchmarks.DataWarehouse, and Foundry.
+- **Editorial and runnable examples:** SimpleDemos, plus FSM_API as the explicit older-repository exception.
 
 Current editorial guardrails from that review:
 
