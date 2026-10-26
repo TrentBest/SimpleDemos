@@ -2,7 +2,7 @@
 
 A reading index for readers who want the longer stories behind the technology shown in **SimpleDemos** and the wider Singularity Workshop. These are links to published Coder Legion articles; this document is an index, not a duplicate of those articles.
 
-For future story ideas across FSM_API, FSM_COS, CiAi, protocol/transport components, and visual tooling, see the [cross-project Article Notebook](ARTICLE_NOTEBOOK.md).
+For future story ideas across FSM_API, FSM_COS, CiAi, protocol/transport components, and visual tooling, see the [cross-project Article Notebook](ARTICLE_NOTEBOOK.md), now organized into three scopes: **Quick Stories (3–5 minutes)**, **Deep Dives (5–10 minutes)**, and **Technical Articles** pairing documented theory with implementation evidence.
 
 - **Author:** The Singularity Workshop / Trent Best
 - **Profile:** https://coderlegion.com/user/The%2BSingularity%2BWorkshop
