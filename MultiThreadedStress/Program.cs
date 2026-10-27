@@ -36,6 +36,8 @@ for (var trial = 1; trial <= options.Trials; trial++)
 
 WriteCsv(CsvPath, rows);
 PrintSummary(rows);
+if (rows.Any(row => !row.CorrectnessPassed))
+    Environment.ExitCode = 1;
 Console.WriteLine();
 Console.WriteLine($"Raw trial data: {Path.GetFullPath(CsvPath)}");
 
@@ -119,10 +121,9 @@ static TrialRow BuildRow(Scenario scenario, Options config, int trial, bool warm
     double setupMilliseconds, TimeSpan elapsed, long allocatedBytes, WorkerContext[] workers, long expected)
 {
     var completed = workers.Sum(worker => Interlocked.Read(ref worker.DataValue));
-    var errors = workers.Sum(worker => worker.ErrorCount);
-    var passed = completed == expected && errors == 0;
+    var passed = completed == expected;
     if (!passed && !warmup)
-        Console.WriteLine($"CORRECTNESS FAILURE: {scenario}; expected {expected:N0}, observed {completed:N0}, errors {errors:N0}");
+        Console.WriteLine($"CORRECTNESS FAILURE: {scenario}; expected {expected:N0}, observed {completed:N0}");
 
     if (!warmup)
     {
@@ -132,7 +133,7 @@ static TrialRow BuildRow(Scenario scenario, Options config, int trial, bool warm
 
     return new TrialRow(
         DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture),
-        scenario.ToString(), trial, config.Workers, config.Iterations, expected, completed, errors,
+        scenario.ToString(), trial, config.Workers, config.Iterations, expected, completed,
         elapsed.TotalMilliseconds, elapsed.TotalSeconds > 0 ? completed / elapsed.TotalSeconds : 0,
         setupMilliseconds, allocatedBytes, passed, RuntimeInformation.FrameworkDescription,
         RuntimeInformation.OSDescription, Environment.ProcessorCount,
@@ -158,7 +159,7 @@ static double Median(double[] values) => values.Length % 2 == 0
 static void WriteCsv(string path, List<TrialRow> rows)
 {
     using var writer = new StreamWriter(path, false);
-    writer.WriteLine("TimestampUtc,Scenario,Trial,Workers,IterationsPerWorker,ExpectedCallbacks,CompletedCallbacks,ErrorCount,ElapsedMilliseconds,CallbacksPerSecond,SetupMilliseconds,AllocatedBytes,CorrectnessPassed,Runtime,OS,LogicalProcessors,DotnetVersion,IsWarmup");
+    writer.WriteLine("TimestampUtc,Scenario,Trial,Workers,IterationsPerWorker,ExpectedCallbacks,CompletedCallbacks,ElapsedMilliseconds,CallbacksPerSecond,SetupMilliseconds,AllocatedBytes,CorrectnessPassed,Runtime,OS,LogicalProcessors,DotnetVersion,IsWarmup");
     foreach (var row in rows)
     {
         writer.WriteLine(string.Join(",", new[]
@@ -166,7 +167,7 @@ static void WriteCsv(string path, List<TrialRow> rows)
             Csv(row.TimestampUtc), Csv(row.Scenario), row.Trial.ToString(CultureInfo.InvariantCulture),
             row.Workers.ToString(CultureInfo.InvariantCulture), row.IterationsPerWorker.ToString(CultureInfo.InvariantCulture),
             row.ExpectedCallbacks.ToString(CultureInfo.InvariantCulture), row.CompletedCallbacks.ToString(CultureInfo.InvariantCulture),
-            row.ErrorCount.ToString(CultureInfo.InvariantCulture), row.ElapsedMilliseconds.ToString("F4", CultureInfo.InvariantCulture),
+            row.ElapsedMilliseconds.ToString("F4", CultureInfo.InvariantCulture),
             row.CallbacksPerSecond.ToString("F2", CultureInfo.InvariantCulture), row.SetupMilliseconds.ToString("F4", CultureInfo.InvariantCulture),
             row.AllocatedBytes.ToString(CultureInfo.InvariantCulture), row.CorrectnessPassed.ToString(),
             Csv(row.Runtime), Csv(row.OS), row.LogicalProcessors.ToString(CultureInfo.InvariantCulture),
@@ -188,7 +189,6 @@ sealed class WorkerContext : IStateContext
     public WorkerContext(string name) => Name = name;
     public long DataValue;
     public int LastPayloadLength;
-    public long ErrorCount;
     public bool IsValid { get; set; } = true;
     public string Name { get; set; }
     public FSMHandle Status { get; set; } = null!;
@@ -196,7 +196,7 @@ sealed class WorkerContext : IStateContext
 
 sealed record TrialRow(
     string TimestampUtc, string Scenario, int Trial, int Workers, int IterationsPerWorker,
-    long ExpectedCallbacks, long CompletedCallbacks, long ErrorCount, double ElapsedMilliseconds,
+    long ExpectedCallbacks, long CompletedCallbacks, double ElapsedMilliseconds,
     double CallbacksPerSecond, double SetupMilliseconds, long AllocatedBytes, bool CorrectnessPassed,
     string Runtime, string OS, int LogicalProcessors, string DotnetVersion, bool IsWarmup);
 
