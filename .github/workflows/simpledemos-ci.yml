@@ -49,3 +49,6 @@ jobs:
 
       - name: Build solution
         run: dotnet build SimpleDemos.slnx --configuration Release --no-restore
+
+      - name: Run bounded multithreaded correctness smoke test
+        run: dotnet run --project MultiThreadedStress/MultiThreadedStress.csproj --configuration Release --no-build -- --workers 2 --iterations 100 --trials 1
