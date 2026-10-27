@@ -458,7 +458,9 @@ Repository map for story discovery:
 - **Semantic UI, perception, and simulation:** GUI, Renderer, Visualize, Physics, and Gestures.
 - **Performance evidence:** FSM_COS_Benchmarks, FSM_Serialization_Benchmarks, MicroBundleDomain_Benchmarks, and Renderer.Benchmarks.
 - **Early data/artifact work:** DataWarehouse, Benchmarks.DataWarehouse, and Foundry.
+- **Semantic interaction:** FSM_UserIO, whose current documentation frames interaction around sensing, expression, action, and capability rather than device-specific input.
 - **Editorial and runnable examples:** SimpleDemos, plus FSM_API as the explicit older-repository exception.
+- **Creator infrastructure:** CreatorNetwork is newly visible in the repository inventory, but its README currently lacks enough detail to ground an article premise.
 
 Current editorial guardrails from that review:
 
@@ -470,7 +472,33 @@ Current editorial guardrails from that review:
 - **DataWarehouse / its benchmark repository / Foundry:** latest commits are initial scaffolding or README-only changes; no mature behavior should be presumed.
 - **FSM_API:** retain it as the explicit historical exception and keep its 2026 integer-backed V2 work and benchmark evidence separate from older published-package behavior.
 
-## 14. Suggested investigation order
+## 14. FSM_UserIO: semantic interaction across forms and capabilities
+
+### 14.1 Input Is Not the Meaning
+**Scope:** Tier 1 — Quick Story · 3–5 min.  
+**Question:** Why isn't a keyboard event, voice utterance, gaze signal, paw gesture, or AI proposal the same thing as application meaning?  
+**Coverage:** Follow one observation or expression from its source adapter through the platform-neutral semantic interaction boundary. Keep the examples illustrative unless they are actually implemented.  
+**Proof needed:** A concrete source-to-semantic example, source references, and tests for the actual contract.
+
+### 14.2 Capability Is Not Authority
+**Scope:** Tier 1 — Quick Story · 3–5 min.  
+**Question:** If an actor or software agent can perform an action, why doesn't that mean the action is permitted?  
+**Coverage:** Explain the boundary between sensing/expressing/acting capability and application policy, authorization, validation, and execution. Use one harmless, testable example rather than a grand claim about every actor type.  
+**Proof needed:** A contract test demonstrating that capability representation alone does not authorize execution.
+
+### 14.3 From Observation to Authorized Execution
+**Scope:** Tier 3 — Technical · theory + implementation.  
+**Question:** What invariants should hold between a physical or software observation, a semantic interaction, policy evaluation, and execution?  
+**Coverage:** Map FSM_UserIO's responsibilities against ProtocolAi, GrammarAi, GUI, FSM_COS, and the host. Keep these as separate boundaries; don't claim integrations merely because the README diagrams them.  
+**Proof needed:** Audit current source and tests, document the actual data contract and failure semantics, then show a tested vertical slice. If no real adapter-to-execution path exists yet, report that gap instead of presenting the architecture as shipped.
+
+## 15. CreatorNetwork: discover the real story before pitching it
+
+The current repository README is only a title, so its purpose and implementation are not yet sufficiently documented to support a responsible technical article. Keep it on the editorial radar, but do not infer a social graph, publishing workflow, moderation model, or other product behavior from the repository name alone.
+
+**Next step:** inspect its active development branch, issues, source tree, and project notes; then add story candidates grounded in the actual domain and a demonstrable user journey.
+
+## 16. Suggested investigation order
 
 This is a provisional order based on evidence dependencies, not a promise of publication dates:
 
