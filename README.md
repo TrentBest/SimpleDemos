@@ -177,7 +177,7 @@ dotnet build SimpleDemos.slnx --no-restore
 
 The separate worker-throughput benchmark is launched with `dotnet run --project Stress/Stress.csproj`. It writes `benchmark_data.csv` and `article_table.txt` into its working directory and can attempt very large worker counts. Run it deliberately, not as part of a quick tour. Results depend on the machine, runtime, and workload; do not treat one run as a universal performance claim.
 
-`MultiThreadedStress/` is currently a scaffold that prints `Hello, World!`; it is not yet a multithreaded FSM demonstration.
+`MultiThreadedStress/` is now a bounded [multithreaded FSM_API experiment](MultiThreadedStress/README.md). It compares serial updates of one shared processing group with concurrent updates of independently configured groups, checks callback counts, and records per-trial CSV evidence. This is an exploratory concurrency probe—not a blanket thread-safety guarantee or a portable performance claim.
 
 ### Explore the implementation
 
