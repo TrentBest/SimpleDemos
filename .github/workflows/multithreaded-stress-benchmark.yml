@@ -1,6 +1,10 @@
 name: MultiThreadedStress Benchmark
 
 on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/multithreaded-stress-benchmark.yml'
   workflow_dispatch:
     inputs:
       workers:
