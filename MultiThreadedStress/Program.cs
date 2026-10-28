@@ -76,35 +76,6 @@ TrialRow RunTrial(Scenario scenario, Options config, int trial, bool isWarmup)
         return BuildRow(scenario, config, trial, isWarmup, setupWatch.Elapsed.TotalMilliseconds,
             watch.Elapsed, allocated, workers, checked((long)config.Workers * config.Iterations));
     }
-    else
-    {
-        var groups = new string[config.Workers];
-        for (var i = 0; i < workers.Length; i++)
-        {
-            groups[i] = $"MTS_Parallel_{runId}_{i}";
-            var definition = $"MTS_Worker_{runId}_{i}";
-            FSM_API.Create.CreateProcessingGroup(groups[i]);
-            FSM_API.Create.CreateFiniteStateMachine(definition, 1, groups[i])
-                .State("Active", null, OnUpdate, null)
-                .BuildDefinition();
-
-            workers[i] = new WorkerContext($"worker-{i}");
-            workers[i].Status = FSM_API.Create.CreateInstance(definition, workers[i], groups[i]);
-        }
-
-        setupWatch.Stop();
-        var allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
-        var watch = Stopwatch.StartNew();
-        Parallel.For(0, config.Workers, workerIndex =>
-        {
-            for (var iteration = 0; iteration < config.Iterations; iteration++)
-                FSM_API.Interaction.Update(groups[workerIndex]);
-        });
-        watch.Stop();
-        var allocated = Math.Max(0, GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore);
-        return BuildRow(scenario, config, trial, isWarmup, setupWatch.Elapsed.TotalMilliseconds,
-            watch.Elapsed, allocated, workers, checked((long)config.Workers * config.Iterations));
-    }
     else if (scenario == Scenario.ConcurrentIndependentGroups)
     {
         var groups = new string[config.Workers];
