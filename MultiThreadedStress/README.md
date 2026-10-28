@@ -50,9 +50,11 @@ The workflow runs on GitHub-hosted `ubuntu-24.04`, so treat results as a baselin
 
 1. **Correctness first.** Expected callback counts must match observed counts. A failed gate is a result, not a number to average away.
 2. **Concurrency second.** Independent groups are the first probe. A successful run is evidence for that workload and environment only; it is not a blanket thread-safety guarantee.
-3. **Performance third.** Throughput and allocations are observations, not portable promises. Repeat runs and retain the raw CSV.
-4. **Keep API limitations visible.** FSM_API catches some callback exceptions internally. This runner's count gate detects missing or duplicated callback executions; it does not yet expose every internal API error counter. A passing count gate therefore does not prove the absence of all internal errors.
-5. **No unsafe structural mutation.** This first runner does not create, destroy, or modify definitions/instances while update tasks are running. That is a separate stress axis and should not be mixed into the first result.
+3. **Frame dependencies define the parallel boundary.** If an operation consumes data produced earlier in the current frame, that dependency must remain on the same sequential execution path unless an explicit dependency/synchronization boundary guarantees the producer has completed before the consumer runs. Do not parallelize frame-dependent work merely because its callbacks can be dispatched to separate workers. Logical independence is a correctness property; speedup is a separate measurement.
+4. **Contention still matters.** Independent paths may compete for CPU time, cache lines, locks, memory allocation, or other shared resources. A worker-count slowdown is useful evidence to investigate, but it does not by itself prove a data dependency or identify the contended resource.
+5. **Performance third.** Throughput and allocations are observations, not portable promises. Repeat runs and retain the raw CSV.
+6. **Keep API limitations visible.** FSM_API catches some callback exceptions internally. This runner's count gate detects missing or duplicated callback executions; it does not yet expose every internal API error counter. A passing count gate therefore does not prove the absence of all internal errors.
+7. **No unsafe structural mutation.** This first runner does not create, destroy, or modify definitions/instances while update tasks are running. That is a separate stress axis and should not be mixed into the first result.
 
 ## Next experiments
 
