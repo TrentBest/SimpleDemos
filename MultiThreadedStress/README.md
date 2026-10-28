@@ -34,6 +34,18 @@ The FSM callbacks and independent control execute the same payload: increment a 
 
 Each measured trial records setup time separately from update time, elapsed time, callback throughput, process-wide allocated-byte delta, expected and observed callback counts, correctness, runtime, OS, logical processor count, and .NET version. Warm-up is excluded from the CSV. The summary reports medians; compare only on the same machine and runtime.
 
+## Capture a repeatable GitHub-hosted run
+
+For an initial set of comparable numbers without needing to run locally:
+
+1. Open the repository's **Actions** tab.
+2. Select **MultiThreadedStress Benchmark**.
+3. Choose **Run workflow** on the `development` branch.
+4. Start with the defaults (4 workers, 10,000 iterations per worker, 5 measured trials).
+5. When complete, download the `multithreaded-stress-<run-id>` artifact. It contains the raw `multithreaded_stress.csv` and the console summary.
+
+The workflow runs on GitHub-hosted `ubuntu-24.04`, so treat results as a baseline for that hosted environment, not as your PC's performance. Keep worker count, iteration count, runtime, and OS the same when comparing runs. The CI correctness smoke test is deliberately tiny and is **not** a performance benchmark. These first measurements help us discover bottlenecks and scaling shape; they are not yet statistically rigorous BenchmarkDotNet results, and shared-host load can affect timings.
+
 ## Reading the evidence correctly
 
 1. **Correctness first.** Expected callback counts must match observed counts. A failed gate is a result, not a number to average away.
