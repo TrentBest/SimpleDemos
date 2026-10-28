@@ -27,11 +27,15 @@ var rows = new List<TrialRow>();
 // Warm up both paths. The warm-up is deliberately excluded from all reported measurements.
 RunTrial(Scenario.SerialSharedGroup, options, trial: 0, isWarmup: true);
 RunTrial(Scenario.ConcurrentIndependentGroups, options, trial: 0, isWarmup: true);
+RunTrial(Scenario.ParallelControlIndependentCounters, options, trial: 0, isWarmup: true);
+RunTrial(Scenario.ParallelControlSharedCounter, options, trial: 0, isWarmup: true);
 
 for (var trial = 1; trial <= options.Trials; trial++)
 {
     rows.Add(RunTrial(Scenario.SerialSharedGroup, options, trial, isWarmup: false));
     rows.Add(RunTrial(Scenario.ConcurrentIndependentGroups, options, trial, isWarmup: false));
+    rows.Add(RunTrial(Scenario.ParallelControlIndependentCounters, options, trial, isWarmup: false));
+    rows.Add(RunTrial(Scenario.ParallelControlSharedCounter, options, trial, isWarmup: false));
 }
 
 WriteCsv(CsvPath, rows);
@@ -101,6 +105,84 @@ TrialRow RunTrial(Scenario scenario, Options config, int trial, bool isWarmup)
         return BuildRow(scenario, config, trial, isWarmup, setupWatch.Elapsed.TotalMilliseconds,
             watch.Elapsed, allocated, workers, checked((long)config.Workers * config.Iterations));
     }
+    else if (scenario == Scenario.ConcurrentIndependentGroups)
+    {
+        var groups = new string[config.Workers];
+        for (var i = 0; i < workers.Length; i++)
+        {
+            groups[i] = $"MTS_Parallel_{runId}_{i}";
+            var definition = $"MTS_Worker_{runId}_{i}";
+            FSM_API.Create.CreateProcessingGroup(groups[i]);
+            FSM_API.Create.CreateFiniteStateMachine(definition, 1, groups[i])
+                .State("Active", null, OnUpdate, null)
+                .BuildDefinition();
+
+            workers[i] = new WorkerContext($"worker-{i}");
+            workers[i].Status = FSM_API.Create.CreateInstance(definition, workers[i], groups[i]);
+        }
+
+        setupWatch.Stop();
+        var allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
+        var watch = Stopwatch.StartNew();
+        Parallel.For(0, config.Workers, workerIndex =>
+        {
+            for (var iteration = 0; iteration < config.Iterations; iteration++)
+                FSM_API.Interaction.Update(groups[workerIndex]);
+        });
+        watch.Stop();
+        var allocated = Math.Max(0, GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore);
+        return BuildRow(scenario, config, trial, isWarmup, setupWatch.Elapsed.TotalMilliseconds,
+            watch.Elapsed, allocated, workers, checked((long)config.Workers * config.Iterations));
+    }
+    else if (scenario == Scenario.ParallelControlIndependentCounters)
+    {
+        for (var i = 0; i < workers.Length; i++)
+            workers[i] = new WorkerContext($"worker-{i}");
+
+        setupWatch.Stop();
+        var allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
+        var watch = Stopwatch.StartNew();
+        Parallel.For(0, config.Workers, workerIndex =>
+        {
+            var worker = workers[workerIndex];
+            for (var iteration = 0; iteration < config.Iterations; iteration++)
+                ExecutePayload(worker);
+        });
+        watch.Stop();
+        var allocated = Math.Max(0, GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore);
+        return BuildRow(scenario, config, trial, isWarmup, setupWatch.Elapsed.TotalMilliseconds,
+            watch.Elapsed, allocated, workers, checked((long)config.Workers * config.Iterations));
+    }
+    else
+    {
+        long sharedCounter = 0;
+        setupWatch.Stop();
+        var allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
+        var watch = Stopwatch.StartNew();
+        Parallel.For(0, config.Workers, _ =>
+        {
+            for (var iteration = 0; iteration < config.Iterations; iteration++)
+                Interlocked.Increment(ref sharedCounter);
+        });
+        watch.Stop();
+        var allocated = Math.Max(0, GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore);
+        // Store the aggregate in one slot so the common correctness gate compares the
+        // total operation count without pretending the shared counter is per-worker data.
+        workers[0] = new WorkerContext("shared-counter") { DataValue = sharedCounter };
+        for (var i = 1; i < workers.Length; i++)
+            workers[i] = new WorkerContext($"worker-{i}");
+        return BuildRow(scenario, config, trial, isWarmup, setupWatch.Elapsed.TotalMilliseconds,
+            watch.Elapsed, allocated, workers, checked((long)config.Workers * config.Iterations));
+    }
+}
+
+static void ExecutePayload(WorkerContext worker)
+{
+    var value = Interlocked.Increment(ref worker.DataValue);
+    var payload = value.ToString(CultureInfo.InvariantCulture);
+    if ((value & 1) == 0)
+        _ = Math.Abs(value);
+    worker.LastPayloadLength = payload.Length;
 }
 
 static void OnUpdate(IStateContext stateContext)
@@ -110,11 +192,7 @@ static void OnUpdate(IStateContext stateContext)
 
     // Preserve the string-backed work that is expected to become a useful comparison
     // point for the future integer-backed FSM_API path.
-    var value = Interlocked.Increment(ref worker.DataValue);
-    var payload = value.ToString(CultureInfo.InvariantCulture);
-    if ((value & 1) == 0)
-        _ = Math.Abs(value);
-    worker.LastPayloadLength = payload.Length;
+    ExecutePayload(worker);
 }
 
 static TrialRow BuildRow(Scenario scenario, Options config, int trial, bool warmup,
@@ -181,7 +259,9 @@ static string Csv(string value) => "\"" + value.Replace("\"", "\"\"") + "\"";
 enum Scenario
 {
     SerialSharedGroup,
-    ConcurrentIndependentGroups
+    ConcurrentIndependentGroups,
+    ParallelControlIndependentCounters,
+    ParallelControlSharedCounter
 }
 
 sealed class WorkerContext : IStateContext
