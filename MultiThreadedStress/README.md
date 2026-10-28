@@ -27,8 +27,10 @@ Use `--help` to see accepted bounds. The maximums protect against accidentally l
 
 - **SerialSharedGroup:** one host thread calls `FSM_API.Interaction.Update` repeatedly for one group containing all worker instances.
 - **ConcurrentIndependentGroups:** each worker owns a separate processing group and instance, and worker tasks call `Update(group)` concurrently. All definitions and instances are created before timing; no structural changes are made during measured updates.
+- **ParallelControlIndependentCounters:** a non-FSM control that runs the same payload in parallel against worker-local counters. This helps separate general task/payload cost from FSM_API update cost.
+- **ParallelControlSharedCounter:** a non-FSM contention control in which all workers increment one shared `long` using `Interlocked.Increment`. This measures a deliberately synchronized shared-state workload; it is not an FSM_API test.
 
-Both paths execute the same per-callback payload: increment a per-worker integer, convert it to a string, and perform a small branch. This keeps the string-backed workload visible as a baseline for future integer-backed API comparisons.
+The FSM callbacks and independent control execute the same payload: increment a per-worker integer, convert it to a string, and perform a small branch. The shared-counter control isolates atomic contention and intentionally does not perform the string conversion. Keep those workload differences in mind when comparing timings.
 
 Each measured trial records setup time separately from update time, elapsed time, callback throughput, process-wide allocated-byte delta, expected and observed callback counts, correctness, runtime, OS, logical processor count, and .NET version. Warm-up is excluded from the CSV. The summary reports medians; compare only on the same machine and runtime.
 
@@ -43,8 +45,9 @@ Each measured trial records setup time separately from update time, elapsed time
 ## Next experiments
 
 - Run on different core counts and record the same CSV metadata.
-- Add isolated contention and callback-heavy workloads only after the basic count gate is stable.
+- Strengthen failure capture with task/worker exception reporting and FSM_API internal-error observability where the public API permits it.
 - Add a deliberate shared-group concurrent-update probe as a separately labelled, potentially unsafe experiment; do not confuse it with the independent-group path.
+- Add lifecycle cleanup and repeated create/destroy scenarios after checking the API's supported lifecycle semantics.
 - Compare the string-backed and integer-backed APIs when the integer path is ready, keeping work equivalence and timing boundaries identical.
 - Add CI correctness smoke tests with small bounded inputs. CI timing is not a performance baseline.
 
