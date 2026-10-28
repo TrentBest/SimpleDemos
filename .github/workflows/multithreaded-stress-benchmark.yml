@@ -54,12 +54,16 @@ jobs:
 
       - name: Run benchmark
         shell: bash
+        env:
+          WORKERS: ${{ inputs.workers || '4' }}
+          ITERATIONS: ${{ inputs.iterations || '10000' }}
+          TRIALS: ${{ inputs.trials || '5' }}
         run: |
           set -euo pipefail
           dotnet run --project MultiThreadedStress/MultiThreadedStress.csproj --configuration Release --no-build -- \
-            --workers "${{ inputs.workers }}" \
-            --iterations "${{ inputs.iterations }}" \
-            --trials "${{ inputs.trials }}" | tee multithreaded_stress_run.log
+            --workers "$WORKERS" \
+            --iterations "$ITERATIONS" \
+            --trials "$TRIALS" | tee multithreaded_stress_run.log
 
       - name: Upload raw CSV and console summary
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v4
