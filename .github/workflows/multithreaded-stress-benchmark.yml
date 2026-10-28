@@ -8,20 +8,10 @@ on:
       - 'MultiThreadedStress/**'
   workflow_dispatch:
     inputs:
-      workers:
-        description: "Worker count (1-64)"
-        required: true
-        default: "4"
-        type: string
-      iterations:
-        description: "Iterations per worker (1-1000000)"
-        required: true
-        default: "10000"
-        type: string
       trials:
-        description: "Measured trials (1-25)"
+        description: "Measured trials per worker count (1-25)"
         required: true
-        default: "5"
+        default: "7"
         type: string
 
 permissions:
@@ -33,9 +23,13 @@ concurrency:
 
 jobs:
   benchmark:
-    name: Run named stress scenarios and retain raw results
+    name: Fixed-workload scaling (workers=${{ matrix.workers }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        workers: [1, 2, 4, 8]
     steps:
       - name: Checkout source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -56,11 +50,17 @@ jobs:
       - name: Run benchmark
         shell: bash
         env:
-          WORKERS: ${{ inputs.workers || '4' }}
-          ITERATIONS: ${{ inputs.iterations || '10000' }}
-          TRIALS: ${{ inputs.trials || '5' }}
+          WORKERS: ${{ matrix.workers }}
+          TOTAL_CALLBACKS: 40000
+          TRIALS: ${{ inputs.trials || '7' }}
         run: |
           set -euo pipefail
+          if (( TOTAL_CALLBACKS % WORKERS != 0 )); then
+            echo "TOTAL_CALLBACKS must divide evenly by WORKERS" >&2
+            exit 2
+          fi
+          ITERATIONS=$((TOTAL_CALLBACKS / WORKERS))
+          echo "Fixed workload: $TOTAL_CALLBACKS callbacks; workers=$WORKERS; iterations per worker=$ITERATIONS; trials=$TRIALS"
           dotnet run --project MultiThreadedStress/MultiThreadedStress.csproj --configuration Release --no-build -- \
             --workers "$WORKERS" \
             --iterations "$ITERATIONS" \
@@ -69,7 +69,7 @@ jobs:
       - name: Upload raw CSV and console summary
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: multithreaded-stress-${{ github.run_id }}
+          name: multithreaded-stress-${{ github.run_id }}-workers-${{ matrix.workers }}
           path: |
             multithreaded_stress.csv
             multithreaded_stress_run.log
