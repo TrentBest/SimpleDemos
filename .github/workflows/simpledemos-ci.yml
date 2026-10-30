@@ -74,12 +74,12 @@ jobs:
       - name: Build solution
         run: dotnet build SimpleDemos.slnx --configuration Release --no-restore -p:EnableWindowsTargeting=true
 
-      - name: Run REST city demonstration paths with deterministic fixture
+      - name: Run independently isolated REST paths and combined proof
         run: |
-          dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode visualize --fixture --output artifacts/tacoma-weather-visualize.svg
-          dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode renderer --fixture
+          dotnet run --project RestCityDemo.Visualize/RestCityDemo.Visualize.csproj --configuration Release --no-build -- --fixture --output artifacts/tacoma-weather-visualize-only.svg
+          dotnet run --project RestCityDemo.Renderer/RestCityDemo.Renderer.csproj --configuration Release --no-build -- --fixture
           dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode combined --fixture --output artifacts/tacoma-weather-combined.svg
-          test -s artifacts/tacoma-weather-visualize.svg
+          test -s artifacts/tacoma-weather-visualize-only.svg
           test -s artifacts/tacoma-weather-combined.svg
 
       - name: Upload REST city presentation artifacts
@@ -87,7 +87,7 @@ jobs:
         with:
           name: rest-city-weather-presentation-proof
           path: |
-            artifacts/tacoma-weather-visualize.svg
+            artifacts/tacoma-weather-visualize-only.svg
             artifacts/tacoma-weather-combined.svg
           if-no-files-found: error
           retention-days: 14
