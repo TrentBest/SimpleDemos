@@ -27,6 +27,8 @@ const double peakRainRate = 0.00002d;
 
 var output = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.GetFullPath("artifacts/water-surface.svg");
 Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+ValidateCflFailureIsAtomic();
+ValidateInvalidRainfallRejected();
 var first = RunScenario();
 var replay = RunScenario();
 Require(first.Depth.SequenceEqual(replay.Depth), "Deterministic replay produced different final depth values.");
@@ -81,6 +83,8 @@ var manifestPath = Path.ChangeExtension(output, ".manifest.txt");
 var manifest = new SortedDictionary<string, string>(StringComparer.Ordinal)
 {
     ["backend"] = "CPU/SVG",
+    ["cflFailureAtomicity"] = "passed",
+    ["invalidRainfallRejected"] = "true",
     ["cellHeightMetres"] = F(cellHeight),
     ["cellWidthMetres"] = F(cellWidth),
     ["depthArraySha256"] = HashDoubles(first.Depth),
@@ -124,6 +128,45 @@ Console.WriteLine($"Surface: {width} × {height} cells; {vertices.Length} vertic
 Console.WriteLine($"SVG: {output}");
 Console.WriteLine($"Manifest: {manifestPath}");
 Console.WriteLine("Backend: CPU/SVG; height-field visualization, not GPU rendering or a full 3D fluid simulation.");
+
+void ValidateCflFailureIsAtomic()
+{
+    var initialDepth = new[] { 0.01d, 0.01d, 0.01d, 0.01d };
+    var basin = new BathymetricShallowWaterBasin2D(
+        2, 2, 1d, 1d, 0.1d, initialDepth, new[] { 0d, 0d, 0d, 0d });
+    var beforeDepth = basin.SnapshotDepth();
+    var beforeVolume = basin.WaterVolume;
+    var beforeStep = basin.StepCount;
+    var excessiveRain = new RainfallRateField2D(2, 2, new[] { 10d, 10d, 10d, 10d });
+    ExpectException<InvalidOperationException>(
+        () => basin.ApplyRainfall(excessiveRain, 1d),
+        "CFL-violating rainfall was not rejected.");
+    Require(beforeDepth.SequenceEqual(basin.SnapshotDepth()),
+        "CFL-rejected rainfall mutated authoritative basin depth.");
+    Require(beforeVolume.Equals(basin.WaterVolume) && beforeStep == basin.StepCount,
+        "CFL-rejected rainfall mutated basin volume or step count.");
+}
+
+void ValidateInvalidRainfallRejected()
+{
+    ExpectException<ArgumentException>(
+        () => _ = new RainfallRateField2D(2, 2, new[] { 0d, -1d, 0d, 0d }),
+        "Negative precipitation rate was not rejected.");
+}
+
+void ExpectException<TException>(Action action, string message)
+    where TException : Exception
+{
+    try
+    {
+        action();
+    }
+    catch (TException)
+    {
+        return;
+    }
+    throw new InvalidOperationException(message);
+}
 
 (double[] Bed, double[] Depth, double[] FreeSurface, double[] Speed, double InitialVolume,
     double Volume, double ExpectedRainVolumeDelta, long StepCount, double SimulationTime) RunScenario()
@@ -197,6 +240,8 @@ void ValidateSnapshot(BasinScenario scenario, int basinWidth, int basinHeight,
         "Physics snapshot arrays do not match the scenario dimensions.");
     Require(bed.All(double.IsFinite) && depth.All(value => double.IsFinite(value) && value >= 0d) &&
         freeSurface.All(double.IsFinite) && speed.All(value => double.IsFinite(value) && value >= 0d),
+        "Physics snapshot contains invalid numeric values.");
+    Require(Enumerable.Range(0, expectedCount).All(i => freeSurface[i].Equals(bed[i] + depth[i])),
         "Physics snapshot contains invalid numeric values.");
     Require(!string.IsNullOrWhiteSpace(scenario.PhysicsRevision), "Scenario provenance is missing the Physics revision.");
 }
