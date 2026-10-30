@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WorkshopGuiSvgProjectPath Condition="'$(WorkshopGuiSvgProjectPath)' == ''">$(MSBuildThisFileDirectory)../_dependencies/GUI/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj</WorkshopGuiSvgProjectPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../_dependencies/Physics/TheSingularityWorkshop.Physics.csproj" />
+    <ProjectReference Include="../_dependencies/Renderer/TheSingularityWorkshop.Renderer.csproj" />
+    <ProjectReference Include="../_dependencies/Visualize/TheSingularityWorkshop.Visualize.csproj" />
+    <ProjectReference Include="../_dependencies/Visualize/integrations/RendererAdapter/TheSingularityWorkshop.Renderer.VisualizeAdapter.csproj" />
+    <ProjectReference Include="../_dependencies/Visualize/integrations/GuiSvg/TheSingularityWorkshop.Visualize.GUI.SVG.csproj" />
+  </ItemGroup>
+</Project>
