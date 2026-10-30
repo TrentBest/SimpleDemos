@@ -197,7 +197,7 @@ void ExpectException<TException>(Action action, string message)
         initialDepth, bed);
     var rainfall = new RainfallRateField2D(width, height, rainRates);
     var initialVolume = basin.WaterVolume;
-    var expectedRainVolumeDelta = rainRates.Sum() * timeStep * width * height * cellWidth * cellHeight * steps;
+    var expectedRainVolumeDelta = rainRates.Sum() * timeStep * cellWidth * cellHeight * steps;
 
     for (var step = 0; step < steps; step++)
     {
@@ -242,7 +242,7 @@ void ValidateSnapshot(BasinScenario scenario, int basinWidth, int basinHeight,
         freeSurface.All(double.IsFinite) && speed.All(value => double.IsFinite(value) && value >= 0d),
         "Physics snapshot contains invalid numeric values.");
     Require(Enumerable.Range(0, expectedCount).All(i => freeSurface[i].Equals(bed[i] + depth[i])),
-        "Physics snapshot contains invalid numeric values.");
+        "Free-surface samples do not equal bed elevation plus water depth.");
     Require(!string.IsNullOrWhiteSpace(scenario.PhysicsRevision), "Scenario provenance is missing the Physics revision.");
 }
 
