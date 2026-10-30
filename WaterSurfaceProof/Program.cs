@@ -11,7 +11,7 @@ using TheSingularityWorkshop.Visualize.GuiSvg;
 const string physicsRevision = "b6e54def8d070832f8b88202e07487b4a55daa90";
 const string rendererRevision = "03d5b77e6af71a4d21d24debf5a8f39012b080ae";
 const string visualizeRevision = "ee7a0fc41eb0a3a78042b79fab72aed79f6e5d04";
-const string guiRevision = "0ad4bde2bd7eab8ab5ba7264811f3c8c26d07e6";
+const string guiRevision = "0ad4bde2bd7eab8ab5ba726d4811f3c8c26d07e6";
 var simpleDemosRevision = Environment.GetEnvironmentVariable("GITHUB_SHA") ?? "local-working-tree";
 
 const int width = 16;
