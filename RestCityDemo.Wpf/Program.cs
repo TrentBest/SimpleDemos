@@ -1,6 +1,7 @@
 using System.Windows;
 using SimpleDemos.RestCityDemo;
 using TheSingularityWorkshop.GUI.WPF;
+using DemoProgram = SimpleDemos.RestCityDemo.Program;
 namespace SimpleDemos.RestCityDemo.Wpf;
 internal static class Program
 {
@@ -9,7 +10,7 @@ internal static class Program
     {
         try
         {
-            var mode=RestCityDemo.Program.ReadOption(args,"--mode")??"renderer";
+            var mode=DemoProgram.ReadOption(args,"--mode")??"renderer";
             if(mode is not ("renderer" or "combined"))throw new ArgumentException("WPF host mode must be renderer or combined.");
             var fixture=args.Contains("--fixture",StringComparer.Ordinal);
             var output=RestCityDemo.Program.ReadOption(args,"--output")??Path.Combine("artifacts","tacoma-weather.svg");
