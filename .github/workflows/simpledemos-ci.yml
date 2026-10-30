@@ -63,16 +63,48 @@ jobs:
           path: _dependencies/GUI
           persist-credentials: false
 
+      - name: Checkout pinned Physics source for water proof
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Physics
+          ref: b6e54def8d070832f8b88202e07487b4a55daa90
+          path: WaterSurfaceProof/_dependencies/Physics
+          persist-credentials: false
+
+      - name: Checkout pinned Renderer source for water proof
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Renderer
+          ref: 03d5b77e6af71a4d21d24debf5a8f39012b080ae
+          path: WaterSurfaceProof/_dependencies/Renderer
+          persist-credentials: false
+
+      - name: Checkout pinned Visualize source for water proof
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Visualize
+          ref: ee7a0fc41eb0a3a78042b79fab72aed79f6e5d04
+          path: WaterSurfaceProof/_dependencies/Visualize
+          persist-credentials: false
+
+      - name: Checkout pinned GUI source for water proof
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.GUI
+          ref: 0ad4bde2bd7eab8ab5ba7264811f3c8c26d07e6
+          path: WaterSurfaceProof/_dependencies/GUI
+          persist-credentials: false
+
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           dotnet-version: 8.0.x
 
       - name: Restore solution
-        run: dotnet restore SimpleDemos.slnx -p:EnableWindowsTargeting=true
+        run: dotnet restore SimpleDemos.slnx -p:EnableWindowsTargeting=true -p:WorkshopRendererProjectPath="${{ github.workspace }}/WaterSurfaceProof/_dependencies/Renderer/TheSingularityWorkshop.Renderer.csproj" -p:WorkshopGuiSvgProjectPath="${{ github.workspace }}/WaterSurfaceProof/_dependencies/GUI/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj"
 
       - name: Build solution
-        run: dotnet build SimpleDemos.slnx --configuration Release --no-restore -p:EnableWindowsTargeting=true
+        run: dotnet build SimpleDemos.slnx --configuration Release --no-restore -p:EnableWindowsTargeting=true -p:WorkshopRendererProjectPath="${{ github.workspace }}/WaterSurfaceProof/_dependencies/Renderer/TheSingularityWorkshop.Renderer.csproj" -p:WorkshopGuiSvgProjectPath="${{ github.workspace }}/WaterSurfaceProof/_dependencies/GUI/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj"
 
       - name: Run independently isolated REST paths and combined proof
         run: |
@@ -81,6 +113,22 @@ jobs:
           dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode combined --fixture --output artifacts/tacoma-weather-combined.svg
           test -s artifacts/tacoma-weather-visualize-only.svg
           test -s artifacts/tacoma-weather-combined.svg
+          dotnet run --project WaterSurfaceProof/WaterSurfaceProof.csproj --configuration Release --no-build -- artifacts/water-surface.svg
+          test -s artifacts/water-surface.svg
+          test -s artifacts/water-surface.manifest.txt
+          grep -q "backend=CPU/SVG" artifacts/water-surface.manifest.txt
+          grep -q "model=BathymetricShallowWaterBasin2D" artifacts/water-surface.manifest.txt
+          grep -q "physicsRevision=b6e54def8d070832f8b88202e07487b4a55daa90" artifacts/water-surface.manifest.txt
+
+      - name: Upload Physics water surface proof and provenance
+        uses: actions/upload-artifact@v7
+        with:
+          name: physics-water-surface-proof
+          path: |
+            artifacts/water-surface.svg
+            artifacts/water-surface.manifest.txt
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload REST city presentation artifacts
         uses: actions/upload-artifact@v7
