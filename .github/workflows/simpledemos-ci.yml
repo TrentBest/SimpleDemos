@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: TrentBest/TheSingularityWorkshop.GUI
-          ref: 0ad4bde2bd7eab8ab5ba7264811f3c8c26d07e6
+          ref: 0ad4bde2bd7eab8ab5ba726d4811f3c8c26d07e6
           path: WaterSurfaceProof/_dependencies/GUI
           persist-credentials: false
 
