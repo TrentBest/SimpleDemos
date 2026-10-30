@@ -28,6 +28,8 @@
 
 **[New: Drone Construction living proof](projects/DroneConstruction/README.md)** — run the real deterministic construction simulation in CI, download the generated animated HTML artifact, and inspect the evidence and limits. This is a small real-snapshot showcase, not a claim of 100,000 construction agents or production GPU rendering.
 
+**[REST city-weather demonstration](docs/REST_CITY_WEATHER_DEMO.md)** — compare Visualize-only, Renderer + GUI textual, and combined paths over one free Open-Meteo REST response. The Visualize artifact is a CPU-side static SVG proof; the WPF host uses GUI.WPF for the textual tree.
+
 A small C#/.NET playground for learning how finite state machines (FSMs) coordinate behavior. Start with one fox and one sleeping dog, inspect the larger 2D multi-agent implementation, or run the separate worker-throughput benchmark.
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
