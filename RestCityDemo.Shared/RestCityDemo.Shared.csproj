@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../RestCityDemo/WeatherSnapshot.cs" Link="WeatherSnapshot.cs" />
+    <Compile Include="../RestCityDemo/OpenMeteoClient.cs" Link="OpenMeteoClient.cs" />
+  </ItemGroup>
+</Project>
