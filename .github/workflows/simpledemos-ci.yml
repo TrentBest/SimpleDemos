@@ -119,6 +119,9 @@ jobs:
           grep -q "backend=CPU/SVG" artifacts/water-surface.manifest.txt
           grep -q "model=BathymetricShallowWaterBasin2D" artifacts/water-surface.manifest.txt
           grep -q "physicsRevision=b6e54def8d070832f8b88202e07487b4a55daa90" artifacts/water-surface.manifest.txt
+          grep -q "cflFailureAtomicity=passed" artifacts/water-surface.manifest.txt
+          grep -q "invalidRainfallRejected=true" artifacts/water-surface.manifest.txt
+          grep -q "simulationTimeSeconds=3" artifacts/water-surface.manifest.txt
 
       - name: Upload Physics water surface proof and provenance
         uses: actions/upload-artifact@v7
