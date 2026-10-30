@@ -12,7 +12,7 @@ const string physicsRevision = "b6e54def8d070832f8b88202e07487b4a55daa90";
 const string rendererRevision = "03d5b77e6af71a4d21d24debf5a8f39012b080ae";
 const string visualizeRevision = "ee7a0fc41eb0a3a78042b79fab72aed79f6e5d04";
 const string guiRevision = "0ad4bde2bd7eab8ab5ba7264811f3c8c26d07e6";
-const string simpleDemosRevision = "9934986e86e9788d1c743e147cc6ba4c1f66dec2";
+var simpleDemosRevision = Environment.GetEnvironmentVariable("GITHUB_SHA") ?? "local-working-tree";
 
 const int width = 16;
 const int height = 12;
@@ -125,7 +125,7 @@ Console.WriteLine($"SVG: {output}");
 Console.WriteLine($"Manifest: {manifestPath}");
 Console.WriteLine("Backend: CPU/SVG; height-field visualization, not GPU rendering or a full 3D fluid simulation.");
 
-static (double[] Bed, double[] Depth, double[] FreeSurface, double[] Speed, double InitialVolume,
+(double[] Bed, double[] Depth, double[] FreeSurface, double[] Speed, double InitialVolume,
     double Volume, double ExpectedRainVolumeDelta, long StepCount, double SimulationTime) RunScenario()
 {
     var count = checked(width * height);
@@ -181,13 +181,15 @@ static (double[] Bed, double[] Depth, double[] FreeSurface, double[] Speed, doub
         expectedRainVolumeDelta, basin.StepCount, basin.SimulationTime);
 }
 
-static void ValidateSnapshot(BasinScenario scenario, int basinWidth, int basinHeight,
+void ValidateSnapshot(BasinScenario scenario, int basinWidth, int basinHeight,
     double[] bed, double[] depth, double[] freeSurface, double[] speed)
 {
     Require(scenario.Width == basinWidth && scenario.Height == basinHeight,
         "Scenario dimensions do not match the authoritative basin.");
     Require(double.IsFinite(scenario.CellWidth) && scenario.CellWidth > 0d &&
-        double.IsFinite(scenario.CellHeight) && scenario.CellHeight > 0d,
+        double.IsFinite(scenario.CellHeight) && scenario.CellHeight > 0d &&
+        double.IsFinite(scenario.TimeStep) && scenario.TimeStep > 0d &&
+        double.IsFinite(scenario.OriginX) && double.IsFinite(scenario.OriginY),
         "Scenario cell spacing must be finite and positive.");
     var expectedCount = checked(scenario.Width * scenario.Height);
     Require(bed.Length == expectedCount && depth.Length == expectedCount &&
@@ -199,7 +201,7 @@ static void ValidateSnapshot(BasinScenario scenario, int basinWidth, int basinHe
     Require(!string.IsNullOrWhiteSpace(scenario.PhysicsRevision), "Scenario provenance is missing the Physics revision.");
 }
 
-static VisualizerVertex[] BuildSurfaceVertices(
+VisualizerVertex[] BuildSurfaceVertices(
     (double[] Bed, double[] Depth, double[] FreeSurface, double[] Speed, double InitialVolume,
         double Volume, double ExpectedRainVolumeDelta, long StepCount, double SimulationTime) state)
 {
@@ -223,7 +225,7 @@ static VisualizerVertex[] BuildSurfaceVertices(
     return vertices;
 }
 
-static uint[] BuildGridIndices(int gridWidth, int gridHeight)
+uint[] BuildGridIndices(int gridWidth, int gridHeight)
 {
     var indices = new List<uint>((gridWidth - 1) * (gridHeight - 1) * 6);
     for (var y = 0; y < gridHeight - 1; y++)
@@ -238,14 +240,14 @@ static uint[] BuildGridIndices(int gridWidth, int gridHeight)
     return indices.ToArray();
 }
 
-static string HashDoubles(IEnumerable<double> values)
+string HashDoubles(IEnumerable<double> values)
 {
     var bytes = values.SelectMany(value => BitConverter.GetBytes(value)).ToArray();
     return Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
 }
 
-static string F(double value) => value.ToString("R", CultureInfo.InvariantCulture);
-static void Require(bool condition, string message)
+string F(double value) => value.ToString("R", CultureInfo.InvariantCulture);
+void Require(bool condition, string message)
 {
     if (!condition) throw new InvalidOperationException(message);
 }
