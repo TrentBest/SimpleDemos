@@ -69,10 +69,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore solution
-        run: dotnet restore SimpleDemos.slnx
+        run: dotnet restore SimpleDemos.slnx -p:EnableWindowsTargeting=true
 
       - name: Build solution
-        run: dotnet build SimpleDemos.slnx --configuration Release --no-restore
+        run: dotnet build SimpleDemos.slnx --configuration Release --no-restore -p:EnableWindowsTargeting=true
 
       - name: Run REST city demonstration paths with deterministic fixture
         run: |
