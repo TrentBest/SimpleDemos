@@ -17,6 +17,7 @@
 mono_crash.*
 
 # Build results
+WaterSurfaceProof/_dependencies/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
