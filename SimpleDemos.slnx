@@ -7,4 +7,5 @@
   <Project Path="RestCityDemo.Renderer/RestCityDemo.Renderer.csproj" />
   <Project Path="RestCityDemo/RestCityDemo.csproj" />
   <Project Path="RestCityDemo.Wpf/RestCityDemo.Wpf.csproj" />
+  <Project Path="WaterSurfaceProof/WaterSurfaceProof.csproj" />
 </Solution>
