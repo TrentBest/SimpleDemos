@@ -82,5 +82,15 @@ jobs:
           test -s artifacts/tacoma-weather-visualize.svg
           test -s artifacts/tacoma-weather-combined.svg
 
+      - name: Upload REST city presentation artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: rest-city-weather-presentation-proof
+          path: |
+            artifacts/tacoma-weather-visualize.svg
+            artifacts/tacoma-weather-combined.svg
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Run bounded multithreaded correctness smoke test
         run: dotnet run --project MultiThreadedStress/MultiThreadedStress.csproj --configuration Release --no-build -- --workers 2 --iterations 100 --trials 1
