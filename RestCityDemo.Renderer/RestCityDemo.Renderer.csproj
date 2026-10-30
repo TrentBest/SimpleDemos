@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../RestCityDemo.Shared/RestCityDemo.Shared.csproj" />
+    <ProjectReference Include="../_dependencies/Renderer/TheSingularityWorkshop.Renderer.csproj" />
+    <ProjectReference Include="../_dependencies/GUI/src/Core/TheSingularityWorkshop.GUI.Core.csproj" />
+    <Compile Include="../RestCityDemo/WeatherRendererPresentation.cs" Link="WeatherRendererPresentation.cs" />
+  </ItemGroup>
+</Project>
