@@ -100,6 +100,21 @@ Run the [verified showcase workflow](https://github.com/TrentBest/SimpleDemos/ac
 
 ---
 
+## 8. REST city weather: one response, three presentation paths
+
+**Start:** [REST city-weather demonstration](../docs/REST_CITY_WEATHER_DEMO.md)
+
+Retrieve current Tacoma weather from the free, no-key Open-Meteo REST API. The sample normalizes one response into one immutable snapshot, then selects one of three paths:
+
+- **Visualize:** direct Visualize frame submission to the CPU-side static SVG backend; Renderer is not invoked by this path.
+- **Renderer + GUI:** Renderer advances its FSM-backed representation state, GUI.Core describes the textual observation, and GUI.WPF manifests the tree as native controls.
+- **Combined:** the same snapshot feeds both the textual GUI and the Visualize SVG artifact.
+
+CI builds the console and WPF hosts and runs all three paths against a deterministic offline fixture. That verifies the adapters and sample flow without claiming a live API call during CI.
+
+**Shows:** one REST response can feed independent visual and semantic/textual presentation paths, with the combined mode sharing the same snapshot.  
+**Does not prove:** production GPU execution, Renderer-owned text serialization (the sample maps its representation decision into GUI.Core), or the reliability/availability of the external API.
+
 ## Evidence vocabulary
 
 - **Illustration:** communicates a model; may be independently hand-authored.
