@@ -39,6 +39,30 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Checkout Visualize source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Visualize
+          ref: development
+          path: _dependencies/Visualize
+          persist-credentials: false
+
+      - name: Checkout Renderer source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.Renderer
+          ref: development
+          path: _dependencies/Renderer
+          persist-credentials: false
+
+      - name: Checkout GUI source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: TrentBest/TheSingularityWorkshop.GUI
+          ref: development
+          path: _dependencies/GUI
+          persist-credentials: false
+
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
@@ -49,6 +73,14 @@ jobs:
 
       - name: Build solution
         run: dotnet build SimpleDemos.slnx --configuration Release --no-restore
+
+      - name: Run REST city demonstration paths with deterministic fixture
+        run: |
+          dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode visualize --fixture --output artifacts/tacoma-weather-visualize.svg
+          dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode renderer --fixture
+          dotnet run --project RestCityDemo/RestCityDemo.csproj --configuration Release --no-build -- --mode combined --fixture --output artifacts/tacoma-weather-combined.svg
+          test -s artifacts/tacoma-weather-visualize.svg
+          test -s artifacts/tacoma-weather-combined.svg
 
       - name: Run bounded multithreaded correctness smoke test
         run: dotnet run --project MultiThreadedStress/MultiThreadedStress.csproj --configuration Release --no-build -- --workers 2 --iterations 100 --trials 1
