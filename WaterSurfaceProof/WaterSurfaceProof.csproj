@@ -12,6 +12,6 @@
     <ProjectReference Include="_dependencies/Renderer/TheSingularityWorkshop.Renderer.csproj" />
     <ProjectReference Include="_dependencies/Visualize/TheSingularityWorkshop.Visualize.csproj" />
     <ProjectReference Include="_dependencies/Visualize/integrations/RendererAdapter/TheSingularityWorkshop.Renderer.VisualizeAdapter.csproj" />
-    <ProjectReference Include="../_dependencies/Visualize/integrations/GuiSvg/TheSingularityWorkshop.Visualize.GUI.SVG.csproj" />
+    <ProjectReference Include="_dependencies/Visualize/integrations/GuiSvg/TheSingularityWorkshop.Visualize.GUI.SVG.csproj" />
   </ItemGroup>
 </Project>
