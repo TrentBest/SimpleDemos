@@ -16,6 +16,7 @@
 
 # SimpleDemos: The Fox, the Dog, and the FSM
 
+[![Sith Policy](assets/sith-policy.svg)](https://github.com/TrentBest/SimpleDemos/actions/workflows/sith-policy.yml)
 <p align="center">
   <img src="docs/assets/fox-dog-number-line.svg" alt="Animated fox walking along a number line, spotting a sleeping sheepdog, jumping over it, and turning around to repeat." width="100%" />
 </p>
