@@ -16,6 +16,8 @@
 
 # SimpleDemos: The Fox, the Dog, and the FSM
 
+[![Sith Policy](assets/sith-policy.svg)](https://github.com/TrentBest/SimpleDemos/actions/workflows/sith-policy.yml)
+
 <p align="center">
   <img src="docs/assets/fox-dog-number-line.svg" alt="Animated fox walking along a number line, spotting a sleeping sheepdog, jumping over it, and turning around to repeat." width="100%" />
 </p>
@@ -26,7 +28,6 @@ A small C#/.NET playground for learning how finite state machines (FSMs) coordin
 
 **The point is not to animate a fox. The point is to make behavior explicit:** agents have state, conditions trigger transitions, and state callbacks determine what happens next.
 
-
 ### The 10×10 plane (GUI.SVG)
 
 The next scale-up is a **10×10 cell plane**. Its regular orthogonal lattice is projected isometrically, so each of the two grid-line families stays parallel and each cell has a stable coordinate. One fox follows a row into the cell beside a sleeping sheepdog: the Zs stop, the dog stands and reaches, a cartoon fight cloud hides the tussle, then a limp fox, RIP stone, and harp-playing angel make the outcome visible. The GUI.SVG repo now contains the scene model and a CI-verified renderer sample; this remains illustrative SVG choreography, not yet a live FSM_API trace.
@@ -35,11 +36,9 @@ The next scale-up is a **10×10 cell plane**. Its regular orthogonal lattice is 
   <img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.GUI/development/docs/assets/fox-sheepdog-10x10.svg" alt="GUI.SVG 10 by 10 isometric test plane showing a fox encounter with a sleeping sheepdog, cartoon fight cloud, RIP stone and ascending harp-playing fox angel." width="100%" />
 </p>
 
-
 ## Demonstration proof work
 
 The visual examples are being developed into a reproducible proof pipeline. Start with the [demonstrations index](demonstrations/README.md) and its [fox/sheepdog state-contract SVG](demonstrations/01-state-contract.svg). The diagram is derived from the existing C# FSM_API source; it is a source map, **not** a claim that the browser SVG is currently driven by live FSM execution.
-
 
 ## 🔵 00 · The problem
 
