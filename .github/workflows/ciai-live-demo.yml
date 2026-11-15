@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
       - name: Observe and validate the requested CI run
         env:
           CIAI_GITHUB_TOKEN: ${{ secrets.CIAI_GITHUB_TOKEN }}
