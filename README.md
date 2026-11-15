@@ -156,7 +156,7 @@ The advanced source files extend the same idea into a 100 × 100 2D environment 
 
 ### Requirements
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Internet access on first restore, to retrieve the published FSM_API NuGet package
 
 ### Run the fox-and-dog demo
