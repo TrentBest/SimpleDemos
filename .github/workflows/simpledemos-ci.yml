@@ -106,6 +106,9 @@ jobs:
       - name: Build solution
         run: dotnet build SimpleDemos.slnx --configuration Release --no-restore -p:EnableWindowsTargeting=true -p:WorkshopRendererProjectPath="${{ github.workspace }}/WaterSurfaceProof/_dependencies/Renderer/TheSingularityWorkshop.Renderer.csproj" -p:WorkshopGuiSvgProjectPath="${{ github.workspace }}/WaterSurfaceProof/_dependencies/GUI/src/SVG/TheSingularityWorkshop.GUI.SVG.csproj"
 
+      - name: Run Minesweeper domain tests
+        run: dotnet test Minesweeper.Tests/Minesweeper.Tests.csproj --configuration Release --no-build
+
       - name: Run independently isolated REST paths and combined proof
         run: |
           dotnet run --project RestCityDemo.Visualize/RestCityDemo.Visualize.csproj --configuration Release --no-build -- --fixture --output artifacts/tacoma-weather-visualize-only.svg

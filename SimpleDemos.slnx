@@ -8,4 +8,6 @@
   <Project Path="RestCityDemo/RestCityDemo.csproj" />
   <Project Path="RestCityDemo.Wpf/RestCityDemo.Wpf.csproj" />
   <Project Path="WaterSurfaceProof/WaterSurfaceProof.csproj" />
+  <Project Path="Minesweeper/Minesweeper.Domain.csproj" />
+  <Project Path="Minesweeper.Tests/Minesweeper.Tests.csproj" />
 </Solution>
