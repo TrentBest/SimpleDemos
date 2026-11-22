@@ -10,4 +10,5 @@
   <Project Path="WaterSurfaceProof/WaterSurfaceProof.csproj" />
   <Project Path="Minesweeper/Minesweeper.Domain.csproj" />
   <Project Path="Minesweeper.Tests/Minesweeper.Tests.csproj" />
+  <Project Path="Minesweeper.Wpf/Minesweeper.Wpf.csproj" />
 </Solution>
