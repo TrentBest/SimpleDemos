@@ -13,11 +13,13 @@
     "MultiThreadedStress",
     "development",
     "feature/ontology-paces",
-    "master"
+    "master",
+    "work/minesweeper-homecoming",
+    "work/minesweeper-playable-wpf"
   ],
-  "branch_count": 8,
+  "branch_count": 10,
   "status": "NON-COMPLIANT",
-  "evaluated_at": "2026-11-21T12:41:09Z",
-  "workflow_run": "https://github.com/TrentBest/SimpleDemos/actions/runs/44905124431",
-  "triggering_commit": "21cc4f69fcc0fe149396bf6ed65679b032a297dd"
+  "evaluated_at": "2026-11-22T12:37:29Z",
+  "workflow_run": "https://github.com/TrentBest/SimpleDemos/actions/runs/45023234883",
+  "triggering_commit": "2be6d7545b308b69523f7a73fa0187e67ab27440"
 }
