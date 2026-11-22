@@ -97,6 +97,8 @@ Run its tests with:
 dotnet test Minesweeper.Tests/Minesweeper.Tests.csproj
 ```
 
+Launch the first interactive Windows manifestation with `dotnet run --project Minesweeper.Wpf/Minesweeper.Wpf.csproj`. Left-click reveals; right-click flags; **New board** advances to the next reproducible seed. The WPF host delegates all game rules to the domain.
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
