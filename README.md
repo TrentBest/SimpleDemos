@@ -87,6 +87,16 @@ The direct baseline remains in [`Stress/Program.cs`](Stress/Program.cs). The mea
 
 SimpleDemos also hosts the first cross-repository [CiAi live-run demonstration](demonstrations/02-ciai-live-run.md). The [GitHub Actions workflow](https://github.com/TrentBest/SimpleDemos/actions/workflows/ciai-live-demo.yml) runs automatically on pushes to `development`, observing a known-good run from CiAi. Inspect its logs for the read-only facts and evidence URL. The default target is `TrentBest/TheSingularityWorkshop.CiAi`, run `40027841199`. This is provider-ingestion proof—not yet an LLM-driven or action-executing workflow.
 
+## Minesweeper: deterministic game domain
+
+The repository now includes a host-independent Minesweeper domain and focused tests. The same authoritative game state can drive a browser, WPF window, SVG scene, or a future 3D manifestation without duplicating the rules. Start with [`Minesweeper/README.md`](Minesweeper/README.md); the domain is deliberately not packaged as a NuGet dependency.
+
+Run its tests with:
+
+```bash
+dotnet test Minesweeper.Tests/Minesweeper.Tests.csproj
+```
+
 ## 🔵 00 · The problem
 
 A fox walks toward a goal. A dog is asleep in its path. The fox can see obstacles, jump, collide, or flee; the dog can wake, chase, and catch the fox. The outcome depends on what each agent can observe and which transition conditions become true.
