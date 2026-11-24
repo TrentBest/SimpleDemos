@@ -19,7 +19,7 @@
   ],
   "branch_count": 10,
   "status": "NON-COMPLIANT",
-  "evaluated_at": "2026-11-23T14:42:04Z",
-  "workflow_run": "https://github.com/TrentBest/SimpleDemos/actions/runs/45196987623",
-  "triggering_commit": "2c7f651b020988b64ce4a60646c89db9cc0e2eb2"
+  "evaluated_at": "2026-11-24T14:54:01Z",
+  "workflow_run": "https://github.com/TrentBest/SimpleDemos/actions/runs/45419205727",
+  "triggering_commit": "e9d5a361a49d9dd2ea1723cb8421841a854626dc"
 }
